@@ -140,6 +140,4 @@ You can also pass a callback function to init, which will get called after the S
 
 In the case that `optOut` is true, then no event will be logged, but the callback will be called. In the case that `batchEvents` is true, if the batch requirements `eventUploadThreshold` and `eventUploadPeriodMillis` are not met when `logEvent` is called, then no request is sent, but the callback is still called. In these cases, the callback will be called with an input status of 0 and response 'No request sent'.
 
-```
-This library is a fork of [https://github.com/amplitude/Amplitude-Javascript](Amplitude-Javascript)
-```
+**This library is a fork of [https://github.com/amplitude/Amplitude-Javascript](Amplitude-Javascript)**
