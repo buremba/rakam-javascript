@@ -1,15 +1,14 @@
 {
-  "name": "amplitude-js",
+  "name": "rakam-js",
   "main": "src/index.js",
-  "repo": "amplitude/amplitude-javascript",
-  "description": "Javascript library for Amplitude Analytics",
+  "repo": "rakam/rakam-javascript",
+  "description": "Javascript library for Rakam Analytics",
   "version": "2.4.0",
   "keywords": [
     "analytics",
-    "amplitude"
+    "rakam"
   ],
   "dependencies": {
-    "amplitude/ua-parser-js": "407f34a",
     "amplitude/JavaScript-MD5": "2350ea9",
     "component/object": "0.0.3",
     "component/querystring": "1.3.0",

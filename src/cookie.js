@@ -30,12 +30,12 @@ var options = function(opts) {
   var domain = (opts.domain !== undefined) ? opts.domain : '.' + topDomain(window.location.href);
   var token = Math.random();
   _options.domain = domain;
-  set('amplitude_test', token);
-  var stored = get('amplitude_test');
+  set('rakam_test', token);
+  var stored = get('rakam_test');
   if (!stored || stored !== token) {
     domain = null;
   }
-  remove('amplitude_test');
+  remove('rakam_test');
   _options.domain = domain;
 };
 

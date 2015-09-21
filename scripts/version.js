@@ -22,7 +22,7 @@ console.log('Updated component.json');
 
 var files = [
   'README.md',
-  path.join('src', 'amplitude-snippet.js'),
+  path.join('src', 'rakam-snippet.js'),
   path.join('src', 'version.js'),
 ];
 files.map(replaceVersion);

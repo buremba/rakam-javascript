@@ -3,5 +3,4 @@
   require('./md5.js');
   require('./uuid.js');
   require('./cookie.js');
-  require('./amplitude.js');
-  require('./ua-parser.js');
+  require('./rakam.js');

@@ -45,7 +45,7 @@ describe('Cookie', function() {
     it('should fallback to no domain when it cant set the test cookie', function(){
       cookie.options({ domain: 'xyz.com' });
       assert.isNull(cookie.options().domain);
-      assert.isNull(cookie.get('amplitude_test'));
+      assert.isNull(cookie.get('rakam_test'));
     });
   });
 });

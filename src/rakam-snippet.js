@@ -1,15 +1,15 @@
 (function(window, document) {
-  var amplitude = window.amplitude || {};
+  var rakam = window.rakam || {};
   var as = document.createElement('script');
   as.type = 'text/javascript';
   as.async = true;
-  as.src = 'https://d24n15hnbwhuhn.cloudfront.net/libs/amplitude-2.4.0-min.gz.js';
+  as.src = 'http://127.0.0.1:8080/dist/rakam-2.4.0.js';
   var s = document.getElementsByTagName('script')[0];
   s.parentNode.insertBefore(as, s);
-  amplitude._q = [];
+  rakam._q = [];
   function proxy(fn) {
-    amplitude[fn] = function() {
-      amplitude._q.push([fn].concat(Array.prototype.slice.call(arguments, 0)));
+    rakam[fn] = function() {
+      rakam._q.push([fn].concat(Array.prototype.slice.call(arguments, 0)));
     };
   }
   var funcs = ["init", "logEvent", "logRevenue", "setUserId", "setUserProperties",
@@ -18,5 +18,5 @@
   for (var i = 0; i < funcs.length; i++) {
     proxy(funcs[i]);
   }
-  window.amplitude = amplitude;
+  window.rakam = rakam;
 })(window, document);

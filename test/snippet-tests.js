@@ -1,17 +1,17 @@
 describe('Snippet', function() {
 
-  it('amplitude object should exist', function() {
+  it('rakam object should exist', function() {
     assert.isObject(window);
-    assert.isObject(window.amplitude);
-    assert.isFunction(window.amplitude.init);
-    assert.isFunction(window.amplitude.logEvent);
+    assert.isObject(window.rakam);
+    assert.isFunction(window.rakam.init);
+    assert.isFunction(window.rakam.logEvent);
   });
 
-  it('amplitude object should proxy functions', function() {
-    amplitude.init("API_KEY");
-    amplitude.logEvent("Event", {prop: 1});
-    assert.lengthOf(amplitude._q, 2);
-    assert.deepEqual(amplitude._q[0], ["init", "API_KEY"]);
+  it('rakam object should proxy functions', function() {
+    rakam.init("API_KEY");
+    rakam.logEvent("Event", {prop: 1});
+    assert.lengthOf(rakam._q, 2);
+    assert.deepEqual(rakam._q[0], ["init", "API_KEY"]);
   });
 
 });

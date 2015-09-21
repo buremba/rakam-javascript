@@ -1,15 +1,15 @@
 {
-  "name": "amplitude-js",
-  "author": "Amplitude <support@amplitude.com>",
+  "name": "rakam-js",
+  "author": "Rakam <support@rakam.com>",
   "version": "2.4.0",
   "license": "MIT",
-  "description": "Javascript library for Amplitude Analytics",
+  "description": "Javascript library for Rakam Analytics",
   "keywords": [
     "analytics",
-    "amplitude"
+    "rakam"
   ],
-  "repository": "git://github.com/amplitude/amplitude-javascript.git",
-  "main": "lib/amplitude.js",
+  "repository": "git://github.com/rakam/rakam-javascript.git",
+  "main": "lib/rakam.js",
   "dependencies": {},
   "devDependencies": {
     "duo": "0.8",

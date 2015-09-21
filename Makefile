@@ -1,12 +1,12 @@
 SRC = $(wildcard src/*.js)
-SNIPPET = src/amplitude-snippet.js
+SNIPPET = src/rakam-snippet.js
 TESTS = $(wildcard test/*.js)
 BINS = node_modules/.bin
 DUO = $(BINS)/duo
 MINIFY = $(BINS)/uglifyjs
 JSHINT = $(BINS)/jshint
 BUILD_DIR = build
-PROJECT = amplitude
+PROJECT = rakam
 OUT = $(PROJECT).js
 SNIPPET_OUT = $(PROJECT)-snippet.min.js
 SEGMENT_SNIPPET_OUT = $(PROJECT)-segment-snippet.min.js
@@ -25,7 +25,7 @@ default: test
 
 clean:
 	@-rm -rf components
-	@-rm -f amplitude.js amplitude.min.js
+	@-rm -f rakam.js rakam.min.js
 	@-rm -rf node_modules npm-debug.log
 
 
@@ -58,16 +58,16 @@ README.md: $(SNIPPET_OUT) version
 	node scripts/readme
 
 #
-# Target for `amplitude.js` file.
+# Target for `rakam.js` file.
 #
 
 $(OUT): node_modules $(SRC) version
 	@$(JSHINT) --verbose $(SRC)
-	@$(DUO) --standalone amplitude src/index.js > $(OUT)
+	@$(DUO) --standalone rakam src/index.js > $(OUT)
 	@$(MINIFY) $(OUT) --output $(MIN_OUT)
 
 #
-# Target for minified `amplitude-snippet.js` file.
+# Target for minified `rakam-snippet.js` file.
 #
 $(SNIPPET_OUT): $(SRC) $(SNIPPET) version
 	@$(JSHINT) --verbose $(SNIPPET)

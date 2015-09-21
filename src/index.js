@@ -1,10 +1,10 @@
 /* jshint expr:true */
 
-var Amplitude = require('./amplitude');
+var Rakam = require('./rakam');
 
-var old = window.amplitude || {};
+var old = window.rakam || {};
 var q = old._q || [];
-var instance = new Amplitude();
+var instance = new Rakam();
 
 // Apply the queued commands
 for (var i = 0; i < q.length; i++) {
