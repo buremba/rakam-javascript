@@ -1,4 +1,4 @@
-[![Circle CI](https://circleci.com/gh/rakam/rakam-js.svg?style=badge&circle-token=80de0dbb7632b2db13f76ccb20a79bbdfc50c215)](https://circleci.com/gh/rakam/Rakam-Javascript)
+[![Build Status](https://travis-ci.org/buremba/rakam-javascript.svg?branch=master)](https://travis-ci.org/buremba/rakam-javascript)
 
 Rakam-Javascript
 ====================
