@@ -16,6 +16,7 @@ var API_VERSION = 1;
 var DEFAULT_OPTIONS = {
     apiEndpoint: 'api.rakam.com',
     apiEndpointPath: '/event/batch',
+    write_key: undefined,
     cookieExpiration: 365 * 10,
     cookieName: 'rakam_id',
     domain: undefined,
@@ -70,6 +71,9 @@ Rakam.prototype.init = function (apiKey, opt_userId, opt_config, callback) {
 
             if (opt_config.saveEvents !== undefined) {
                 this.options.saveEvents = !!opt_config.saveEvents;
+            }
+            if (opt_config.write_key !== undefined) {
+                this.options.write_key = !!opt_config.write_key;
             }
             if (opt_config.domain !== undefined) {
                 this.options.domain = opt_config.domain;
@@ -465,7 +469,8 @@ Rakam.prototype.sendEvents = function (callback) {
         var headers = {
             "Upload-Time": uploadTime,
             "Api-Version": API_VERSION,
-            "Content-MD5": md5(API_VERSION + JSON.stringify(events) + uploadTime)
+            "write_key": this.options.write_key,
+            "Content-MD5": md5(API_VERSION + JSON.stringify(events) + uploadTime).toUpperCase()
         };
         var scope = this;
         new Request(url, events, headers).send(function (status, response) {
