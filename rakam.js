@@ -127,6 +127,7 @@ var log = function (s) {
 var API_VERSION = 1;
 var DEFAULT_OPTIONS = {
     apiEndpoint: 'api.rakam.com',
+    apiEndpointPath: '/event/batch',
     cookieExpiration: 365 * 10,
     cookieName: 'rakam_id',
     domain: undefined,
@@ -563,7 +564,7 @@ Rakam.prototype.sendEvents = function (callback) {
     if (!this._sending && !this.options.optOut && this._unsentEvents.length > 0) {
         this._sending = true;
         var url = ('https:' === window.location.protocol ? 'https' : 'http') + '://' +
-            this.options.apiEndpoint + '/';
+            this.options.apiEndpoint + this.options.apiEndpointPath;
 
         // Determine how many events to send and track the maximum event id sent in this batch.
         var numEvents = Math.min(this._unsentEvents.length, this.options.uploadBatchSize);
