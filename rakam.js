@@ -577,7 +577,7 @@ Rakam.prototype.sendEvents = function (callback) {
         var headers = {
             "Upload-Time": uploadTime,
             "Api-Version": API_VERSION,
-            "Content-MD5": md5(API_VERSION + this.options.apiKey + events + uploadTime)
+            "Content-MD5": md5(API_VERSION + JSON.stringify(events) + uploadTime)
         };
         var scope = this;
         new Request(url, events, headers).send(function (status, response) {
