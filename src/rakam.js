@@ -65,6 +65,8 @@ Rakam.prototype.init = function (apiKey, opt_userId, opt_config, callback) {
     try {
         this.options.apiKey = apiKey;
         if (opt_config) {
+            this.options.apiEndpoint = opt_config.apiEndpoint || this.options.apiEndpoint;
+
             if (opt_config.saveEvents !== undefined) {
                 this.options.saveEvents = !!opt_config.saveEvents;
             }
