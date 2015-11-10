@@ -595,15 +595,14 @@ Rakam.prototype._logEvent = function (eventType, eventProperties, apiProperties,
             project: this.options.apiKey,
             collection: eventType,
             properties: {
-                //id: eventId,
                 device_id: this.options.deviceId,
                 _user: this.options.userId || this.options.deviceId,
                 _time: eventTime,
                 session_id: this._sessionId || -1,
                 platform: this.options.platform,
                 user_agent: navigator.userAgent || null,
-                language: this.options.language,
-                uuid: UUID()
+                language: this.options.language
+                //uuid: UUID()
             }
         };
 
