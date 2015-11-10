@@ -307,7 +307,14 @@ Rakam.prototype.logInlinedEvent = function (collection, extraProperties, callbac
             if (element.tagName === 'INPUT') {
                 value = element.value;
             } else if (element.tagName === 'SELECT') {
-                value = element.options[element.selectedIndex].value;
+                var attr = element.getAttribute('rakam-attribute-value');
+                var option = element.options[element.selectedIndex];
+                if(attr === "text" && option.key !== "") {
+                    value = option.value;
+                } else {
+                    value = option.value;
+                }
+
             } else if (element.innerText) {
                 value = element.innerText.replace(/^\s+|\s+$/g, '');
             } else {
