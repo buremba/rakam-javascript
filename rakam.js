@@ -124,6 +124,18 @@ var log = function (s) {
     console.log('[Rakam] ' + s);
 };
 
+var indexOf;
+if (!Array.prototype.indexOf) {
+    indexOf = function(obj, start) {
+        for (var i = (start || 0), j = this.length; i < j; i++) {
+            if (this[i] === obj) { return i; }
+        }
+        return -1;
+    };
+} else {
+    indexOf = Array.prototype.indexOf;
+}
+
 var API_VERSION = 1;
 var DEFAULT_OPTIONS = {
     apiEndpoint: 'api.rakam.com',
@@ -216,6 +228,7 @@ Rakam.prototype.init = function (apiKey, opt_userId, opt_config, callback) {
             this.options.eventUploadThreshold = opt_config.eventUploadThreshold || this.options.eventUploadThreshold;
             this.options.savedMaxCount = opt_config.savedMaxCount || this.options.savedMaxCount;
             this.options.eventUploadPeriodMillis = opt_config.eventUploadPeriodMillis || this.options.eventUploadPeriodMillis;
+            this.options.userPropertiesForEvent = opt_config.userPropertiesForEvent || [];
         }
 
         Cookie.options({
@@ -366,8 +379,11 @@ var _loadCookieData = function (scope) {
         if (cookieData.userId) {
             scope.options.userId = cookieData.userId;
         }
-        if (cookieData.globalUserProperties) {
-            scope.options.userProperties = cookieData.globalUserProperties;
+        if (cookieData.userProps) {
+            scope.options.userProperties = cookieData.userProps;
+        }
+        if (cookieData.eventProps) {
+            scope.options.userPropertiesForEvent = cookieData.eventProps;
         }
         if (cookieData.optOut !== undefined) {
             scope.options.optOut = cookieData.optOut;
@@ -379,7 +395,8 @@ var _saveCookieData = function (scope) {
     Cookie.set(scope.options.cookieName, {
         deviceId: scope.options.deviceId,
         userId: scope.options.userId,
-        globalUserProperties: scope.options.userProperties,
+        userProps: scope.options.userProperties,
+        eventProps: scope.options.userPropertiesForEvent,
         optOut: scope.options.optOut
     });
 };
@@ -416,6 +433,12 @@ Rakam.prototype._initUtmData = function (queryParams, cookieParams) {
     queryParams = queryParams || location.search;
     cookieParams = cookieParams || Cookie.get('__utmz');
     this._utmProperties = Rakam._getUtmData(cookieParams, queryParams);
+    var utmData = ['utm_campaign', 'utm_content', 'utm_medium', 'utm_source', 'utm_term'];
+
+    this.options.userPropertiesForEvent = this.options.userPropertiesForEvent || [];
+    for (var i=0; i < utmData.length; i++) {
+        this.options.userPropertiesForEvent.push(utmData[i]);
+    }
 };
 
 Rakam.prototype._initTrackForms = function () {
@@ -535,12 +558,16 @@ Rakam.prototype.setDeviceId = function (deviceId) {
     }
 };
 
-Rakam.prototype.setUserProperties = function (userProperties, opt_replace) {
+Rakam.prototype.setUserProperties = function (userProperties, opt_replace, eventProps) {
     try {
         if (opt_replace) {
             this.options.userProperties = userProperties;
         } else {
             this.options.userProperties = object.merge(this.options.userProperties || {}, userProperties);
+        }
+        this.options.userPropertiesForEvent = this.options.userPropertiesForEvent || [];
+        for (var i=0; i < eventProps.length; i++) {
+            this.options.userPropertiesForEvent.push(eventProps[i]);
         }
         _saveCookieData(this);
         log('set userProperties=' + JSON.stringify(userProperties));
@@ -607,7 +634,7 @@ Rakam.prototype._logEvent = function (eventType, eventProperties, apiProperties,
                 _time: eventTime,
                 session_id: this._sessionId || -1,
                 platform: this.options.platform,
-                user_agent: navigator.userAgent || null,
+                user_agent: true,
                 language: this.options.language
                 //uuid: UUID()
             }
@@ -618,7 +645,7 @@ Rakam.prototype._logEvent = function (eventType, eventProperties, apiProperties,
         //}
 
         for (var key in userProperties) {
-            if (userProperties.hasOwnProperty(key)) {
+            if (userProperties.hasOwnProperty(key) && indexOf.call(this.options.userPropertiesForEvent, key) > -1) {
                 event.properties["user_" + key] = userProperties[key];
             }
         }
@@ -738,10 +765,6 @@ Rakam.prototype.sendEvents = function (callback) {
     }
 };
 
-/**
- *  @deprecated
- */
-Rakam.prototype.setGlobalUserProperties = Rakam.prototype.setUserProperties;
 
 Rakam.prototype.__VERSION__ = version;
 
