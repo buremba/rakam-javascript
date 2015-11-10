@@ -326,7 +326,7 @@ describe('Rakam', function () {
             assert.lengthOf(server.requests, 1);
             var unsentEvents = rakam._unsentEvents;
             assert.lengthOf(unsentEvents, 5);
-            assert.equal(unsentEvents[4].properties.index, 14);
+            assert.equal(unsentEvents[4].event.properties.index, 14);
 
             // remaining 5 events should be sent by the delayed sendEvent call
             clock.tick(eventUploadPeriodMillis);

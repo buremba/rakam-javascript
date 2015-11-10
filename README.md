@@ -11,8 +11,8 @@ Rakam-Javascript
           (function(e,t){var r=e.rakam||{};var a=t.createElement("script");a.type="text/javascript";
           a.async=true;a.src="http://127.0.0.1:8080/dist/rakam-2.4.0.js";var s=t.getElementsByTagName("script")[0];
           s.parentNode.insertBefore(a,s);r._q=[];function n(e){r[e]=function(){r._q.push([e].concat(Array.prototype.slice.call(arguments,0)));
-          }}var o=["init","logEvent","logRevenue","setUserId","setUserProperties","setOptOut","setVersionName","setDomain","setDeviceId","setGlobalUserProperties"];
-          for(var i=0;i<o.length;i++){n(o[i])}e.rakam=r})(window,document);
+          }}var i=["init","logEvent","setUserId","setUserProperties","setOptOut","setVersionName","setDomain","setDeviceId","setGlobalUserProperties"];
+          for(var o=0;o<i.length;o++){n(i[o])}e.rakam=r})(window,document);
 
           rakam.init("YOUR_API_KEY_HERE");
         </script>
@@ -55,16 +55,6 @@ To add properties that are tracked in every event, you can set properties for a 
     var userProperties = {};
     userProperties.key = "value";
     rakam.setUserProperties(userProperties);
-
-# Tracking Revenue #
-
-To track revenue from a user, call
-
-    rakam.logRevenue(9.99, 1, "product");
-
-The function takes a unit price, a quantity, and a product identifier. Quantity and product identifier are optional parameters.
-
-This allows us to automatically display data relevant to revenue on the Rakam website, including average revenue per daily active user (ARPDAU), 7, 30, and 90 day revenue, lifetime value (LTV) estimates, and revenue by advertising campaign cohort and daily/weekly/monthly cohorts.
 
 # Opting User Out of Logging #
 

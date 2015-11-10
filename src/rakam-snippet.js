@@ -12,7 +12,7 @@
       rakam._q.push([fn].concat(Array.prototype.slice.call(arguments, 0)));
     };
   }
-  var funcs = ["init", "logEvent", "logRevenue", "setUserId", "setUserProperties",
+  var funcs = ["init", "logEvent", "setUserId", "setUserProperties",
                "setOptOut", "setVersionName", "setDomain", "setDeviceId",
                "setGlobalUserProperties"];
   for (var i = 0; i < funcs.length; i++) {

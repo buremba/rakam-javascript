@@ -133,6 +133,7 @@ var DEFAULT_OPTIONS = {
     cookieName: 'rakam_id',
     domain: undefined,
     includeUtm: false,
+    trackForms: false,
     language: language.language,
     optOut: false,
     platform: 'Web',
@@ -177,6 +178,9 @@ Rakam.prototype._newSession = false;
  */
 Rakam.prototype.init = function (apiKey, opt_userId, opt_config, callback) {
     try {
+        if (!apiKey) {
+            throw new Error("apiKey is null");
+        }
         this.options.apiKey = apiKey;
         if (opt_config) {
             this.options.apiEndpoint = opt_config.apiEndpoint || this.options.apiEndpoint;
@@ -185,13 +189,19 @@ Rakam.prototype.init = function (apiKey, opt_userId, opt_config, callback) {
                 this.options.saveEvents = !!opt_config.saveEvents;
             }
             if (opt_config.write_key !== undefined) {
-                this.options.write_key = !!opt_config.write_key;
+                this.options.write_key = opt_config.write_key;
             }
             if (opt_config.domain !== undefined) {
                 this.options.domain = opt_config.domain;
             }
             if (opt_config.includeUtm !== undefined) {
                 this.options.includeUtm = !!opt_config.includeUtm;
+            }
+            if (opt_config.trackClicks !== undefined) {
+                this.options.trackClicks = !!opt_config.trackClicks;
+            }
+            if (opt_config.trackForms !== undefined) {
+                this.options.trackForms = !!opt_config.trackForms;
             }
             if (opt_config.includeReferrer !== undefined) {
                 this.options.includeReferrer = !!opt_config.includeReferrer;
@@ -242,6 +252,14 @@ Rakam.prototype.init = function (apiKey, opt_userId, opt_config, callback) {
             this._initUtmData();
         }
 
+        if (this.options.trackForms) {
+            this._initTrackForms();
+        }
+
+        if (this.options.trackClicks) {
+            this._initTrackClicks();
+        }
+
         this._lastEventTime = parseInt(localStorage.getItem(LocalStorageKeys.LAST_EVENT_TIME)) || null;
         this._sessionId = parseInt(localStorage.getItem(LocalStorageKeys.SESSION_ID)) || null;
         this._eventId = localStorage.getItem(LocalStorageKeys.LAST_id) || 0;
@@ -260,6 +278,47 @@ Rakam.prototype.init = function (apiKey, opt_userId, opt_config, callback) {
     if (callback && typeof(callback) === 'function') {
         callback();
     }
+};
+
+Rakam.prototype.logInlinedEvent = function (collection, extraProperties, callback) {
+
+    var getAllElementsWithAttribute = function (attribute) {
+        if (document.querySelectorAll) {
+            return document.querySelectorAll('[rakam-event-attribute]');
+        }
+        var matchingElements = [];
+        var allElements = document.getElementsByTagName('*');
+        for (var i = 0, n = allElements.length; i < n; i++) {
+            if (allElements[i].getAttribute(attribute) !== null) {
+                matchingElements.push(allElements[i]);
+            }
+        }
+        return matchingElements;
+    };
+
+    var properties = extraProperties || {};
+    var elements = getAllElementsWithAttribute('rakam-event-attribute');
+    for (var i = 0; i < elements.length; i++) {
+        var element = elements[i];
+        var attribute = element.getAttribute('rakam-event-attribute');
+        var value = element.getAttribute('rakam-event-attribute-value');
+        //var type = element.getAttribute('rakam-event-attribute-type');
+        if (value === null) {
+            if (element.tagName === 'INPUT') {
+                value = element.value;
+            } else if (element.tagName === 'SELECT') {
+                value = element.options[element.selectedIndex].value;
+            } else if (element.innerText) {
+                value = element.innerText.replace(/^\s+|\s+$/g, '');
+            } else {
+                log('Could find value of DOM element.', element);
+            }
+        }
+        if (value !== null && value !== '') {
+            properties[attribute] = value;
+        }
+    }
+    this.logEvent(collection, properties, callback);
 };
 
 Rakam.prototype.isNewSession = function () {
@@ -350,6 +409,66 @@ Rakam.prototype._initUtmData = function (queryParams, cookieParams) {
     queryParams = queryParams || location.search;
     cookieParams = cookieParams || Cookie.get('__utmz');
     this._utmProperties = Rakam._getUtmData(cookieParams, queryParams);
+};
+
+Rakam.prototype._initTrackForms = function () {
+    document.addEventListener('submit', function(event) {
+        var targetElement = event.target || event.srcElement;
+        var collection = targetElement.getAttribute('rakam-event-track');
+        if(targetElement.tagName === 'FORM' && collection) {
+            var properties = {};
+
+            var extraAttributes = targetElement.getAttribute("rakam-event-extra");
+            if(extraAttributes !== null) {
+                for (var key in JSON.parse(extraAttributes)) {
+                    if (extraAttributes.hasOwnProperty(key)) {
+                        properties[key] = extraAttributes[key];
+                    }
+                }
+            }
+
+            for(var i=0; i<targetElement.elements.length; i++) {
+                var element = targetElement.elements[i];
+
+                if(!element.hasAttribute("rakam-event-form-element")) {
+                    continue;
+                }
+
+                if(element.tagName === 'SELECT') {
+                    properties[element.getAttribute("name")] = element.options[element.selectedIndex].value;
+                } else
+                if(element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+                    properties[element.getAttribute("name")] = element.value;
+                } else {
+                    log("Couldn't get value of form element: "+name);
+                }
+
+            }
+
+            this.logEvent(collection, properties);
+        }
+    });
+};
+
+Rakam.prototype._initTrackClicks = function () {
+    document.addEventListener('click', function(event) {
+        var targetElement = event.target || event.srcElement;
+        var collection = targetElement.getAttribute('rakam-event-track');
+        if(targetElement.tagName === 'FORM' && collection) {
+            var properties = {};
+
+            var extraAttributes = targetElement.getAttribute("rakam-event-properties");
+            if(extraAttributes !== null) {
+                for (var key in JSON.parse(extraAttributes)) {
+                    if (extraAttributes.hasOwnProperty(key)) {
+                        properties[key] = extraAttributes[key];
+                    }
+                }
+            }
+
+            this.logEvent(collection, properties);
+        }
+    });
 };
 
 Rakam.prototype._getReferrer = function () {
@@ -476,22 +595,21 @@ Rakam.prototype._logEvent = function (eventType, eventProperties, apiProperties,
             project: this.options.apiKey,
             collection: eventType,
             properties: {
-                id: eventId,
+                //id: eventId,
                 device_id: this.options.deviceId,
-                user_id: this.options.userId || this.options.deviceId,
-                time: eventTime,
+                _user: this.options.userId || this.options.deviceId,
+                _time: eventTime,
                 session_id: this._sessionId || -1,
                 platform: this.options.platform,
                 user_agent: navigator.userAgent || null,
                 language: this.options.language,
-                uuid: UUID(),
-                cpu_count : navigator.hardwareConcurrency || null
+                uuid: UUID()
             }
         };
 
-        if(typeof window.performance === 'object' && typeof window.performance.timing === 'object') {
-            event.properties.load_time = window.performance.timing.domContentLoadedEventEnd - window.performance.timing.navigationStart;
-        }
+        //if (typeof window.performance === 'object' && typeof window.performance.timing === 'object') {
+        //    event.properties.load_time = window.performance.timing.domContentLoadedEventEnd - window.performance.timing.navigationStart;
+        //}
 
         for (var key in userProperties) {
             if (userProperties.hasOwnProperty(key)) {
@@ -504,7 +622,7 @@ Rakam.prototype._logEvent = function (eventType, eventProperties, apiProperties,
 
         log('logged eventType=' + eventType + ', properties=' + JSON.stringify(eventProperties));
 
-        this._unsentEvents.push(event);
+        this._unsentEvents.push({id: eventId, event: event});
 
         // Remove old events from the beginning of the array if too many
         // have accumulated. Don't want to kill memory. Default is 1000 events.
@@ -531,24 +649,10 @@ Rakam.prototype.logEvent = function (eventType, eventProperties, callback) {
 };
 
 // Test that n is a number or a numeric value.
-var _isNumber = function (n) {
-    return !isNaN(parseFloat(n)) && isFinite(n);
-};
+//var _isNumber = function (n) {
+//    return !isNaN(parseFloat(n)) && isFinite(n);
+//};
 
-Rakam.prototype.logRevenue = function (price, quantity, product) {
-    // Test that the parameters are of the right type.
-    if (!_isNumber(price) || quantity !== undefined && !_isNumber(quantity)) {
-        // log('Price and quantity arguments to logRevenue must be numbers');
-        return;
-    }
-
-    return this._logEvent('revenue_amount', {}, {
-        productId: product,
-        special: 'revenue_amount',
-        quantity: quantity || 1,
-        price: price
-    });
-};
 
 /**
  * Remove events in storage with event ids up to and including maxEventId. Does
@@ -557,7 +661,7 @@ Rakam.prototype.logRevenue = function (price, quantity, product) {
 Rakam.prototype.removeEvents = function (maxEventId) {
     var filteredEvents = [];
     for (var i = 0; i < this._unsentEvents.length; i++) {
-        if (this._unsentEvents[i].properties.id > maxEventId) {
+        if (this._unsentEvents[i].id > maxEventId) {
             filteredEvents.push(this._unsentEvents[i]);
         }
     }
@@ -572,10 +676,12 @@ Rakam.prototype.sendEvents = function (callback) {
 
         // Determine how many events to send and track the maximum event id sent in this batch.
         var numEvents = Math.min(this._unsentEvents.length, this.options.uploadBatchSize);
-        var maxEventId = this._unsentEvents[numEvents - 1].properties.id;
+        var maxEventId = this._unsentEvents[numEvents - 1].id;
 
         this._unsentEvents.slice(0, numEvents);
-        var events = this._unsentEvents.slice(0, numEvents);
+        var events = this._unsentEvents.slice(0, numEvents).map(function(e)  {
+            return e.event;
+        });
         var uploadTime = new Date().getTime();
 
         var headers = {
