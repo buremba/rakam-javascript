@@ -293,6 +293,11 @@ Rakam.prototype.init = function (apiKey, opt_userId, opt_config, callback) {
     }
 };
 
+Rakam.prototype.onEvent = function (callback) {
+    this.options.eventCallbacks = this.options.eventCallbacks || [];
+    this.options.eventCallbacks.push(callback);
+};
+
 Rakam.prototype.logInlinedEvent = function (collection, extraProperties, callback) {
 
     var getAllElementsWithAttribute = function (attribute) {
@@ -757,6 +762,16 @@ Rakam.prototype.sendEvents = function (callback) {
                 }
             } catch (e) {
                 log('failed upload');
+            }
+
+            if (scope.options.eventCallbacks !== null) {
+                try {
+                    for (var i = 0; i < scope.options.eventCallbacks.length; i++) {
+                        scope.options.eventCallbacks[i](status, response);
+                    }
+                } catch (e) {
+                    log('callback throwed an exception', e);
+                }
             }
         });
     } else if (callback) {
