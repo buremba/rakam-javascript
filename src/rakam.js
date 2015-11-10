@@ -522,7 +522,6 @@ Rakam.prototype._logEvent = function (eventType, eventProperties, apiProperties,
                 _time: eventTime,
                 session_id: this._sessionId || -1,
                 platform: this.options.platform,
-                user_agent: true,
                 language: this.options.language
                 //uuid: UUID()
             }
