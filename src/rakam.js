@@ -197,7 +197,7 @@ Rakam.prototype.logInlinedEvent = function (collection, extraProperties, callbac
             } else if (element.tagName === 'SELECT') {
                 var attr = element.getAttribute('rakam-attribute-value');
                 var option = element.options[element.selectedIndex];
-                if(attr === "text" && option.key !== "") {
+                if(attr === "text" && option.value !== null && option.value !== "") {
                     value = option.text;
                 } else {
                     value = option.value;
