@@ -23,7 +23,7 @@ Request.prototype.send = function (callback) {
         xhr.open('POST', this.url, true);
         xhr.onreadystatechange = function () {
             if (xhr.readyState === 4) {
-                callback(xhr.status, xhr.responseText);
+                callback(xhr.status, xhr.responseText, xhr.getAllResponseHeaders());
             }
         };
         xhr.setRequestHeader('Content-Type', 'application/json charset=utf-8');
