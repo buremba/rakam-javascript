@@ -10,7 +10,9 @@
   ],
   "repository": "git://github.com/rakam/rakam-javascript.git",
   "main": "lib/rakam.js",
-  "dependencies": {},
+  "dependencies": {
+    "ifvisible.js": "1.0.4"
+  },
   "devDependencies": {
     "duo": "0.8",
     "express": "4.x",

@@ -40,21 +40,23 @@ Request.prototype.send = function (callback) {
         xdr.send(JSON.stringify(this.data));
     } else {
         var xhr = new XMLHttpRequest();
+        xhr.withCredentials = "true";
+
         xhr.open('POST', this.url, true);
+
         xhr.onreadystatechange = function () {
             if (xhr.readyState === 4) {
                 callback(xhr.status, xhr.responseText, parseResponseHeaders(xhr.getAllResponseHeaders()));
             }
         };
-        xhr.setRequestHeader('Content-Type', 'application/json charset=utf-8');
-        for (var key in this.headers) {
-            if (this.headers.hasOwnProperty(key)) {
-                xhr.setRequestHeader(key, this.headers[key]);
-            }
-        }
+        xhr.setRequestHeader('Content-Type', 'text/plain');
+        //for (var key in this.headers) {
+        //    if (this.headers.hasOwnProperty(key)) {
+        //        xhr.setRequestHeader(key, this.headers[key]);
+        //    }
+        //}
         xhr.send(JSON.stringify(this.data));
     }
-    //log('sent request to ' + this.url + ' with data ' + decodeURIComponent(queryString(this.data)));
 };
 
 module.exports = Request;

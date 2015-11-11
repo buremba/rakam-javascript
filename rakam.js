@@ -119,6 +119,7 @@ var object = require('object');
 var Request = require('./xhr');
 var UUID = require('./uuid');
 var version = require('./version');
+var ifvisible = require('../node_modules/ifvisible.js/src/ifvisible.min.js');
 
 var log = function (s) {
     console.log('[Rakam] ' + s);
@@ -348,6 +349,46 @@ Rakam.prototype.logInlinedEvent = function (collection, extraProperties, callbac
 
 Rakam.prototype.isNewSession = function () {
     return this._newSession;
+};
+
+var gapMillis = 0;
+var startTime = (new Date()).getTime();
+var idleTime;
+
+Rakam.prototype.startTimer = function (saveOnClose) {
+
+    startTime = (new Date()).getTime();
+
+    ifvisible.on("idle", function(){
+        idleTime = (new Date()).getTime();
+    });
+
+    ifvisible.on("wakeup", function(){
+        gapMillis += (new Date()).getTime() - idleTime;
+        idleTime = null;
+    });
+
+    if(saveOnClose) {
+        var func;
+        if(window.onbeforeunload !== null) {
+            func = window.onbeforeunload;
+        }
+        var _this = this;
+        window.onbeforeunload = function (e) {
+            if(func !== null) {
+                func(e);
+            }
+            Cookie.set("_rakam_time", _this.getTimeOnPage());
+        };
+    }
+};
+
+Rakam.prototype.getTimeOnPage = function () {
+    return (idleTime !== null ? idleTime : (new Date()).getTime()) - startTime - gapMillis;
+};
+
+Rakam.prototype.getTimeOnPreviousPage = function () {
+    return Cookie.get('_rakam_time');
 };
 
 Rakam.prototype.nextEventId = function () {
@@ -784,7 +825,7 @@ Rakam.prototype.__VERSION__ = version;
 
 module.exports = Rakam;
 
-}, {"./cookie":3,"json":4,"./language":5,"./localstorage":6,"JavaScript-MD5":7,"object":8,"./xhr":9,"./uuid":10,"./version":11}],
+}, {"./cookie":3,"json":4,"./language":5,"./localstorage":6,"JavaScript-MD5":7,"object":8,"./xhr":9,"./uuid":10,"./version":11,"../node_modules/ifvisible.js/src/ifvisible.min.js":12}],
 3: [function(require, module, exports) {
 /*
  * Cookie data
@@ -911,8 +952,8 @@ module.exports = {
 
 };
 
-}, {"./base64":12,"json":4,"top-domain":13}],
-12: [function(require, module, exports) {
+}, {"./base64":13,"json":4,"top-domain":14}],
+13: [function(require, module, exports) {
 /* jshint bitwise: false */
 /* global escape, unescape */
 
@@ -1011,8 +1052,8 @@ var Base64 = {
 
 module.exports = Base64;
 
-}, {"./utf8":14}],
-14: [function(require, module, exports) {
+}, {"./utf8":15}],
+15: [function(require, module, exports) {
 /* jshint bitwise: false */
 
 /*
@@ -1082,8 +1123,8 @@ module.exports = parse && stringify
   ? JSON
   : require('json-fallback');
 
-}, {"json-fallback":15}],
-15: [function(require, module, exports) {
+}, {"json-fallback":16}],
+16: [function(require, module, exports) {
 /*
     json2.js
     2014-02-04
@@ -1573,7 +1614,7 @@ module.exports = parse && stringify
 }());
 
 }, {}],
-13: [function(require, module, exports) {
+14: [function(require, module, exports) {
 
 /**
  * Module dependencies.
@@ -1621,8 +1662,8 @@ function domain(url){
   return match ? match[0] : '';
 };
 
-}, {"url":16}],
-16: [function(require, module, exports) {
+}, {"url":17}],
+17: [function(require, module, exports) {
 
 /**
  * Parse the given `url`.
@@ -2239,21 +2280,23 @@ Request.prototype.send = function (callback) {
         xdr.send(JSON.stringify(this.data));
     } else {
         var xhr = new XMLHttpRequest();
+        xhr.withCredentials = "true";
+
         xhr.open('POST', this.url, true);
+
         xhr.onreadystatechange = function () {
             if (xhr.readyState === 4) {
                 callback(xhr.status, xhr.responseText, parseResponseHeaders(xhr.getAllResponseHeaders()));
             }
         };
-        xhr.setRequestHeader('Content-Type', 'application/json charset=utf-8');
-        for (var key in this.headers) {
-            if (this.headers.hasOwnProperty(key)) {
-                xhr.setRequestHeader(key, this.headers[key]);
-            }
-        }
+        xhr.setRequestHeader('Content-Type', 'text/plain');
+        //for (var key in this.headers) {
+        //    if (this.headers.hasOwnProperty(key)) {
+        //        xhr.setRequestHeader(key, this.headers[key]);
+        //    }
+        //}
         xhr.send(JSON.stringify(this.data));
     }
-    //log('sent request to ' + this.url + ' with data ' + decodeURIComponent(queryString(this.data)));
 };
 
 module.exports = Request;
@@ -2296,5 +2339,8 @@ module.exports = uuid;
 11: [function(require, module, exports) {
 module.exports = '2.4.0';
 
+}, {}],
+12: [function(require, module, exports) {
+(function(){!function(a,b){return"function"==typeof define&&define.amd?define(function(){return b()}):"object"==typeof exports?module.exports=b():a.ifvisible=b()}(this,function(){var a,b,c,d,e,f,g,h,i,j,k,l,m,n;return i={},c=document,k=!1,l="active",g=6e4,f=!1,b=function(){var a,b,c,d,e,f,g;return a=function(){return(65536*(1+Math.random())|0).toString(16).substring(1)},e=function(){return a()+a()+"-"+a()+"-"+a()+"-"+a()+"-"+a()+a()+a()},f={},c="__ceGUID",b=function(a,b,d){return a[c]=void 0,a[c]||(a[c]="ifvisible.object.event.identifier"),f[a[c]]||(f[a[c]]={}),f[a[c]][b]||(f[a[c]][b]=[]),f[a[c]][b].push(d)},d=function(a,b,d){var e,g,h,i,j;if(a[c]&&f[a[c]]&&f[a[c]][b]){for(i=f[a[c]][b],j=[],g=0,h=i.length;h>g;g++)e=i[g],j.push(e(d||{}));return j}},g=function(a,b,d){var e,g,h,i,j;if(d){if(a[c]&&f[a[c]]&&f[a[c]][b])for(j=f[a[c]][b],g=h=0,i=j.length;i>h;g=++h)if(e=j[g],e===d)return f[a[c]][b].splice(g,1),e}else if(a[c]&&f[a[c]]&&f[a[c]][b])return delete f[a[c]][b]},{add:b,remove:g,fire:d}}(),a=function(){var a;return a=!1,function(b,c,d){return a||(a=b.addEventListener?function(a,b,c){return a.addEventListener(b,c,!1)}:b.attachEvent?function(a,b,c){return a.attachEvent("on"+b,c,!1)}:function(a,b,c){return a["on"+b]=c}),a(b,c,d)}}(),d=function(a,b){var d;return c.createEventObject?a.fireEvent("on"+b,d):(d=c.createEvent("HTMLEvents"),d.initEvent(b,!0,!0),!a.dispatchEvent(d))},h=function(){var a,b,d,e,f;for(e=void 0,f=3,d=c.createElement("div"),a=d.getElementsByTagName("i"),b=function(){return d.innerHTML="<!--[if gt IE "+ ++f+"]><i></i><![endif]-->",a[0]};b(););return f>4?f:e}(),e=!1,n=void 0,"undefined"!=typeof c.hidden?(e="hidden",n="visibilitychange"):"undefined"!=typeof c.mozHidden?(e="mozHidden",n="mozvisibilitychange"):"undefined"!=typeof c.msHidden?(e="msHidden",n="msvisibilitychange"):"undefined"!=typeof c.webkitHidden&&(e="webkitHidden",n="webkitvisibilitychange"),m=function(){var b,d;return b=!1,d=function(){return clearTimeout(b),"active"!==l&&i.wakeup(),f=+new Date,b=setTimeout(function(){return"active"===l?i.idle():void 0},g)},d(),a(c,"mousemove",d),a(c,"keyup",d),a(window,"scroll",d),i.focus(d),i.wakeup(d)},j=function(){var b;return k?!0:(e===!1?(b="blur",9>h&&(b="focusout"),a(window,b,function(){return i.blur()}),a(window,"focus",function(){return i.focus()})):a(c,n,function(){return c[e]?i.blur():i.focus()},!1),k=!0,m())},i={setIdleDuration:function(a){return g=1e3*a},getIdleDuration:function(){return g},getIdleInfo:function(){var a,b;return a=+new Date,b={},"idle"===l?(b.isIdle=!0,b.idleFor=a-f,b.timeLeft=0,b.timeLeftPer=100):(b.isIdle=!1,b.idleFor=a-f,b.timeLeft=f+g-a,b.timeLeftPer=(100-100*b.timeLeft/g).toFixed(2)),b},focus:function(a){return"function"==typeof a?this.on("focus",a):(l="active",b.fire(this,"focus"),b.fire(this,"wakeup"),b.fire(this,"statusChanged",{status:l}))},blur:function(a){return"function"==typeof a?this.on("blur",a):(l="hidden",b.fire(this,"blur"),b.fire(this,"idle"),b.fire(this,"statusChanged",{status:l}))},idle:function(a){return"function"==typeof a?this.on("idle",a):(l="idle",b.fire(this,"idle"),b.fire(this,"statusChanged",{status:l}))},wakeup:function(a){return"function"==typeof a?this.on("wakeup",a):(l="active",b.fire(this,"wakeup"),b.fire(this,"statusChanged",{status:l}))},on:function(a,c){return j(),b.add(this,a,c)},off:function(a,c){return j(),b.remove(this,a,c)},onEvery:function(a,b){var c,d;return j(),c=!1,b&&(d=setInterval(function(){return"active"===l&&c===!1?b():void 0},1e3*a)),{stop:function(){return clearInterval(d)},pause:function(){return c=!0},resume:function(){return c=!1},code:d,callback:b}},now:function(a){return j(),l===(a||"active")}}})}).call(this);
 }, {}]}, {}, {"1":""})
 );

@@ -7,6 +7,7 @@ var object = require('object');
 var Request = require('./xhr');
 var UUID = require('./uuid');
 var version = require('./version');
+var ifvisible = require('../node_modules/ifvisible.js/src/ifvisible.min.js');
 
 var log = function (s) {
     console.log('[Rakam] ' + s);
@@ -236,6 +237,46 @@ Rakam.prototype.logInlinedEvent = function (collection, extraProperties, callbac
 
 Rakam.prototype.isNewSession = function () {
     return this._newSession;
+};
+
+var gapMillis = 0;
+var startTime = (new Date()).getTime();
+var idleTime;
+
+Rakam.prototype.startTimer = function (saveOnClose) {
+
+    startTime = (new Date()).getTime();
+
+    ifvisible.on("idle", function(){
+        idleTime = (new Date()).getTime();
+    });
+
+    ifvisible.on("wakeup", function(){
+        gapMillis += (new Date()).getTime() - idleTime;
+        idleTime = null;
+    });
+
+    if(saveOnClose) {
+        var func;
+        if(window.onbeforeunload !== null) {
+            func = window.onbeforeunload;
+        }
+        var _this = this;
+        window.onbeforeunload = function (e) {
+            if(func !== null) {
+                func(e);
+            }
+            Cookie.set("_rakam_time", _this.getTimeOnPage());
+        };
+    }
+};
+
+Rakam.prototype.getTimeOnPage = function () {
+    return (idleTime !== null ? idleTime : (new Date()).getTime()) - startTime - gapMillis;
+};
+
+Rakam.prototype.getTimeOnPreviousPage = function () {
+    return Cookie.get('_rakam_time');
 };
 
 Rakam.prototype.nextEventId = function () {

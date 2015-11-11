@@ -172,11 +172,11 @@ describe('Rakam', function () {
             assert.equal(JSON.parse(server.requests[0].requestBody)[0].project, apiKey);
         });
 
-        it('should send api version', function () {
-            rakam.logEvent('Event Type 3');
-            assert.lengthOf(server.requests, 1);
-            assert.equal(server.requests[0].requestHeaders['Api-Version'], '1');
-        });
+        //it('should send api version', function () {
+        //    rakam.logEvent('Event Type 3');
+        //    assert.lengthOf(server.requests, 1);
+        //    assert.equal(server.requests[0].requestHeaders['Api-Version'], '1');
+        //});
 
         it('should send event JSON', function () {
             rakam.logEvent('Event Type 4');
