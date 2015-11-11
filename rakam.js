@@ -728,7 +728,7 @@ Rakam.prototype.sendEvents = function (callback) {
             "Content-MD5": md5(API_VERSION + JSON.stringify(events) + uploadTime).toUpperCase()
         };
         var scope = this;
-        new Request(url, events, headers).send(function (status, response) {
+        new Request(url, events, headers).send(function (status, response, headers) {
             scope._sending = false;
             try {
                 if (status === 200 && response === '1') {
@@ -767,7 +767,7 @@ Rakam.prototype.sendEvents = function (callback) {
             if (scope.options.eventCallbacks !== null) {
                 try {
                     for (var i = 0; i < scope.options.eventCallbacks.length; i++) {
-                        scope.options.eventCallbacks[i](status, response);
+                        scope.options.eventCallbacks[i](status, response, headers);
                     }
                 } catch (e) {
                     log('callback throwed an exception', e);
