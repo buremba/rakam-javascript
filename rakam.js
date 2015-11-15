@@ -162,7 +162,8 @@ var DEFAULT_OPTIONS = {
 var LocalStorageKeys = {
     LAST_id: 'rakam_lastEventId',
     LAST_EVENT_TIME: 'rakam_lastEventTime',
-    SESSION_ID: 'rakam_sessionId'
+    SESSION_ID: 'rakam_sessionId',
+    RETURNING_SESSION: 'rakam_returning'
 };
 
 /*
@@ -175,6 +176,7 @@ var Rakam = function () {
 
 
 Rakam.prototype._eventId = 0;
+Rakam.prototype._returningUser = false;
 Rakam.prototype._sending = false;
 Rakam.prototype._lastEventTime = null;
 Rakam.prototype._sessionId = null;
@@ -279,9 +281,15 @@ Rakam.prototype.init = function (apiKey, opt_userId, opt_config, callback) {
         this._eventId = localStorage.getItem(LocalStorageKeys.LAST_id) || 0;
         var now = new Date().getTime();
         if (!this._sessionId || !this._lastEventTime || now - this._lastEventTime > this.options.sessionTimeout) {
-            this._newSession = true;
+            if(this._sessionId !== null || this.options.userId !==null) {
+                localStorage.setItem(LocalStorageKeys.RETURNING_SESSION, true);
+                this._returningUser = true;
+            }
             this._sessionId = now;
+            Cookie.remove('_rakam_time');
             localStorage.setItem(LocalStorageKeys.SESSION_ID, this._sessionId);
+        } else {
+            this._returningUser = localStorage.getItem(LocalStorageKeys.RETURNING_SESSION) === 'true';
         }
         this._lastEventTime = now;
         localStorage.setItem(LocalStorageKeys.LAST_EVENT_TIME, this._lastEventTime);
@@ -297,6 +305,38 @@ Rakam.prototype.init = function (apiKey, opt_userId, opt_config, callback) {
 Rakam.prototype.onEvent = function (callback) {
     this.options.eventCallbacks = this.options.eventCallbacks || [];
     this.options.eventCallbacks.push(callback);
+};
+
+var transformValue = function(attribute, value, type) {
+    if(type !== null) {
+        type = type.toLowerCase();
+    }
+    if(type === 'long' || type === 'time' || type === 'timestamp') {
+        value = parseInt(value);
+        if(isNaN(value) || !isFinite(value)) {
+            log("ignoring "+attribute+": the value must be a number");
+            value = null;
+        }
+    } else
+    if(type === 'double') {
+        value = parseFloat(value);
+        if(isNaN(value) || !isFinite(value)) {
+            log("ignoring "+attribute+": the value is not double");
+            value = null;
+        }
+    }else
+    if(type === 'boolean') {
+        if(type === "true" || type === "1") {
+            value = true;
+        } else
+        if(type === "false" || type === "0") {
+            value = false;
+        } else {
+            log("ignoring "+attribute+": the value is not boolean");
+            value = null;
+        }
+    }
+    return value;
 };
 
 Rakam.prototype.logInlinedEvent = function (collection, extraProperties, callback) {
@@ -321,7 +361,7 @@ Rakam.prototype.logInlinedEvent = function (collection, extraProperties, callbac
         var element = elements[i];
         var attribute = element.getAttribute('rakam-event-attribute');
         var value = element.getAttribute('rakam-event-attribute-value');
-        //var type = element.getAttribute('rakam-event-attribute-type');
+        var type = element.getAttribute('rakam-event-attribute-type');
         if (value === null) {
             if (element.tagName === 'INPUT') {
                 value = element.value;
@@ -341,14 +381,15 @@ Rakam.prototype.logInlinedEvent = function (collection, extraProperties, callbac
             }
         }
         if (value !== null && value !== '') {
-            properties[attribute] = value;
+            properties[attribute] = transformValue(attribute, value, type);
         }
+
     }
     this.logEvent(collection, properties, callback);
 };
 
-Rakam.prototype.isNewSession = function () {
-    return this._newSession;
+Rakam.prototype.isReturningUser = function () {
+    return this._returningUser;
 };
 
 var gapMillis = 0;
@@ -384,7 +425,7 @@ Rakam.prototype.startTimer = function (saveOnClose) {
 };
 
 Rakam.prototype.getTimeOnPage = function () {
-    return (idleTime !== null ? idleTime : (new Date()).getTime()) - startTime - gapMillis;
+    return ((idleTime > 0 ? idleTime : (new Date()).getTime()) - startTime - gapMillis)/1000;
 };
 
 Rakam.prototype.getTimeOnPreviousPage = function () {
@@ -506,17 +547,20 @@ Rakam.prototype._initTrackForms = function () {
             for(var i=0; i<targetElement.elements.length; i++) {
                 var element = targetElement.elements[i];
 
+                var type = element.getAttribute('rakam-event-attribute-type');
+
                 if(!element.hasAttribute("rakam-event-form-element")) {
                     continue;
                 }
 
+                var attribute = element.getAttribute("name");
                 if(element.tagName === 'SELECT') {
-                    properties[element.getAttribute("name")] = element.options[element.selectedIndex].value;
+                    properties[attribute] = transformValue(attribute, element.options[element.selectedIndex].value, type);
                 } else
                 if(element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
-                    properties[element.getAttribute("name")] = element.value;
+                    properties[attribute] = transformValue(attribute, element.value, type);
                 } else {
-                    log("Couldn't get value of form element: "+name);
+                    log("Couldn't get value of form element: "+attribute);
                 }
 
             }
@@ -677,7 +721,7 @@ Rakam.prototype._logEvent = function (eventType, eventProperties, apiProperties,
             properties: {
                 device_id: this.options.deviceId,
                 _user: this.options.userId || this.options.deviceId,
-                _time: eventTime,
+                _time: eventTime/1000,
                 session_id: this._sessionId || -1,
                 platform: this.options.platform,
                 language: this.options.language
@@ -725,12 +769,6 @@ Rakam.prototype._logEvent = function (eventType, eventProperties, apiProperties,
 Rakam.prototype.logEvent = function (eventType, eventProperties, callback) {
     return this._logEvent(eventType, eventProperties, null, callback);
 };
-
-// Test that n is a number or a numeric value.
-//var _isNumber = function (n) {
-//    return !isNaN(parseFloat(n)) && isFinite(n);
-//};
-
 
 /**
  * Remove events in storage with event ids up to and including maxEventId. Does
