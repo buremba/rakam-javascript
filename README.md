@@ -9,15 +9,23 @@ Rakam-Javascript
 
         <script type="text/javascript">
           (function(e,t){var r=e.rakam||{};var a=t.createElement("script");a.type="text/javascript";
-          a.async=true;a.src="http://127.0.0.1:8080/dist/rakam-2.4.0.js";var s=t.getElementsByTagName("script")[0];
+          a.async=true;a.src="[YOUR_CDN]rakam-2.4.0.js";var s=t.getElementsByTagName("script")[0];
           s.parentNode.insertBefore(a,s);r._q=[];function n(e){r[e]=function(){r._q.push([e].concat(Array.prototype.slice.call(arguments,0)));
-          }}var i=["init","logEvent","setUserId","setUserProperties","setOptOut","setVersionName","setDomain","setDeviceId","setGlobalUserProperties"];
+          }}var i=["init","logEvent","setUserId","setUserProperties","getTimeOnPreviousPage","onEvent","logInlinedEvent","startTimer","getTimeOnPage","isReturningUser","setOptOut","setVersionName","setDomain","setDeviceId"];
           for(var o=0;o<i.length;o++){n(i[o])}e.rakam=r})(window,document);
 
-          rakam.init("YOUR_API_KEY_HERE");
+          rakam.init("YOUR_PROJECT_HERE", "USER_ID_HERE", {
+            apiEndpoint:"127.0.0.1:9999",
+            writeKey: "YOUR_PROJECT_WRITE_KEY",
+            includeUtm: true,
+            trackClicks: true,
+            trackForms: true,
+            includeReferrer: true
+          });
+          
         </script>
 
-3. Replace `YOUR_API_KEY_HERE` with the API Key given to you.
+3. Replace `YOUR_PROJECT_HERE` with the API Key given to you.
 4. To track an event anywhere on the page, call:
 
         rakam.logEvent("EVENT_IDENTIFIER_HERE");
@@ -28,6 +36,26 @@ Rakam-Javascript
 
 It's important to think about what types of events you care about as a developer. You should aim to track between 5 and 50 types of events on your site. Common event types are actions the user initiates (such as pressing a button) and events you want the user to complete (such as filling out a form, completing a level, or making a payment). Shoot me an email if you want assistance determining what would be best for you to track.
 
+# Setting Event Properties #
+
+You can attach additional data to any event by passing a Javascript object as the second argument to `logEvent`:
+
+    var eventProperties = {};
+    eventProperties.key = "value";
+    rakam.logEvent("EVENT_COLLECTION_HERE", eventProperties);
+
+# Setting User Properties #
+
+To add properties that are tracked in every event, you can set properties for a user:
+
+    var userProperties = {"age": 30};
+    userProperties.key = "value";
+    // drop previous use attributes
+    var override = false;
+    // list of user attributes that will be included in events
+    var eventAttributes = ["age"];
+    rakam.setUserProperties(userProperties, override, eventAttributes);
+
 # Settings Custom User IDs #
 
 If your app has its own login system that you want to track users with, you can call `setUserId` at any time:
@@ -36,25 +64,121 @@ If your app has its own login system that you want to track users with, you can 
 
 A user's data will be merged on the backend so that any events up to that point from the same browser will be tracked under the same user.
 
-You can also add the user ID as an argument to the `init` call:
+# Event tracking based on DOM elements #
 
-    rakam.init("YOUR_API_KEY_HERE", "USER_ID_HERE");
+Rakam has a spesific method that is similar to `rakam.logEvent` but lets you to track events automatically by adding attributes to DOM elements. When you call `rakam.logInlinedEvent` method,  Rakam searches all DOM elements that have `rakam-event-attribute` attribute and include their values to event that is collected. It also works for various elements including for elements such as `SELECT`, `INPUT`, `TEXTAREA`.
+For example, let's say that you want to collect user search events in your website. The search page already includes data that you want to use as attributes of the event so instead of generating event properties manually and using `rakam.logEvent` you may set `rakam-event-attribute` attribute to DOM elements such as result count, category, sorting criteria etc. and call `rakam.logInlinedEvent`.
 
-# Setting Event Properties #
+    rakam.logInlinedEvent("EVENT_COLLECTION_NAME", extraProperties, callback);
+    
+Since all
 
-You can attach additional data to any event by passing a Javascript object as the second argument to `logEvent`:
+Full example:
 
-    var eventProperties = {};
-    eventProperties.key = "value";
-    rakam.logEvent("EVENT_IDENTIFIER_HERE", eventProperties);
+```html
+    <html>
+        <body>
+            <h1>
+                <input type="search" rakam-event-attribute="query_term" value="phones">
+                <span rakam-event-attribute="result_count" rakam-event-attribute-type="long">12</span>
+                results found
+                <span rakam-event-attribute="category">electronics</span>
+                category.
+                <select rakam-event-attribute="sorting_criteria">
+                   <option value="relevance" selected>relevance</option>
+                   <option value="name">name</option>
+                   <option value="price">price</option>
+                </select>
+            </h1>
+        <body>
+    <html>
+    <script>
+    rakam.init("shop");
+    rakam.logInlinedEvent("search");
+    </script>
+```
 
-# Setting User Properties #
+It produces the following JSON that will be used as event properties:
 
-To add properties that are tracked in every event, you can set properties for a user:
+```json
+    {
+        "project": "shop",
+        "collection": "search",
+        "properties": {
+             "query_term": "phones",
+             "result_count": 12,
+             "category": "electronics",
+             "sorting_criteria": "relevance"
+        }
+   }
+```
 
-    var userProperties = {};
-    userProperties.key = "value";
-    rakam.setUserProperties(userProperties);
+| DOM attribute | description | default |
+|------------|----------------------------------------------------------------------------------|-----------|
+| rakam-event-attribute | The value is the event attribute name, if a DOM element doesn't have this attribute it will be ignored. | `null` |
+| rakam-event-attribute-type | The type of the event attribute. The valid values are `string`, `long`, `time` (The format is 24:00:00), `timestamp` and `date` (The value must be epoch unix timestamp), `double`, `boolean`  | `string` |
+| rakam-event-attribute-value | If the attribute is present, the DOM element value will be ignored and the value of this attribute will be used. | `null` |
+
+# Tracking Forms #
+If `trackForms` option is set true, Rakam automatically track forms that have `rakam-event-form` attribute. When a visitor submits a form that has `rakam-event-form` attribute, Rakam visits all the form elements, generate event properties and send event to Rakam. If the form causes page redirection, the event will be saved in `localStorage` and sent after redirection. (If the form redirects to another domain and the visitor never returns to the website, the event will be lost. We may use [sendBeacon](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/sendBeacon) API to fix this issue in the future but unfortunately there is no cross-browser version of this API).
+
+Available options for FORM tag:
+
+| DOM attribute | description | default |
+|------------|----------------------------------------------------------------------------------|-----------|
+| rakam-event-form | If the form that is submitted doesn't have this attribute, Rakam doesn't track it. The value will be the event collection. | `null` |
+| rakam-event-extra | An optional attribute for forms that are tracked by Rakam. If the form that is submitted have this attribute the value will be merged with the generated event properties from the form elements. | `null` (Must be a JSON string) |
+
+Available options for FORM elements:
+
+| DOM attribute | description | default |
+|------------|----------------------------------------------------------------------------------|-----------|
+| rakam-event-form-element-ignore | The form element will be ignored if this is attribute is set. | `string` |
+
+You can also use `rakam-event-attribute`, `rakam-event-attribute-type` and `rakam-event-attribute-value` attributes that are explained in previous section. If `rakam-event-attribute` is not set, the `name` attribute of the form element will be used as event attribute.
+
+If the form element is an INPUT and the type is PASSWORD, it will be ignored automatically.
+
+# Event Hooks #
+
+You can add event hooks with `rakam.onEvent` method. The callback function will be executed when the events that are succesfully collected by the Rakam, the function parameters include the response data that is returned by the server.
+
+This feature is useful if you use automation module or custom event mappers in your Rakam cluster. For example the automation module uses a custom header `_auto_action` to send client to take action in real-time. The following snippet displays an alert that includes the message that is sent from automation module to the client.
+
+```javascript
+rakam.onEvent(function(status, response, headers) {
+      var actions = headers['_auto_action'];
+      if(actions) {
+          var actions = actions.split(",");
+          for(var i=0; i < actions.length; i++) {
+              var action = decodeURIComponent(escape(window.atob( actions[i] )));
+              // we use JQuery in this example.
+              var div = $("<div/>").text(action).attr('style', 'position: fixed; bottom: 20px; right: 20px; background: #FFF8EB; border: 1px solid #FFD17E; padding: 9px; z-index: 100; box-shadow: 0 0 5px #CCCCCC; color: #9E6600;')
+                      .appendTo('body');
+              setTimeout(function() {
+                  div.fadeOut(300, function() { $(this).remove(); });
+              }, 4000);
+          }
+      }
+  });
+```
+
+# Sessions #
+Rakam will automatically attach session_id attribute to each event that is unique for each session. When a new visitor visits your website, Rakam generates a unique session id for the visitor. This session id will be used in collected events for the next 30 minutes, and then the session timeouts and Rakam automatically generates a new session id. you can configure the interval of sessions with `sessionTimeout` option.
+
+### Miscellaneous methods
+
+`rakam.isReturningUser()` returns true if the session is a returning session.
+
+### Timer
+
+Timer calculates the actual duration that the visitor spent on your website. You can use this feature attach `time_on_page` metric to your events.
+
+`rakam.startTimer(isSaveOnClose)` starts a timer that indicates the active duration of the visitor in the webpage. It uses (ifvisible.js)[https://github.com/serkanyersen/ifvisible.js/] to find out the actual duration that visitor spent on the website. `isSaveOnClose` is a boolean parameter, when user closes the webpage, it saves the final duration to a cookie so that you can use `rakam.getTimeOnPreviousPage()` on the next page. If it's not set, `rakam.getTimeOnPreviousPage()` is not functional.
+
+`rakam.timeOnPage()` returns the current duration the user spent on the webpage.
+
+`rakam.getTimeOnPreviousPage()` reads the cookie parameter that is saved Rakam Timer. If you called `rakam.startTimer(true)` on previous page, it will save the final duration to a cookie automatically before the visitor arrives on this page.
 
 # Opting User Out of Logging #
 
@@ -67,20 +191,9 @@ setting will persist across page loads. Calling
 
     setOptOut(false)
 
-will reenable logging.
+will re-enable logging.
 
 # Configuration Options #
-
-You can configure Rakam by passing an object as the third argument to the `init`:
-
-    rakam.init("YOUR_API_KEY_HERE", null, {
-      // optional configuration options
-      saveEvents: true,
-      includeUtm: true,
-      includeReferrer: true,
-      batchEvents: true,
-      eventUploadThreshold: 50
-    })
 
 | option | description | default |
 |------------|----------------------------------------------------------------------------------|-----------|
