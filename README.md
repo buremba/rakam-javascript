@@ -170,11 +170,11 @@ Rakam will automatically attach session_id attribute to each event that is uniqu
 
 `rakam.isReturningUser()` returns true if the session is a returning session.
 
-### Timer
+# Timer
 
 Timer calculates the actual duration that the visitor spent on your website. You can use this feature attach `time_on_page` metric to your events.
 
-`rakam.startTimer(isSaveOnClose)` starts a timer that indicates the active duration of the visitor in the webpage. It uses (ifvisible.js)[https://github.com/serkanyersen/ifvisible.js/] to find out the actual duration that visitor spent on the website. `isSaveOnClose` is a boolean parameter, when user closes the webpage, it saves the final duration to a cookie so that you can use `rakam.getTimeOnPreviousPage()` on the next page. If it's not set, `rakam.getTimeOnPreviousPage()` is not functional.
+`rakam.startTimer(isSaveOnClose)` starts a timer that indicates the active duration of the visitor in the webpage. It uses [ifvisible.js](https://github.com/serkanyersen/ifvisible.js/) to find out the actual duration that visitor spent on the website. `isSaveOnClose` is a boolean parameter, when user closes the webpage, it saves the final duration to a cookie so that you can use `rakam.getTimeOnPreviousPage()` on the next page. If it's not set, `rakam.getTimeOnPreviousPage()` is not functional.
 
 `rakam.timeOnPage()` returns the current duration the user spent on the webpage.
 
