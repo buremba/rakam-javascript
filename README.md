@@ -174,11 +174,12 @@ Rakam will automatically attach session_id attribute to each event that is uniqu
 
 Timer calculates the actual duration that the visitor spent on your website. You can use this feature attach `time_on_page` metric to your events.
 
-`rakam.startTimer(isSaveOnClose)` starts a timer that indicates the active duration of the visitor in the webpage. It uses [ifvisible.js](https://github.com/serkanyersen/ifvisible.js/) to find out the actual duration that visitor spent on the website. `isSaveOnClose` is a boolean parameter, when user closes the webpage, it saves the final duration to a cookie so that you can use `rakam.getTimeOnPreviousPage()` on the next page. If it's not set, `rakam.getTimeOnPreviousPage()` is not functional.
 
-`rakam.timeOnPage()` returns the current duration the user spent on the webpage.
-
-`rakam.getTimeOnPreviousPage()` reads the cookie parameter that is saved Rakam Timer. If you called `rakam.startTimer(true)` on previous page, it will save the final duration to a cookie automatically before the visitor arrives on this page.
+| method | description
+|------------|----------------------------------------------------------------------------------|
+| `rakam.startTimer(isSaveOnClose)` | Starts a timer that indicates the active duration of the visitor in the webpage. It uses [ifvisible.js](https://github.com/serkanyersen/ifvisible.js/) to find out the actual duration that visitor spent on the website. `isSaveOnClose` is a boolean parameter, when user closes the webpage, it saves the final duration to a cookie so that you can use `rakam.getTimeOnPreviousPage()` on the next page. If it's not set, the other methods is not functional.|
+|`rakam.timeOnPage()` |returns the current duration the user spent on the webpage.|
+|`rakam.getTimeOnPreviousPage()`| reads the cookie parameter that is saved Rakam Timer. If you called `rakam.startTimer(true)` on previous page, it will save the final duration to a cookie automatically before the visitor arrives on this page.|
 
 # Opting User Out of Logging #
 
