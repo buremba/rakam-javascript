@@ -169,7 +169,7 @@ describe('Rakam', function () {
         it('should send api key', function () {
             rakam.logEvent('Event Type 2');
             assert.lengthOf(server.requests, 1);
-            assert.equal(JSON.parse(server.requests[0].requestBody)[0].project, apiKey);
+            assert.equal(JSON.parse(server.requests[0].requestBody).project, apiKey);
         });
 
         //it('should send api version', function () {
@@ -182,23 +182,23 @@ describe('Rakam', function () {
             rakam.logEvent('Event Type 4');
             assert.lengthOf(server.requests, 1);
             var events = JSON.parse(server.requests[0].requestBody);
-            assert.equal(events.length, 1);
-            assert.equal(events[0].collection, 'Event Type 4');
+            assert.equal(events.events.length, 1);
+            assert.equal(events.events[0].collection, 'Event Type 4');
         });
 
         it('should send language', function () {
             rakam.logEvent('Event Should Send Language');
             assert.lengthOf(server.requests, 1);
             var events = JSON.parse(server.requests[0].requestBody);
-            assert.equal(events.length, 1);
-            assert.isNotNull(events[0].properties.language);
+            assert.equal(events.events.length, 1);
+            assert.isNotNull(events.events[0].properties.language);
         });
 
         it('should accept properties', function () {
             rakam.logEvent('Event Type 5', {prop: true});
             assert.lengthOf(server.requests, 1);
             var events = JSON.parse(server.requests[0].requestBody);
-            assert.equal(events[0].properties.prop, true);
+            assert.equal(events.events[0].properties.prop, true);
         });
 
         it('should queue events', function () {
@@ -212,9 +212,9 @@ describe('Rakam', function () {
 
             assert.lengthOf(server.requests, 1);
             var events = JSON.parse(server.requests[0].requestBody);
-            assert.lengthOf(events, 4);
-            assert.equal(events[0].properties.index, 1);
-            assert.equal(events[3].properties.index, 100);
+            assert.lengthOf(events.events, 4);
+            assert.equal(events.events[0].properties.index, 1);
+            assert.equal(events.events[3].properties.index, 100);
         });
 
         it('should limit events queued', function () {
@@ -230,9 +230,9 @@ describe('Rakam', function () {
 
             assert.lengthOf(server.requests, 1);
             var events = JSON.parse(server.requests[0].requestBody);
-            assert.lengthOf(events, 10);
-            assert.equal(events[0].properties.index, 6);
-            assert.equal(events[9].properties.index, 100);
+            assert.lengthOf(events.events, 10);
+            assert.equal(events.events[0].properties.index, 6);
+            assert.equal(events.events[9].properties.index, 100);
         });
 
         it('should remove only sent events', function () {
@@ -249,8 +249,8 @@ describe('Rakam', function () {
 
             assert.lengthOf(server.requests, 2);
             var events = JSON.parse(server.requests[1].requestBody);
-            assert.lengthOf(events, 1);
-            assert.equal(events[0].properties.index, 4);
+            assert.lengthOf(events.events, 1);
+            assert.equal(events.events[0].properties.index, 4);
         });
 
         it('should save events', function () {
@@ -288,18 +288,18 @@ describe('Rakam', function () {
 
             assert.lengthOf(server.requests, 1);
             var events = JSON.parse(server.requests[0].requestBody);
-            assert.lengthOf(events, 10);
-            assert.equal(events[0].properties.index, 0);
-            assert.equal(events[9].properties.index, 9);
+            assert.lengthOf(events.events, 10);
+            assert.equal(events.events[0].properties.index, 0);
+            assert.equal(events.events[9].properties.index, 9);
 
             server.respondWith('1');
             server.respond();
 
             assert.lengthOf(server.requests, 2);
             var events = JSON.parse(server.requests[1].requestBody);
-            assert.lengthOf(events, 6);
-            assert.equal(events[0].properties.index, 10);
-            assert.equal(events[5].properties.index, 100);
+            assert.lengthOf(events.events, 6);
+            assert.equal(events.events[0].properties.index, 10);
+            assert.equal(events.events[5].properties.index, 100);
         });
 
         it('should batch events sent', function () {
@@ -316,9 +316,9 @@ describe('Rakam', function () {
 
             assert.lengthOf(server.requests, 1);
             var events = JSON.parse(server.requests[0].requestBody);
-            assert.lengthOf(events, 10);
-            assert.equal(events[0].properties.index, 0);
-            assert.equal(events[9].properties.index, 9);
+            assert.lengthOf(events.events, 10);
+            assert.equal(events.events[0].properties.index, 0);
+            assert.equal(events.events[9].properties.index, 9);
 
             server.respondWith('1');
             server.respond();
@@ -335,8 +335,8 @@ describe('Rakam', function () {
             server.respond();
             assert.lengthOf(rakam._unsentEvents, 0);
             var events = JSON.parse(server.requests[1].requestBody);
-            assert.lengthOf(events, 5);
-            assert.equal(events[4].properties.index, 14);
+            assert.lengthOf(events.events, 5);
+            assert.equal(events.events[4].properties.index, 14);
         });
 
         it('should send events after a delay', function () {
@@ -358,8 +358,8 @@ describe('Rakam', function () {
             server.respondWith('1');
             server.respond();
             var events = JSON.parse(server.requests[0].requestBody);
-            assert.lengthOf(events, 1);
-            assert.deepEqual(events[0].collection, 'Event');
+            assert.lengthOf(events.events, 1);
+            assert.deepEqual(events.events[0].collection, 'Event');
         });
 
         it('should not send events after a delay if no events to send', function () {
@@ -378,8 +378,8 @@ describe('Rakam', function () {
             server.respondWith('1');
             server.respond();
             var events = JSON.parse(server.requests[0].requestBody);
-            assert.lengthOf(events, 2);
-            assert.deepEqual(events[1].collection, 'Event2');
+            assert.lengthOf(events.events, 2);
+            assert.deepEqual(events.events[1].collection, 'Event2');
 
             // saveEvent should be called after delay, but no request made
             assert.lengthOf(rakam._unsentEvents, 0);
@@ -400,19 +400,19 @@ describe('Rakam', function () {
 
             assert.lengthOf(server.requests, 1);
             var events = JSON.parse(server.requests[0].requestBody);
-            assert.lengthOf(events, 10);
-            assert.equal(events[0].properties.index, 0);
+            assert.lengthOf(events.events, 10);
+            assert.equal(events.events[0].properties.index, 0);
 
-            assert.equal(events[9].properties.index, 9);
+            assert.equal(events.events[9].properties.index, 9);
 
             server.respondWith([413, {}, ""]);
             server.respond();
 
             assert.lengthOf(server.requests, 2);
             var events = JSON.parse(server.requests[1].requestBody);
-            assert.lengthOf(events, 5);
-            assert.equal(events[0].properties.index, 0);
-            assert.equal(events[4].properties.index, 4);
+            assert.lengthOf(events.events, 5);
+            assert.equal(events.events[0].properties.index, 0);
+            assert.equal(events.events[4].properties.index, 4);
         });
 
         it('should back off on 413 status all the way to 1 event with drops', function () {
@@ -432,8 +432,8 @@ describe('Rakam', function () {
             }
 
             var events = JSON.parse(server.requests[6].requestBody);
-            assert.lengthOf(events, 1);
-            assert.equal(events[0].properties.index, 2);
+            assert.lengthOf(events.events, 1);
+            assert.equal(events.events[0].properties.index, 2);
         });
 
         it('should run callback if no eventType', function () {
@@ -586,7 +586,7 @@ describe('Rakam', function () {
 
             assert.lengthOf(server.requests, 1);
             var events = JSON.parse(server.requests[0].requestBody);
-            assert.lengthOf(events, 16);
+            assert.lengthOf(events.events, 16);
 
             // after 413 response received, callback should not have fired
             server.respondWith([413, {}, ""]);
@@ -598,7 +598,7 @@ describe('Rakam', function () {
             // after sending first backoff batch, callback still should not have fired
             assert.lengthOf(server.requests, 2);
             var events = JSON.parse(server.requests[1].requestBody);
-            assert.lengthOf(events, 8);
+            assert.lengthOf(events.events, 8);
             server.respondWith('1');
             server.respond();
             assert.equal(counter, 0);
@@ -608,7 +608,7 @@ describe('Rakam', function () {
             // after sending second backoff batch, callback should fire
             assert.lengthOf(server.requests, 3);
             var events = JSON.parse(server.requests[1].requestBody);
-            assert.lengthOf(events, 8);
+            assert.lengthOf(events.events, 8);
             server.respondWith('1');
             server.respond();
             assert.equal(counter, 1);
@@ -671,7 +671,7 @@ describe('Rakam', function () {
             assert.lengthOf(server.requests, 1);
 
             var events = JSON.parse(server.requests[0].requestBody);
-            assert.lengthOf(events, 1);
+            assert.lengthOf(events.events, 1);
         });
 
         it('should have state be persisted in the cookie', function () {
@@ -705,11 +705,11 @@ describe('Rakam', function () {
             rakam.logEvent('UTM Test Event', {});
             assert.lengthOf(server.requests, 1);
             var events = JSON.parse(server.requests[0].requestBody);
-            assert.equal(events[0].properties.user_utm_campaign, undefined);
-            assert.equal(events[0].properties.user_utm_content, undefined);
-            assert.equal(events[0].properties.user_utm_medium, undefined);
-            assert.equal(events[0].properties.user_utm_source, undefined);
-            assert.equal(events[0].properties.user_utm_term, undefined);
+            assert.equal(events.events[0].properties.user_utm_campaign, undefined);
+            assert.equal(events.events[0].properties.user_utm_content, undefined);
+            assert.equal(events.events[0].properties.user_utm_medium, undefined);
+            assert.equal(events.events[0].properties.user_utm_source, undefined);
+            assert.equal(events.events[0].properties.user_utm_term, undefined);
         });
 
         it('should send utm data when the includeUtm flag is true', function () {
@@ -721,8 +721,8 @@ describe('Rakam', function () {
 
             assert.lengthOf(server.requests, 1);
             var events = JSON.parse(server.requests[0].requestBody);
-            assert.equal(events[0].properties.user_utm_campaign, 'new');
-            assert.equal(events[0].properties.user_utm_content, 'top');
+            assert.equal(events.events[0].properties.user_utm_campaign, 'new');
+            assert.equal(events.events[0].properties.user_utm_content, 'top');
         });
 
         it('should add utm params to the user properties', function () {
@@ -736,12 +736,12 @@ describe('Rakam', function () {
 
             assert.lengthOf(server.requests, 1);
             var events = JSON.parse(server.requests[0].requestBody);
-            assert.equal(events[0].properties.user_prop, true);
-            assert.equal(events[0].properties.user_utm_campaign, 'new');
-            assert.equal(events[0].properties.user_utm_content, 'top');
-            assert.equal(events[0].properties.user_utm_medium, 'email');
-            assert.equal(events[0].properties.user_utm_source, 'rakam');
-            assert.equal(events[0].properties.user_utm_term, 'terms');
+            assert.equal(events.events[0].properties.user_prop, true);
+            assert.equal(events.events[0].properties.user_utm_campaign, 'new');
+            assert.equal(events.events[0].properties.user_utm_content, 'top');
+            assert.equal(events.events[0].properties.user_utm_medium, 'email');
+            assert.equal(events.events[0].properties.user_utm_source, 'rakam');
+            assert.equal(events.events[0].properties.user_utm_term, 'terms');
         });
 
         it('should get utm params from the query string', function () {
@@ -803,7 +803,7 @@ describe('Rakam', function () {
             rakam.logEvent('Referrer Test Event', {});
             assert.lengthOf(server.requests, 1);
             var events = JSON.parse(server.requests[0].requestBody);
-            assert.equal(events[0].properties.user_referrer, undefined);
+            assert.equal(events.events[0].properties.user_referrer, undefined);
         });
 
         //it('should send referrer data when the includeReferrer flag is true', function () {
@@ -814,7 +814,7 @@ describe('Rakam', function () {
         //
         //    assert.lengthOf(server.requests, 1);
         //    var events = JSON.parse(server.requests[0].requestBody);
-        //    assert.equal(events[0].properties.user_referrer, 'https://rakam.com/contact');
+        //    assert.equal(events.events[0].properties.user_referrer, 'https://rakam.com/contact');
         //});
 
         //it('should add referrer data to the user properties', function () {
@@ -826,8 +826,8 @@ describe('Rakam', function () {
         //
         //    assert.lengthOf(server.requests, 1);
         //    var events = JSON.parse(server.requests[0].requestBody);
-        //    assert.equal(events[0].properties.user_referrer, 'https://rakam.com/contact');
-        //    assert.equal(events[0].properties.user_prop, true);
+        //    assert.equal(events.events[0].properties.user_referrer, 'https://rakam.com/contact');
+        //    assert.equal(events.events[0].properties.user_prop, true);
         //});
     });
 
@@ -851,10 +851,10 @@ describe('Rakam', function () {
             rakam.logEvent('Event Type 1');
             assert.lengthOf(server.requests, 1);
             var events = JSON.parse(server.requests[0].requestBody);
-            assert.equal(events.length, 1);
-            assert.notEqual(events[0].session_id, sessionId);
+            assert.equal(events.events.length, 1);
+            assert.notEqual(events.events[0].session_id, sessionId);
             assert.notEqual(rakam._sessionId, sessionId);
-            assert.equal(events[0].properties.session_id, rakam._sessionId);
+            assert.equal(events.events[0].properties.session_id, rakam._sessionId);
         });
     });
 });

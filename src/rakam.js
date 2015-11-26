@@ -2,7 +2,7 @@ var Cookie = require('./cookie');
 var JSON = require('json'); // jshint ignore:line
 var language = require('./language');
 var localStorage = require('./localstorage');  // jshint ignore:line
-var md5 = require('JavaScript-MD5');
+//var md5 = require('JavaScript-MD5');
 var object = require('object');
 var Request = require('./xhr');
 var UUID = require('./uuid');
@@ -29,7 +29,7 @@ var API_VERSION = 1;
 var DEFAULT_OPTIONS = {
     apiEndpoint: 'api.rakam.com',
     apiEndpointPath: '/event/batch',
-    write_key: undefined,
+    writeKey: undefined,
     cookieExpiration: 365 * 10,
     cookieName: 'rakam_id',
     domain: undefined,
@@ -48,7 +48,7 @@ var DEFAULT_OPTIONS = {
     eventUploadPeriodMillis: 30 * 1000 // 30s
 };
 var LocalStorageKeys = {
-    LAST_id: 'rakam_lastEventId',
+    LAST_ID: 'rakam_lastEventId',
     LAST_EVENT_TIME: 'rakam_lastEventTime',
     SESSION_ID: 'rakam_sessionId',
     RETURNING_SESSION: 'rakam_returning'
@@ -91,8 +91,8 @@ Rakam.prototype.init = function (apiKey, opt_userId, opt_config, callback) {
             if (opt_config.saveEvents !== undefined) {
                 this.options.saveEvents = !!opt_config.saveEvents;
             }
-            if (opt_config.write_key !== undefined) {
-                this.options.write_key = opt_config.write_key;
+            if (opt_config.writeKey !== undefined) {
+                this.options.writeKey = opt_config.writeKey;
             }
             if (opt_config.domain !== undefined) {
                 this.options.domain = opt_config.domain;
@@ -166,7 +166,7 @@ Rakam.prototype.init = function (apiKey, opt_userId, opt_config, callback) {
 
         this._lastEventTime = parseInt(localStorage.getItem(LocalStorageKeys.LAST_EVENT_TIME)) || null;
         this._sessionId = parseInt(localStorage.getItem(LocalStorageKeys.SESSION_ID)) || null;
-        this._eventId = localStorage.getItem(LocalStorageKeys.LAST_id) || 0;
+        this._eventId = localStorage.getItem(LocalStorageKeys.LAST_ID) || 0;
         var now = new Date().getTime();
         if (!this._sessionId || !this._lastEventTime || now - this._lastEventTime > this.options.sessionTimeout) {
             if(this._sessionId !== null || this.options.userId !==null) {
@@ -199,7 +199,7 @@ var transformValue = function(attribute, value, type) {
     if(type !== null) {
         type = type.toLowerCase();
     }
-    if(type === 'long' || type === 'time' || type === 'timestamp') {
+    if(type === 'long' || type === 'time' || type === 'timestamp' || type === 'date') {
         value = parseInt(value);
         if(isNaN(value) || !isFinite(value)) {
             log("ignoring "+attribute+": the value must be a number");
@@ -419,7 +419,7 @@ Rakam.prototype._initUtmData = function (queryParams, cookieParams) {
 Rakam.prototype._initTrackForms = function () {
     document.addEventListener('submit', function(event) {
         var targetElement = event.target || event.srcElement;
-        var collection = targetElement.getAttribute('rakam-event-track');
+        var collection = targetElement.getAttribute('rakam-event-form');
         if(targetElement.tagName === 'FORM' && collection) {
             var properties = {};
 
@@ -436,12 +436,34 @@ Rakam.prototype._initTrackForms = function () {
                 var element = targetElement.elements[i];
 
                 var type = element.getAttribute('rakam-event-attribute-type');
+                var formElemType;
+                if(element.hasAttribute('type')) {
+                    formElemType =  element.getAttribute('type').toLowerCase();
+                }
 
-                if(!element.hasAttribute("rakam-event-form-element")) {
+                if(formElemType === "password") {
                     continue;
                 }
 
-                var attribute = element.getAttribute("name");
+                if(type === null && element.tagName === 'INPUT' && formElemType === 'number') {
+                    type = "long";
+                }
+
+                if(element.hasAttribute("rakam-event-form-element-ignore")) {
+                    continue;
+                }
+
+                var attribute;
+                if(element.hasAttribute("rakam-event-attribute")) {
+                    attribute = element.getAttribute("rakam-event-attribute");
+                } else {
+                    attribute = element.getAttribute("name");
+                }
+
+
+                if(element.hasAttribute("rakam-event-attribute-value")) {
+                    properties[attribute] = transformValue(attribute, element.getAttribute('rakam-event-attribute-value'), type);
+                } else
                 if(element.tagName === 'SELECT') {
                     properties[attribute] = transformValue(attribute, element.options[element.selectedIndex].value, type);
                 } else
@@ -586,7 +608,7 @@ Rakam.prototype._logEvent = function (eventType, eventProperties, apiProperties,
         }
         this._lastEventTime = eventTime;
         localStorage.setItem(LocalStorageKeys.LAST_EVENT_TIME, this._lastEventTime);
-        localStorage.setItem(LocalStorageKeys.LAST_id, eventId);
+        localStorage.setItem(LocalStorageKeys.LAST_ID, eventId);
 
         var userProperties = {};
         object.merge(userProperties, this.options.userProperties || {});
@@ -604,7 +626,6 @@ Rakam.prototype._logEvent = function (eventType, eventProperties, apiProperties,
         apiProperties = apiProperties || {};
         eventProperties = eventProperties || {};
         var event = {
-            project: this.options.apiKey,
             collection: eventType,
             properties: {
                 device_id: this.options.deviceId,
@@ -688,14 +709,15 @@ Rakam.prototype.sendEvents = function (callback) {
         });
         var uploadTime = new Date().getTime();
 
-        var headers = {
-            "Upload-Time": uploadTime,
-            "Api-Version": API_VERSION,
-            "write_key": this.options.write_key,
-            "Content-MD5": md5(API_VERSION + JSON.stringify(events) + uploadTime).toUpperCase()
+        var api = {
+            "uploadTime": uploadTime,
+            "apiVersion": API_VERSION,
+            "writeKey": this.options.writeKey
+            //"checksum": md5(API_VERSION + JSON.stringify(events) + uploadTime).toUpperCase()
         };
+
         var scope = this;
-        new Request(url, events, headers).send(function (status, response, headers) {
+        new Request(url, {api: api, project: this.options.apiKey, events: events}).send(function (status, response, headers) {
             scope._sending = false;
             try {
                 if (status === 200 && response === '1') {

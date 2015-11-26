@@ -114,7 +114,7 @@ var Cookie = require('./cookie');
 var JSON = require('json'); // jshint ignore:line
 var language = require('./language');
 var localStorage = require('./localstorage');  // jshint ignore:line
-var md5 = require('JavaScript-MD5');
+//var md5 = require('JavaScript-MD5');
 var object = require('object');
 var Request = require('./xhr');
 var UUID = require('./uuid');
@@ -141,7 +141,7 @@ var API_VERSION = 1;
 var DEFAULT_OPTIONS = {
     apiEndpoint: 'api.rakam.com',
     apiEndpointPath: '/event/batch',
-    write_key: undefined,
+    writeKey: undefined,
     cookieExpiration: 365 * 10,
     cookieName: 'rakam_id',
     domain: undefined,
@@ -160,7 +160,7 @@ var DEFAULT_OPTIONS = {
     eventUploadPeriodMillis: 30 * 1000 // 30s
 };
 var LocalStorageKeys = {
-    LAST_id: 'rakam_lastEventId',
+    LAST_ID: 'rakam_lastEventId',
     LAST_EVENT_TIME: 'rakam_lastEventTime',
     SESSION_ID: 'rakam_sessionId',
     RETURNING_SESSION: 'rakam_returning'
@@ -203,8 +203,8 @@ Rakam.prototype.init = function (apiKey, opt_userId, opt_config, callback) {
             if (opt_config.saveEvents !== undefined) {
                 this.options.saveEvents = !!opt_config.saveEvents;
             }
-            if (opt_config.write_key !== undefined) {
-                this.options.write_key = opt_config.write_key;
+            if (opt_config.writeKey !== undefined) {
+                this.options.writeKey = opt_config.writeKey;
             }
             if (opt_config.domain !== undefined) {
                 this.options.domain = opt_config.domain;
@@ -278,7 +278,7 @@ Rakam.prototype.init = function (apiKey, opt_userId, opt_config, callback) {
 
         this._lastEventTime = parseInt(localStorage.getItem(LocalStorageKeys.LAST_EVENT_TIME)) || null;
         this._sessionId = parseInt(localStorage.getItem(LocalStorageKeys.SESSION_ID)) || null;
-        this._eventId = localStorage.getItem(LocalStorageKeys.LAST_id) || 0;
+        this._eventId = localStorage.getItem(LocalStorageKeys.LAST_ID) || 0;
         var now = new Date().getTime();
         if (!this._sessionId || !this._lastEventTime || now - this._lastEventTime > this.options.sessionTimeout) {
             if(this._sessionId !== null || this.options.userId !==null) {
@@ -311,7 +311,7 @@ var transformValue = function(attribute, value, type) {
     if(type !== null) {
         type = type.toLowerCase();
     }
-    if(type === 'long' || type === 'time' || type === 'timestamp') {
+    if(type === 'long' || type === 'time' || type === 'timestamp' || type === 'date') {
         value = parseInt(value);
         if(isNaN(value) || !isFinite(value)) {
             log("ignoring "+attribute+": the value must be a number");
@@ -531,7 +531,7 @@ Rakam.prototype._initUtmData = function (queryParams, cookieParams) {
 Rakam.prototype._initTrackForms = function () {
     document.addEventListener('submit', function(event) {
         var targetElement = event.target || event.srcElement;
-        var collection = targetElement.getAttribute('rakam-event-track');
+        var collection = targetElement.getAttribute('rakam-event-form');
         if(targetElement.tagName === 'FORM' && collection) {
             var properties = {};
 
@@ -548,12 +548,34 @@ Rakam.prototype._initTrackForms = function () {
                 var element = targetElement.elements[i];
 
                 var type = element.getAttribute('rakam-event-attribute-type');
+                var formElemType;
+                if(element.hasAttribute('type')) {
+                    formElemType =  element.getAttribute('type').toLowerCase();
+                }
 
-                if(!element.hasAttribute("rakam-event-form-element")) {
+                if(formElemType === "password") {
                     continue;
                 }
 
-                var attribute = element.getAttribute("name");
+                if(type === null && element.tagName === 'INPUT' && formElemType === 'number') {
+                    type = "long";
+                }
+
+                if(element.hasAttribute("rakam-event-form-element-ignore")) {
+                    continue;
+                }
+
+                var attribute;
+                if(element.hasAttribute("rakam-event-attribute")) {
+                    attribute = element.getAttribute("rakam-event-attribute");
+                } else {
+                    attribute = element.getAttribute("name");
+                }
+
+
+                if(element.hasAttribute("rakam-event-attribute-value")) {
+                    properties[attribute] = transformValue(attribute, element.getAttribute('rakam-event-attribute-value'), type);
+                } else
                 if(element.tagName === 'SELECT') {
                     properties[attribute] = transformValue(attribute, element.options[element.selectedIndex].value, type);
                 } else
@@ -698,7 +720,7 @@ Rakam.prototype._logEvent = function (eventType, eventProperties, apiProperties,
         }
         this._lastEventTime = eventTime;
         localStorage.setItem(LocalStorageKeys.LAST_EVENT_TIME, this._lastEventTime);
-        localStorage.setItem(LocalStorageKeys.LAST_id, eventId);
+        localStorage.setItem(LocalStorageKeys.LAST_ID, eventId);
 
         var userProperties = {};
         object.merge(userProperties, this.options.userProperties || {});
@@ -716,7 +738,6 @@ Rakam.prototype._logEvent = function (eventType, eventProperties, apiProperties,
         apiProperties = apiProperties || {};
         eventProperties = eventProperties || {};
         var event = {
-            project: this.options.apiKey,
             collection: eventType,
             properties: {
                 device_id: this.options.deviceId,
@@ -800,14 +821,15 @@ Rakam.prototype.sendEvents = function (callback) {
         });
         var uploadTime = new Date().getTime();
 
-        var headers = {
-            "Upload-Time": uploadTime,
-            "Api-Version": API_VERSION,
-            "write_key": this.options.write_key,
-            "Content-MD5": md5(API_VERSION + JSON.stringify(events) + uploadTime).toUpperCase()
+        var api = {
+            "uploadTime": uploadTime,
+            "apiVersion": API_VERSION,
+            "writeKey": this.options.writeKey
+            //"checksum": md5(API_VERSION + JSON.stringify(events) + uploadTime).toUpperCase()
         };
+
         var scope = this;
-        new Request(url, events, headers).send(function (status, response, headers) {
+        new Request(url, {api: api, project: this.options.apiKey, events: events}).send(function (status, response, headers) {
             scope._sending = false;
             try {
                 if (status === 200 && response === '1') {
@@ -863,7 +885,7 @@ Rakam.prototype.__VERSION__ = version;
 
 module.exports = Rakam;
 
-}, {"./cookie":3,"json":4,"./language":5,"./localstorage":6,"JavaScript-MD5":7,"object":8,"./xhr":9,"./uuid":10,"./version":11,"../node_modules/ifvisible.js/src/ifvisible.min.js":12}],
+}, {"./cookie":3,"json":4,"./language":5,"./localstorage":6,"object":7,"./xhr":8,"./uuid":9,"./version":10,"../node_modules/ifvisible.js/src/ifvisible.min.js":11}],
 3: [function(require, module, exports) {
 /*
  * Cookie data
@@ -990,8 +1012,8 @@ module.exports = {
 
 };
 
-}, {"./base64":13,"json":4,"top-domain":14}],
-13: [function(require, module, exports) {
+}, {"./base64":12,"json":4,"top-domain":13}],
+12: [function(require, module, exports) {
 /* jshint bitwise: false */
 /* global escape, unescape */
 
@@ -1090,8 +1112,8 @@ var Base64 = {
 
 module.exports = Base64;
 
-}, {"./utf8":15}],
-15: [function(require, module, exports) {
+}, {"./utf8":14}],
+14: [function(require, module, exports) {
 /* jshint bitwise: false */
 
 /*
@@ -1161,8 +1183,8 @@ module.exports = parse && stringify
   ? JSON
   : require('json-fallback');
 
-}, {"json-fallback":16}],
-16: [function(require, module, exports) {
+}, {"json-fallback":15}],
+15: [function(require, module, exports) {
 /*
     json2.js
     2014-02-04
@@ -1652,7 +1674,7 @@ module.exports = parse && stringify
 }());
 
 }, {}],
-14: [function(require, module, exports) {
+13: [function(require, module, exports) {
 
 /**
  * Module dependencies.
@@ -1700,8 +1722,8 @@ function domain(url){
   return match ? match[0] : '';
 };
 
-}, {"url":17}],
-17: [function(require, module, exports) {
+}, {"url":16}],
+16: [function(require, module, exports) {
 
 /**
  * Parse the given `url`.
@@ -1902,294 +1924,6 @@ module.exports = localStorage;
 
 }, {}],
 7: [function(require, module, exports) {
-/*
- * JavaScript MD5 1.0.1
- * https://github.com/blueimp/JavaScript-MD5
- *
- * Copyright 2011, Sebastian Tschan
- * https://blueimp.net
- *
- * Licensed under the MIT license:
- * http://www.opensource.org/licenses/MIT
- * 
- * Based on
- * A JavaScript implementation of the RSA Data Security, Inc. MD5 Message
- * Digest Algorithm, as defined in RFC 1321.
- * Version 2.2 Copyright (C) Paul Johnston 1999 - 2009
- * Other contributors: Greg Holt, Andrew Kepert, Ydnar, Lostinet
- * Distributed under the BSD License
- * See http://pajhome.org.uk/crypt/md5 for more info.
- */
-
-/*jslint bitwise: true */
-/*global unescape, define */
-
-(function ($) {
-    'use strict';
-
-    /*
-    * Add integers, wrapping at 2^32. This uses 16-bit operations internally
-    * to work around bugs in some JS interpreters.
-    */
-    function safe_add(x, y) {
-        var lsw = (x & 0xFFFF) + (y & 0xFFFF),
-            msw = (x >> 16) + (y >> 16) + (lsw >> 16);
-        return (msw << 16) | (lsw & 0xFFFF);
-    }
-
-    /*
-    * Bitwise rotate a 32-bit number to the left.
-    */
-    function bit_rol(num, cnt) {
-        return (num << cnt) | (num >>> (32 - cnt));
-    }
-
-    /*
-    * These functions implement the four basic operations the algorithm uses.
-    */
-    function md5_cmn(q, a, b, x, s, t) {
-        return safe_add(bit_rol(safe_add(safe_add(a, q), safe_add(x, t)), s), b);
-    }
-    function md5_ff(a, b, c, d, x, s, t) {
-        return md5_cmn((b & c) | ((~b) & d), a, b, x, s, t);
-    }
-    function md5_gg(a, b, c, d, x, s, t) {
-        return md5_cmn((b & d) | (c & (~d)), a, b, x, s, t);
-    }
-    function md5_hh(a, b, c, d, x, s, t) {
-        return md5_cmn(b ^ c ^ d, a, b, x, s, t);
-    }
-    function md5_ii(a, b, c, d, x, s, t) {
-        return md5_cmn(c ^ (b | (~d)), a, b, x, s, t);
-    }
-
-    /*
-    * Calculate the MD5 of an array of little-endian words, and a bit length.
-    */
-    function binl_md5(x, len) {
-        /* append padding */
-        x[len >> 5] |= 0x80 << (len % 32);
-        x[(((len + 64) >>> 9) << 4) + 14] = len;
-
-        var i, olda, oldb, oldc, oldd,
-            a =  1732584193,
-            b = -271733879,
-            c = -1732584194,
-            d =  271733878;
-
-        for (i = 0; i < x.length; i += 16) {
-            olda = a;
-            oldb = b;
-            oldc = c;
-            oldd = d;
-
-            a = md5_ff(a, b, c, d, x[i],       7, -680876936);
-            d = md5_ff(d, a, b, c, x[i +  1], 12, -389564586);
-            c = md5_ff(c, d, a, b, x[i +  2], 17,  606105819);
-            b = md5_ff(b, c, d, a, x[i +  3], 22, -1044525330);
-            a = md5_ff(a, b, c, d, x[i +  4],  7, -176418897);
-            d = md5_ff(d, a, b, c, x[i +  5], 12,  1200080426);
-            c = md5_ff(c, d, a, b, x[i +  6], 17, -1473231341);
-            b = md5_ff(b, c, d, a, x[i +  7], 22, -45705983);
-            a = md5_ff(a, b, c, d, x[i +  8],  7,  1770035416);
-            d = md5_ff(d, a, b, c, x[i +  9], 12, -1958414417);
-            c = md5_ff(c, d, a, b, x[i + 10], 17, -42063);
-            b = md5_ff(b, c, d, a, x[i + 11], 22, -1990404162);
-            a = md5_ff(a, b, c, d, x[i + 12],  7,  1804603682);
-            d = md5_ff(d, a, b, c, x[i + 13], 12, -40341101);
-            c = md5_ff(c, d, a, b, x[i + 14], 17, -1502002290);
-            b = md5_ff(b, c, d, a, x[i + 15], 22,  1236535329);
-
-            a = md5_gg(a, b, c, d, x[i +  1],  5, -165796510);
-            d = md5_gg(d, a, b, c, x[i +  6],  9, -1069501632);
-            c = md5_gg(c, d, a, b, x[i + 11], 14,  643717713);
-            b = md5_gg(b, c, d, a, x[i],      20, -373897302);
-            a = md5_gg(a, b, c, d, x[i +  5],  5, -701558691);
-            d = md5_gg(d, a, b, c, x[i + 10],  9,  38016083);
-            c = md5_gg(c, d, a, b, x[i + 15], 14, -660478335);
-            b = md5_gg(b, c, d, a, x[i +  4], 20, -405537848);
-            a = md5_gg(a, b, c, d, x[i +  9],  5,  568446438);
-            d = md5_gg(d, a, b, c, x[i + 14],  9, -1019803690);
-            c = md5_gg(c, d, a, b, x[i +  3], 14, -187363961);
-            b = md5_gg(b, c, d, a, x[i +  8], 20,  1163531501);
-            a = md5_gg(a, b, c, d, x[i + 13],  5, -1444681467);
-            d = md5_gg(d, a, b, c, x[i +  2],  9, -51403784);
-            c = md5_gg(c, d, a, b, x[i +  7], 14,  1735328473);
-            b = md5_gg(b, c, d, a, x[i + 12], 20, -1926607734);
-
-            a = md5_hh(a, b, c, d, x[i +  5],  4, -378558);
-            d = md5_hh(d, a, b, c, x[i +  8], 11, -2022574463);
-            c = md5_hh(c, d, a, b, x[i + 11], 16,  1839030562);
-            b = md5_hh(b, c, d, a, x[i + 14], 23, -35309556);
-            a = md5_hh(a, b, c, d, x[i +  1],  4, -1530992060);
-            d = md5_hh(d, a, b, c, x[i +  4], 11,  1272893353);
-            c = md5_hh(c, d, a, b, x[i +  7], 16, -155497632);
-            b = md5_hh(b, c, d, a, x[i + 10], 23, -1094730640);
-            a = md5_hh(a, b, c, d, x[i + 13],  4,  681279174);
-            d = md5_hh(d, a, b, c, x[i],      11, -358537222);
-            c = md5_hh(c, d, a, b, x[i +  3], 16, -722521979);
-            b = md5_hh(b, c, d, a, x[i +  6], 23,  76029189);
-            a = md5_hh(a, b, c, d, x[i +  9],  4, -640364487);
-            d = md5_hh(d, a, b, c, x[i + 12], 11, -421815835);
-            c = md5_hh(c, d, a, b, x[i + 15], 16,  530742520);
-            b = md5_hh(b, c, d, a, x[i +  2], 23, -995338651);
-
-            a = md5_ii(a, b, c, d, x[i],       6, -198630844);
-            d = md5_ii(d, a, b, c, x[i +  7], 10,  1126891415);
-            c = md5_ii(c, d, a, b, x[i + 14], 15, -1416354905);
-            b = md5_ii(b, c, d, a, x[i +  5], 21, -57434055);
-            a = md5_ii(a, b, c, d, x[i + 12],  6,  1700485571);
-            d = md5_ii(d, a, b, c, x[i +  3], 10, -1894986606);
-            c = md5_ii(c, d, a, b, x[i + 10], 15, -1051523);
-            b = md5_ii(b, c, d, a, x[i +  1], 21, -2054922799);
-            a = md5_ii(a, b, c, d, x[i +  8],  6,  1873313359);
-            d = md5_ii(d, a, b, c, x[i + 15], 10, -30611744);
-            c = md5_ii(c, d, a, b, x[i +  6], 15, -1560198380);
-            b = md5_ii(b, c, d, a, x[i + 13], 21,  1309151649);
-            a = md5_ii(a, b, c, d, x[i +  4],  6, -145523070);
-            d = md5_ii(d, a, b, c, x[i + 11], 10, -1120210379);
-            c = md5_ii(c, d, a, b, x[i +  2], 15,  718787259);
-            b = md5_ii(b, c, d, a, x[i +  9], 21, -343485551);
-
-            a = safe_add(a, olda);
-            b = safe_add(b, oldb);
-            c = safe_add(c, oldc);
-            d = safe_add(d, oldd);
-        }
-        return [a, b, c, d];
-    }
-
-    /*
-    * Convert an array of little-endian words to a string
-    */
-    function binl2rstr(input) {
-        var i,
-            output = '';
-        for (i = 0; i < input.length * 32; i += 8) {
-            output += String.fromCharCode((input[i >> 5] >>> (i % 32)) & 0xFF);
-        }
-        return output;
-    }
-
-    /*
-    * Convert a raw string to an array of little-endian words
-    * Characters >255 have their high-byte silently ignored.
-    */
-    function rstr2binl(input) {
-        var i,
-            output = [];
-        output[(input.length >> 2) - 1] = undefined;
-        for (i = 0; i < output.length; i += 1) {
-            output[i] = 0;
-        }
-        for (i = 0; i < input.length * 8; i += 8) {
-            output[i >> 5] |= (input.charCodeAt(i / 8) & 0xFF) << (i % 32);
-        }
-        return output;
-    }
-
-    /*
-    * Calculate the MD5 of a raw string
-    */
-    function rstr_md5(s) {
-        return binl2rstr(binl_md5(rstr2binl(s), s.length * 8));
-    }
-
-    /*
-    * Calculate the HMAC-MD5, of a key and some data (raw strings)
-    */
-    function rstr_hmac_md5(key, data) {
-        var i,
-            bkey = rstr2binl(key),
-            ipad = [],
-            opad = [],
-            hash;
-        ipad[15] = opad[15] = undefined;
-        if (bkey.length > 16) {
-            bkey = binl_md5(bkey, key.length * 8);
-        }
-        for (i = 0; i < 16; i += 1) {
-            ipad[i] = bkey[i] ^ 0x36363636;
-            opad[i] = bkey[i] ^ 0x5C5C5C5C;
-        }
-        hash = binl_md5(ipad.concat(rstr2binl(data)), 512 + data.length * 8);
-        return binl2rstr(binl_md5(opad.concat(hash), 512 + 128));
-    }
-
-    /*
-    * Convert a raw string to a hex string
-    */
-    function rstr2hex(input) {
-        var hex_tab = '0123456789abcdef',
-            output = '',
-            x,
-            i;
-        for (i = 0; i < input.length; i += 1) {
-            x = input.charCodeAt(i);
-            output += hex_tab.charAt((x >>> 4) & 0x0F) +
-                hex_tab.charAt(x & 0x0F);
-        }
-        return output;
-    }
-
-    /*
-    * Encode a string as utf-8
-    */
-    function str2rstr_utf8(input) {
-        return unescape(encodeURIComponent(input));
-    }
-
-    /*
-    * Take string arguments and return either raw or hex encoded strings
-    */
-    function raw_md5(s) {
-        return rstr_md5(str2rstr_utf8(s));
-    }
-    function hex_md5(s) {
-        return rstr2hex(raw_md5(s));
-    }
-    function raw_hmac_md5(k, d) {
-        return rstr_hmac_md5(str2rstr_utf8(k), str2rstr_utf8(d));
-    }
-    function hex_hmac_md5(k, d) {
-        return rstr2hex(raw_hmac_md5(k, d));
-    }
-
-    function md5(string, key, raw) {
-        if (!key) {
-            if (!raw) {
-                return hex_md5(string);
-            }
-            return raw_md5(string);
-        }
-        if (!raw) {
-            return hex_hmac_md5(key, string);
-        }
-        return raw_hmac_md5(key, string);
-    }
-
-    // check js environment
-    if (typeof(exports) !== 'undefined') {
-        // nodejs env
-        if (typeof module !== 'undefined' && module.exports) {
-            exports = module.exports = md5;
-        }
-        exports.md5 = md5;
-    } else {
-        // requirejs env (optional)
-        if (typeof(define) === 'function' && define.amd) {
-            define(function () {
-                    return md5;
-                });
-        } else {
-            // browser env
-            $.md5 = md5;
-        }
-    }
-}(this));
-
-}, {}],
-8: [function(require, module, exports) {
 
 /**
  * HOP ref.
@@ -2275,16 +2009,15 @@ exports.isEmpty = function(obj){
   return 0 == exports.length(obj);
 };
 }, {}],
-9: [function(require, module, exports) {
+8: [function(require, module, exports) {
 var JSON = require('json'); // jshint ignore:line
 
 /*
  * Simple AJAX request object
  */
-var Request = function (url, data, headers) {
+var Request = function (url, data) {
     this.url = url;
     this.data = data || {};
-    this.headers = headers || null;
 };
 
 function parseResponseHeaders(headerStr) {
@@ -2340,7 +2073,7 @@ Request.prototype.send = function (callback) {
 module.exports = Request;
 
 }, {"json":4}],
-10: [function(require, module, exports) {
+9: [function(require, module, exports) {
 /* jshint bitwise: false, laxbreak: true */
 
 /**
@@ -2374,11 +2107,11 @@ var uuid = function(a) {
 module.exports = uuid;
 
 }, {}],
-11: [function(require, module, exports) {
+10: [function(require, module, exports) {
 module.exports = '2.4.0';
 
 }, {}],
-12: [function(require, module, exports) {
+11: [function(require, module, exports) {
 (function(){!function(a,b){return"function"==typeof define&&define.amd?define(function(){return b()}):"object"==typeof exports?module.exports=b():a.ifvisible=b()}(this,function(){var a,b,c,d,e,f,g,h,i,j,k,l,m,n;return i={},c=document,k=!1,l="active",g=6e4,f=!1,b=function(){var a,b,c,d,e,f,g;return a=function(){return(65536*(1+Math.random())|0).toString(16).substring(1)},e=function(){return a()+a()+"-"+a()+"-"+a()+"-"+a()+"-"+a()+a()+a()},f={},c="__ceGUID",b=function(a,b,d){return a[c]=void 0,a[c]||(a[c]="ifvisible.object.event.identifier"),f[a[c]]||(f[a[c]]={}),f[a[c]][b]||(f[a[c]][b]=[]),f[a[c]][b].push(d)},d=function(a,b,d){var e,g,h,i,j;if(a[c]&&f[a[c]]&&f[a[c]][b]){for(i=f[a[c]][b],j=[],g=0,h=i.length;h>g;g++)e=i[g],j.push(e(d||{}));return j}},g=function(a,b,d){var e,g,h,i,j;if(d){if(a[c]&&f[a[c]]&&f[a[c]][b])for(j=f[a[c]][b],g=h=0,i=j.length;i>h;g=++h)if(e=j[g],e===d)return f[a[c]][b].splice(g,1),e}else if(a[c]&&f[a[c]]&&f[a[c]][b])return delete f[a[c]][b]},{add:b,remove:g,fire:d}}(),a=function(){var a;return a=!1,function(b,c,d){return a||(a=b.addEventListener?function(a,b,c){return a.addEventListener(b,c,!1)}:b.attachEvent?function(a,b,c){return a.attachEvent("on"+b,c,!1)}:function(a,b,c){return a["on"+b]=c}),a(b,c,d)}}(),d=function(a,b){var d;return c.createEventObject?a.fireEvent("on"+b,d):(d=c.createEvent("HTMLEvents"),d.initEvent(b,!0,!0),!a.dispatchEvent(d))},h=function(){var a,b,d,e,f;for(e=void 0,f=3,d=c.createElement("div"),a=d.getElementsByTagName("i"),b=function(){return d.innerHTML="<!--[if gt IE "+ ++f+"]><i></i><![endif]-->",a[0]};b(););return f>4?f:e}(),e=!1,n=void 0,"undefined"!=typeof c.hidden?(e="hidden",n="visibilitychange"):"undefined"!=typeof c.mozHidden?(e="mozHidden",n="mozvisibilitychange"):"undefined"!=typeof c.msHidden?(e="msHidden",n="msvisibilitychange"):"undefined"!=typeof c.webkitHidden&&(e="webkitHidden",n="webkitvisibilitychange"),m=function(){var b,d;return b=!1,d=function(){return clearTimeout(b),"active"!==l&&i.wakeup(),f=+new Date,b=setTimeout(function(){return"active"===l?i.idle():void 0},g)},d(),a(c,"mousemove",d),a(c,"keyup",d),a(window,"scroll",d),i.focus(d),i.wakeup(d)},j=function(){var b;return k?!0:(e===!1?(b="blur",9>h&&(b="focusout"),a(window,b,function(){return i.blur()}),a(window,"focus",function(){return i.focus()})):a(c,n,function(){return c[e]?i.blur():i.focus()},!1),k=!0,m())},i={setIdleDuration:function(a){return g=1e3*a},getIdleDuration:function(){return g},getIdleInfo:function(){var a,b;return a=+new Date,b={},"idle"===l?(b.isIdle=!0,b.idleFor=a-f,b.timeLeft=0,b.timeLeftPer=100):(b.isIdle=!1,b.idleFor=a-f,b.timeLeft=f+g-a,b.timeLeftPer=(100-100*b.timeLeft/g).toFixed(2)),b},focus:function(a){return"function"==typeof a?this.on("focus",a):(l="active",b.fire(this,"focus"),b.fire(this,"wakeup"),b.fire(this,"statusChanged",{status:l}))},blur:function(a){return"function"==typeof a?this.on("blur",a):(l="hidden",b.fire(this,"blur"),b.fire(this,"idle"),b.fire(this,"statusChanged",{status:l}))},idle:function(a){return"function"==typeof a?this.on("idle",a):(l="idle",b.fire(this,"idle"),b.fire(this,"statusChanged",{status:l}))},wakeup:function(a){return"function"==typeof a?this.on("wakeup",a):(l="active",b.fire(this,"wakeup"),b.fire(this,"statusChanged",{status:l}))},on:function(a,c){return j(),b.add(this,a,c)},off:function(a,c){return j(),b.remove(this,a,c)},onEvery:function(a,b){var c,d;return j(),c=!1,b&&(d=setInterval(function(){return"active"===l&&c===!1?b():void 0},1e3*a)),{stop:function(){return clearInterval(d)},pause:function(){return c=!0},resume:function(){return c=!1},code:d,callback:b}},now:function(a){return j(),l===(a||"active")}}})}).call(this);
 }, {}]}, {}, {"1":""})
 );

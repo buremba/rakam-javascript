@@ -3,10 +3,9 @@ var JSON = require('json'); // jshint ignore:line
 /*
  * Simple AJAX request object
  */
-var Request = function (url, data, headers) {
+var Request = function (url, data) {
     this.url = url;
     this.data = data || {};
-    this.headers = headers || null;
 };
 
 function parseResponseHeaders(headerStr) {
