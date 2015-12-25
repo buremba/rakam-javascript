@@ -808,8 +808,9 @@ Rakam.prototype.removeEvents = function (maxEventId) {
 Rakam.prototype.sendEvents = function (callback) {
     if (!this._sending && !this.options.optOut && this._unsentEvents.length > 0) {
         this._sending = true;
-        var url = ('https:' === window.location.protocol ? 'https' : 'http') + '://' +
-            this.options.apiEndpoint + this.options.apiEndpointPath;
+        //var url = ('https:' === window.location.protocol ? 'https' : 'http') + '://' +
+        //    this.options.apiEndpoint + this.options.apiEndpointPath;
+        var url = this.options.apiEndpoint + this.options.apiEndpointPath;
 
         // Determine how many events to send and track the maximum event id sent in this batch.
         var numEvents = Math.min(this._unsentEvents.length, this.options.uploadBatchSize);
