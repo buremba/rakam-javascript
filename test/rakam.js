@@ -169,7 +169,7 @@ describe('Rakam', function () {
         it('should send api key', function () {
             rakam.logEvent('Event Type 2');
             assert.lengthOf(server.requests, 1);
-            assert.equal(JSON.parse(server.requests[0].requestBody).project, apiKey);
+            assert.equal(JSON.parse(server.requests[0].requestBody).api.project, apiKey);
         });
 
         //it('should send api version', function () {

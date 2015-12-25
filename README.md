@@ -9,20 +9,12 @@ Rakam-Javascript
 
         <script type="text/javascript">
           (function(e,t){var r=e.rakam||{};var a=t.createElement("script");a.type="text/javascript";
-          a.async=true;a.src="[YOUR_CDN]rakam-2.4.0.js";var s=t.getElementsByTagName("script")[0];
+          a.async=true;a.src="http://127.0.0.1:8080/dist/rakam-2.4.0.js";var s=t.getElementsByTagName("script")[0];
           s.parentNode.insertBefore(a,s);r._q=[];function n(e){r[e]=function(){r._q.push([e].concat(Array.prototype.slice.call(arguments,0)));
-          }}var i=["init","logEvent","setUserId","setUserProperties","getTimeOnPreviousPage","onEvent","logInlinedEvent","startTimer","getTimeOnPage","isReturningUser","setOptOut","setVersionName","setDomain","setDeviceId"];
+          }}var i=["init","logEvent","setUserId","setUserProperties","setOptOut","setVersionName","setDomain","setDeviceId","setGlobalUserProperties"];
           for(var o=0;o<i.length;o++){n(i[o])}e.rakam=r})(window,document);
 
-          rakam.init("YOUR_PROJECT_HERE", "USER_ID_HERE", {
-            apiEndpoint:"127.0.0.1:9999",
-            writeKey: "YOUR_PROJECT_WRITE_KEY",
-            includeUtm: true,
-            trackClicks: true,
-            trackForms: true,
-            includeReferrer: true
-          });
-          
+          rakam.init("YOUR_API_KEY_HERE");
         </script>
 
 3. Replace `YOUR_PROJECT_HERE` with the API Key given to you.
