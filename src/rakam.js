@@ -713,13 +713,12 @@ Rakam.prototype.sendEvents = function (callback) {
         var api = {
             "uploadTime": uploadTime,
             "apiVersion": API_VERSION,
-            "writeKey": this.options.writeKey,
-            "project": this.options.apiKey
+            "writeKey": this.options.writeKey
             //"checksum": md5(API_VERSION + JSON.stringify(events) + uploadTime).toUpperCase()
         };
 
         var scope = this;
-        new Request(url, {api: api, events: events}).send(function (status, response, headers) {
+        new Request(url, {api: api, "project": this.options.apiKey, events: events}).send(function (status, response, headers) {
             scope._sending = false;
             try {
                 if (status === 200 && response === '1') {
