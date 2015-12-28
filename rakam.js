@@ -866,7 +866,7 @@ Rakam.prototype.sendEvents = function (callback) {
                 log('failed upload');
             }
 
-            if (scope.options.eventCallbacks !== null) {
+            if (scope.options.eventCallbacks) {
                 try {
                     for (var i = 0; i < scope.options.eventCallbacks.length; i++) {
                         scope.options.eventCallbacks[i](status, response, headers);
