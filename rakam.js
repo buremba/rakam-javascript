@@ -416,7 +416,7 @@ Rakam.prototype.startTimer = function (saveOnClose) {
         }
         var _this = this;
         window.onbeforeunload = function (e) {
-            if(func !== null) {
+            if(func) {
                 func(e);
             }
             Cookie.set("_rakam_time", _this.getTimeOnPage());
