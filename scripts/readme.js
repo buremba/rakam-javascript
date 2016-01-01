@@ -11,14 +11,14 @@ var snippet = fs.readFileSync(snippetFilename, 'utf-8');
 var script =
 '        <script type="text/javascript">\n' +
 snippet.trim().replace(/^/gm, '          ') + '\n\n' +
-'          rakam.init("YOUR_PROJECT_HERE", "USER_ID_HERE", { \
-                apiEndpoint:"127.0.0.1:9999", \
-                    writeKey: "YOUR_PROJECT_WRITE_KEY", \
-                    includeUtm: true, \
-                    trackClicks: true, \
-                    trackForms: true, \
-                    includeReferrer: true \
-            });\n' +
+'          rakam.init("YOUR_PROJECT_HERE", "USER_ID_HERE", { \n\
+                apiEndpoint:"127.0.0.1:9999", \n\
+                writeKey: "YOUR_PROJECT_WRITE_KEY", \n\
+                includeUtm: true, \n\
+                trackClicks: true, \n\
+                trackForms: true, \n\
+                includeReferrer: true \n\
+           });\n' +
                 '        </script>';
 
 var updated = readme.replace(/ +<script[\s\S]+?script>/, script);

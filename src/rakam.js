@@ -304,10 +304,11 @@ Rakam.prototype.startTimer = function (saveOnClose) {
         }
         var _this = this;
         window.onbeforeunload = function (e) {
+            Cookie.set("_rakam_time", _this.getTimeOnPage());
+
             if(func) {
                 func(e);
             }
-            Cookie.set("_rakam_time", _this.getTimeOnPage());
         };
     }
 };
@@ -538,7 +539,11 @@ Rakam.prototype.setUserId = function (userId) {
 };
 
 Rakam.prototype.getUserId = function () {
-    return this._eventId > 0 ? (this.options.userId || this.options.deviceId) : null;
+    return this._eventId > 0 ? this.options.userId : null;
+};
+
+Rakam.prototype.getDeviceId = function () {
+    return this._eventId > 0 ? this.options.deviceId : null;
 };
 
 Rakam.prototype.setOptOut = function (enable) {
@@ -700,9 +705,7 @@ Rakam.prototype.removeEvents = function (maxEventId) {
 Rakam.prototype.sendEvents = function (callback) {
     if (!this._sending && !this.options.optOut && this._unsentEvents.length > 0) {
         this._sending = true;
-        //var url = ('https:' === window.location.protocol ? 'https' : 'http') + '://' +
-        //    this.options.apiEndpoint + this.options.apiEndpointPath;
-        var url = this.options.apiEndpoint + this.options.apiEndpointPath;
+        var url = ('https:' === window.location.protocol ? 'https' : 'http') + '://' + this.options.apiEndpoint + this.options.apiEndpointPath;
 
         // Determine how many events to send and track the maximum event id sent in this batch.
         var numEvents = Math.min(this._unsentEvents.length, this.options.uploadBatchSize);

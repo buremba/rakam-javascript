@@ -156,7 +156,7 @@ describe('Rakam', function () {
         it('should send request', function () {
             rakam.logEvent('Event Type 1');
             assert.lengthOf(server.requests, 1);
-            assert.equal(server.requests[0].url, 'api.rakam.com/event/batch');
+            assert.equal(server.requests[0].url, 'http://api.rakam.com/event/batch');
             assert.equal(server.requests[0].method, 'POST');
             assert.equal(server.requests[0].async, true);
         });

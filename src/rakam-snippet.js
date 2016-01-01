@@ -12,7 +12,7 @@
       rakam._q.push([fn].concat(Array.prototype.slice.call(arguments, 0)));
     };
   }
-  var funcs = ["init", "logEvent", "logInlinedEvent", "setUserId", "getUserId", "setUserProperties",
+  var funcs = ["init", "logEvent", "logInlinedEvent", "setUserId", "getUserId", "getDeviceId", "setUserProperties",
                "setOptOut", "setVersionName", "setDomain", "setDeviceId",
                "onEvent", "getTimeOnPreviousPage", "getTimeOnPage", "startTimer", "isReturningUser",
                "setGlobalUserProperties"];
