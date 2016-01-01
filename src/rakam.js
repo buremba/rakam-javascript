@@ -575,9 +575,12 @@ Rakam.prototype.setUserProperties = function (userProperties, opt_replace, event
             this.options.userProperties = object.merge(this.options.userProperties || {}, userProperties);
         }
         this.options.userPropertiesForEvent = this.options.userPropertiesForEvent || [];
-        for (var i=0; i < eventProps.length; i++) {
-            this.options.userPropertiesForEvent.push(eventProps[i]);
+        if(eventProps && eventProps.length > 0) {
+            for (var i=0; i < eventProps.length; i++) {
+                this.options.userPropertiesForEvent.push(eventProps[i]);
+            }
         }
+
         _saveCookieData(this);
         log('set userProperties=' + JSON.stringify(userProperties));
     } catch (e) {
