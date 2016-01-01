@@ -538,7 +538,7 @@ Rakam.prototype.setUserId = function (userId) {
 };
 
 Rakam.prototype.getUserId = function () {
-    return this._eventId > 0 ? this.options.userId : null;
+    return this._eventId > 0 ? (this.options.userId || this.options.deviceId) : null;
 };
 
 Rakam.prototype.setOptOut = function (enable) {

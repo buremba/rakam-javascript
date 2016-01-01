@@ -14,14 +14,7 @@ Rakam-Javascript
           }}var i=["init","logEvent","logInlinedEvent","setUserId","getUserId","setUserProperties","setOptOut","setVersionName","setDomain","setDeviceId","onEvent","getTimeOnPreviousPage","getTimeOnPage","startTimer","isReturningUser","setGlobalUserProperties"];
           for(var o=0;o<i.length;o++){a(i[o])}e.rakam=r})(window,document);
 
-          rakam.init("YOUR_PROJECT_HERE", "USER_ID_HERE", {
-                apiEndpoint:"127.0.0.1:9999",
-                writeKey: "YOUR_PROJECT_WRITE_KEY",
-                includeUtm: true,
-                trackClicks: true,
-                trackForms: true,
-                includeReferrer: true
-          });
+          rakam.init("YOUR_PROJECT_HERE", "USER_ID_HERE", {                 apiEndpoint:"127.0.0.1:9999",                     writeKey: "YOUR_PROJECT_WRITE_KEY",                     includeUtm: true,                     trackClicks: true,                     trackForms: true,                     includeReferrer: true             });
         </script>
 
 3. Replace `YOUR_PROJECT_HERE` with the API Key given to you.
