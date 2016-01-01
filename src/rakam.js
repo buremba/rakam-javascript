@@ -132,7 +132,7 @@ Rakam.prototype.init = function (apiKey, opt_userId, opt_config, callback) {
 
         this.options.deviceId = (opt_config && opt_config.deviceId !== undefined &&
         opt_config.deviceId !== null && opt_config.deviceId) ||
-        this.options.deviceId || UUID();
+        this.options.deviceId || UUID().replace(/\-/g, "").substring(0, 16);
         this.options.userId = (opt_userId !== undefined && opt_userId !== null && opt_userId) || this.options.userId || null;
         _saveCookieData(this);
 
@@ -537,6 +537,10 @@ Rakam.prototype.setUserId = function (userId) {
     }
 };
 
+Rakam.prototype.getUserId = function () {
+    return this._eventId > 0 ? this.options.userId : null;
+};
+
 Rakam.prototype.setOptOut = function (enable) {
     try {
         this.options.optOut = enable;
@@ -630,7 +634,7 @@ Rakam.prototype._logEvent = function (eventType, eventProperties, apiProperties,
             properties: {
                 device_id: this.options.deviceId,
                 _user: this.options.userId || this.options.deviceId,
-                _time: eventTime/1000,
+                _time: parseInt((eventTime/1000)*1000),
                 session_id: this._sessionId || -1,
                 platform: this.options.platform,
                 language: this.options.language
