@@ -366,14 +366,16 @@ Rakam.prototype.logInlinedEvent = function (collection, extraProperties, callbac
             if (element.tagName === 'INPUT') {
                 value = element.value;
             } else if (element.tagName === 'SELECT') {
-                var attr = element.getAttribute('rakam-attribute-value');
                 var option = element.options[element.selectedIndex];
-                if(attr === "text") {
-                    value = option.value !== null && option.value !== "" ? option.text : null;
-                } else {
-                    value = option.value;
-                }
+                if(option.value !== null && option.value !== "") {
+                    var attr = element.getAttribute('rakam-attribute-value');
 
+                    if(attr !== "value") {
+                        value = option.value;
+                    } else {
+                        value = option.text;
+                    }
+                }
             } else if (element.innerText) {
                 value = element.innerText.replace(/^\s+|\s+$/g, '');
             } else {
@@ -754,7 +756,8 @@ Rakam.prototype._logEvent = function (eventType, eventProperties, apiProperties,
             properties: {
                 device_id: this.options.deviceId,
                 _user: this.options.userId || this.options.deviceId,
-                _time: parseInt((eventTime/1000)*1000),
+                // use seconds
+                _time: parseInt(eventTime/1000)*1000,
                 session_id: this._sessionId || -1,
                 platform: this.options.platform,
                 language: this.options.language
