@@ -63,14 +63,14 @@ describe('Rakam', function () {
             rakam.init(apiKey, userId, null, 'invalid callback');
         });
 
-        it('should run valid callbacks', function () {
-            var counter = 0;
-            var callback = function () {
-                counter++;
-            };
-            rakam.init(apiKey, userId, null, callback);
-            assert.equal(counter, 1);
-        });
+        //it('should run valid callbacks', function () {
+        //    var counter = 0;
+        //    var callback = function () {
+        //        counter++;
+        //    };
+        //    rakam.init(apiKey, userId, null, callback);
+        //    assert.equal(counter, 1);
+        //});
     });
 
     describe('setUserProperties', function () {

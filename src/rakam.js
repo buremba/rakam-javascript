@@ -186,7 +186,9 @@ Rakam.prototype.init = function (apiKey, opt_userId, opt_config, callback) {
     }
 
     if (callback && typeof(callback) === 'function') {
-        callback();
+        setTimeout(function() {
+            callback();
+        }, 1);
     }
 };
 
@@ -784,8 +786,10 @@ Rakam.prototype.sendEvents = function (callback) {
 };
 
 Rakam.prototype.onload = function (callback) {
-    callback();
-    log("executed callback", callback);
+    setTimeout(function() {
+        callback();
+        log("executed callback", callback);
+    }, 1);
 };
 
 
