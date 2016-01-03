@@ -307,11 +307,6 @@ Rakam.prototype.onEvent = function (callback) {
     this.options.eventCallbacks.push(callback);
 };
 
-Rakam.prototype.onload = function (callback) {
-    if(callback !== null) {
-        callback();
-    }
-};
 
 var transformValue = function(attribute, value, type) {
     if(type !== null) {
@@ -898,6 +893,11 @@ Rakam.prototype.sendEvents = function (callback) {
     } else if (callback) {
         callback(0, 'No request sent');
     }
+};
+
+Rakam.prototype.onload = function (callback) {
+    callback();
+    log("executed callback", callback);
 };
 
 
