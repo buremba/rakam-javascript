@@ -8,10 +8,10 @@ Rakam-Javascript
 2. On every page that uses analytics, paste the following Javascript code between the `<head>` and `</head>` tags:
 
         <script type="text/javascript">
-          (function(e,t){var r=e.rakam||{};var s=t.createElement("script");s.type="text/javascript";
-          s.async=true;s.src="http://127.0.0.1:8080/dist/rakam-2.4.0.js";var n=t.getElementsByTagName("script")[0];
-          n.parentNode.insertBefore(s,n);r._q=[];function a(e){r[e]=function(){r._q.push([e].concat(Array.prototype.slice.call(arguments,0)));
-          }}var i=["init","logEvent","logInlinedEvent","setUserId","getUserId","getDeviceId","setUserProperties","setOptOut","setVersionName","setDomain","setDeviceId","onEvent","getTimeOnPreviousPage","getTimeOnPage","startTimer","isReturningUser","setGlobalUserProperties"];
+          (function(e,t){var r=e.rakam||{};var n=t.createElement("script");n.type="text/javascript";
+          n.async=true;n.src="http://127.0.0.1:8080/dist/rakam-2.4.0.js";var s=t.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(n,s);r._q=[];function a(e){r[e]=function(){r._q.push([e].concat(Array.prototype.slice.call(arguments,0)));
+          }}var i=["init","logEvent","logInlinedEvent","setUserId","getUserId","getDeviceId","setUserProperties","setOptOut","setVersionName","setDomain","setDeviceId","onload","onEvent","getTimeOnPreviousPage","getTimeOnPage","startTimer","isReturningUser","setGlobalUserProperties"];
           for(var o=0;o<i.length;o++){a(i[o])}e.rakam=r})(window,document);
 
           rakam.init("YOUR_PROJECT_HERE", "USER_ID_HERE", { 

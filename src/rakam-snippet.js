@@ -13,7 +13,7 @@
     };
   }
   var funcs = ["init", "logEvent", "logInlinedEvent", "setUserId", "getUserId", "getDeviceId", "setUserProperties",
-               "setOptOut", "setVersionName", "setDomain", "setDeviceId",
+               "setOptOut", "setVersionName", "setDomain", "setDeviceId", "onload",
                "onEvent", "getTimeOnPreviousPage", "getTimeOnPage", "startTimer", "isReturningUser",
                "setGlobalUserProperties"];
   for (var i = 0; i < funcs.length; i++) {
