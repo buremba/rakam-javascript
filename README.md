@@ -42,28 +42,23 @@ You can attach additional data to any event by passing a Javascript object as th
 
 # Setting User Properties #
 
-To add properties that are tracked in every event, you can set properties for a user:
+To add properties to a user you can use the User API.
 
-    var userProperties = {"age": 30};
-    userProperties.key = "value";
-    // drop previous use attributes
-    var override = false;
-    // list of user attributes that will be included in events
-    var eventAttributes = ["age"];
-    rakam.setUserProperties(userProperties, override, eventAttributes);
+    rakam.User.set({'property', 'value'}, callback);
+
+Currently, we have `set`, `setOnce`, `increment` and `unset` methods in User API.
+
+# Super properties #
+
+If you want to track extra attributes in all the events that are occurred for a given user, you can use super properties. They're usually handful for tracking user properties in events.
+
+    rakam.setSuperProperties({user_gender: 'male'}, replaceExisting);
 
 # Settings Custom User IDs #
 
 If your app has its own login system that you want to track users with, you can call `setUserId` at any time:
 
     rakam.setUserId("USER_ID_HERE");
-
-# User API #
-
-You can set user properties via this command:
-    rakam.User.set({'property', 'value'}, callback);
-
-Currently, we have `set`, `setOnce`, `increment` and `unset` methods in User API.
 
 A user's data will be merged on the backend so that any events up to that point from the same browser will be tracked under the same user.
 
