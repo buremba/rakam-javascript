@@ -6,10 +6,13 @@
 
         <script type="text/javascript">
           (function(e,t){var r=e.rakam||{};var n=t.createElement("script");n.type="text/javascript";
-          n.async=true;n.src="http://127.0.0.1:8080/dist/rakam-2.4.0.js";var a=t.getElementsByTagName("script")[0];
-          a.parentNode.insertBefore(n,a);r._q=[];function s(e){r[e]=function(){r._q.push([e].concat(Array.prototype.slice.call(arguments,0)));
-          }}var i=["init","logEvent","logInlinedEvent","setUserId","getUserId","getDeviceId","setSuperProperties","setOptOut","setVersionName","setDomain","setDeviceId","onload","onEvent","getTimeOnPreviousPage","getTimeOnPage","startTimer","isReturningUser","User"];
-          for(var o=0;o<i.length;o++){s(i[o])}e.rakam=r})(window,document);
+          n.async=true;n.src="http://127.0.0.1:8080/dist/rakam-2.4.0.js";var s=t.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(n,s);var a=function(){this._q=[];return this};function i(e){
+          a.prototype[e]=function(){this._q.push([e].concat(Array.prototype.slice.call(arguments,0)));
+          return this}}var o=["set","setOnce","increment","unset"];for(var c=0;c<o.length;c++){
+          i(o[c])}r._q=[];r.User=a;function u(e){r[e]=function(){r._q.push([e].concat(Array.prototype.slice.call(arguments,0)));
+          }}var p=["init","logEvent","logInlinedEvent","setUserId","getUserId","getDeviceId","setSuperProperties","setOptOut","setVersionName","setDomain","setDeviceId","onload","onEvent","getTimeOnPreviousPage","getTimeOnPage","startTimer","isReturningUser","User"];
+          for(var g=0;g<p.length;g++){u(p[g])}e.rakam=r})(window,document);
 
           rakam.init("YOUR_PROJECT_HERE", "USER_ID_HERE", { 
                 apiEndpoint:"127.0.0.1:9999", 
