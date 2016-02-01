@@ -7,6 +7,7 @@ var object = require('object');
 var Request = require('./xhr');
 var UUID = require('./uuid');
 var version = require('./version');
+var User = require('./user');
 var ifvisible = require('../node_modules/ifvisible.js/src/ifvisible.min.js');
 
 var log = function (s) {
@@ -28,7 +29,7 @@ if (!Array.prototype.indexOf) {
 var API_VERSION = 1;
 var DEFAULT_OPTIONS = {
     apiEndpoint: 'api.rakam.com',
-    apiEndpointPath: '/event/batch',
+    eventEndpointPath: '/event/batch',
     writeKey: undefined,
     cookieExpiration: 365 * 10,
     cookieName: 'rakam_id',
@@ -77,7 +78,6 @@ Rakam.prototype._newSession = false;
  * opt_config Configuration options
  *   - saveEvents (boolean) Whether to save events to local storage. Defaults to true.
  *   - includeUtm (boolean) Whether to send utm parameters with events. Defaults to false.
- *   - includeReferrer (boolean) Whether to send referrer info with events. Defaults to false.
  */
 Rakam.prototype.init = function (apiKey, opt_userId, opt_config, callback) {
     try {
@@ -85,6 +85,13 @@ Rakam.prototype.init = function (apiKey, opt_userId, opt_config, callback) {
             throw new Error("apiKey is null");
         }
         this.options.apiKey = apiKey;
+
+        var user = new User();
+        user.init(this.options);
+        this.User = function() {
+            return user;
+        };
+
         if (opt_config) {
             this.options.apiEndpoint = opt_config.apiEndpoint || this.options.apiEndpoint;
 
@@ -106,9 +113,6 @@ Rakam.prototype.init = function (apiKey, opt_userId, opt_config, callback) {
             if (opt_config.trackForms !== undefined) {
                 this.options.trackForms = !!opt_config.trackForms;
             }
-            if (opt_config.includeReferrer !== undefined) {
-                this.options.includeReferrer = !!opt_config.includeReferrer;
-            }
             if (opt_config.batchEvents !== undefined) {
                 this.options.batchEvents = !!opt_config.batchEvents;
             }
@@ -119,7 +123,7 @@ Rakam.prototype.init = function (apiKey, opt_userId, opt_config, callback) {
             this.options.eventUploadThreshold = opt_config.eventUploadThreshold || this.options.eventUploadThreshold;
             this.options.savedMaxCount = opt_config.savedMaxCount || this.options.savedMaxCount;
             this.options.eventUploadPeriodMillis = opt_config.eventUploadPeriodMillis || this.options.eventUploadPeriodMillis;
-            this.options.userPropertiesForEvent = opt_config.userPropertiesForEvent || [];
+            this.options.superProperties = opt_config.superProperties || [];
         }
 
         Cookie.options({
@@ -360,11 +364,8 @@ var _loadCookieData = function (scope) {
         if (cookieData.userId) {
             scope.options.userId = cookieData.userId;
         }
-        if (cookieData.userProps) {
-            scope.options.userProperties = cookieData.userProps;
-        }
-        if (cookieData.eventProps) {
-            scope.options.userPropertiesForEvent = cookieData.eventProps;
+        if (cookieData.superProps) {
+            scope.options.superProperties = cookieData.superProps;
         }
         if (cookieData.optOut !== undefined) {
             scope.options.optOut = cookieData.optOut;
@@ -376,8 +377,7 @@ var _saveCookieData = function (scope) {
     Cookie.set(scope.options.cookieName, {
         deviceId: scope.options.deviceId,
         userId: scope.options.userId,
-        userProps: scope.options.userProperties,
-        eventProps: scope.options.userPropertiesForEvent,
+        superProps: scope.options.superProperties,
         optOut: scope.options.optOut
     });
 };
@@ -416,9 +416,9 @@ Rakam.prototype._initUtmData = function (queryParams, cookieParams) {
     this._utmProperties = Rakam._getUtmData(cookieParams, queryParams);
     var utmData = ['utm_campaign', 'utm_content', 'utm_medium', 'utm_source', 'utm_term'];
 
-    this.options.userPropertiesForEvent = this.options.userPropertiesForEvent || [];
+    this.options.superProperties = this.options.superProperties || [];
     for (var i=0; i < utmData.length; i++) {
-        this.options.userPropertiesForEvent.push(utmData[i]);
+        this.options.superProperties.push(utmData[i]);
     }
 };
 
@@ -507,10 +507,6 @@ Rakam.prototype._initTrackClicks = function () {
     });
 };
 
-Rakam.prototype._getReferrer = function () {
-    return document.referrer;
-};
-
 Rakam.prototype.saveEvents = function () {
     try {
         localStorage.setItem(this.options.unsentKey, JSON.stringify(this._unsentEvents));
@@ -572,22 +568,20 @@ Rakam.prototype.setDeviceId = function (deviceId) {
     }
 };
 
-Rakam.prototype.setUserProperties = function (userProperties, opt_replace, eventProps) {
+Rakam.prototype.setSuperProperties = function (eventProps, opt_replace) {
     try {
-        if (opt_replace) {
-            this.options.userProperties = userProperties;
-        } else {
-            this.options.userProperties = object.merge(this.options.userProperties || {}, userProperties);
-        }
-        this.options.userPropertiesForEvent = this.options.userPropertiesForEvent || [];
-        if(eventProps && eventProps.length > 0) {
-            for (var i=0; i < eventProps.length; i++) {
-                this.options.userPropertiesForEvent.push(eventProps[i]);
+        this.options.superProperties = this.options.superProperties || {};
+        for (var property in eventProps) {
+            if (eventProps.hasOwnProperty(property)) {
+                if(opt_replace === false && this.options.superProperties[property] !== undefined) {
+                    continue;
+                }
+                this.options.superProperties[property] = eventProps[property];
             }
         }
 
         _saveCookieData(this);
-        log('set userProperties=' + JSON.stringify(userProperties));
+        log('set super properties=' + JSON.stringify(eventProps));
     } catch (e) {
         log(e);
     }
@@ -627,21 +621,12 @@ Rakam.prototype._logEvent = function (eventType, eventProperties, apiProperties,
         localStorage.setItem(LocalStorageKeys.LAST_EVENT_TIME, this._lastEventTime);
         localStorage.setItem(LocalStorageKeys.LAST_ID, eventId);
 
-        var userProperties = {};
-        object.merge(userProperties, this.options.userProperties || {});
-
-        // Add the utm properties, if any, onto the user properties.
-        object.merge(userProperties, this._utmProperties);
-
-        // Add referral info onto the user properties
-        if (this.options.includeReferrer) {
-            object.merge(userProperties, {
-                'referrer': this._getReferrer()
-            });
-        }
-
         apiProperties = apiProperties || {};
         eventProperties = eventProperties || {};
+
+        // Add the utm properties, if any, onto the user properties.
+        object.merge(eventProperties, this._utmProperties);
+
         var event = {
             collection: eventType,
             properties: {
@@ -656,16 +641,7 @@ Rakam.prototype._logEvent = function (eventType, eventProperties, apiProperties,
             }
         };
 
-        //if (typeof window.performance === 'object' && typeof window.performance.timing === 'object') {
-        //    event.properties.load_time = window.performance.timing.domContentLoadedEventEnd - window.performance.timing.navigationStart;
-        //}
-
-        for (var key in userProperties) {
-            if (userProperties.hasOwnProperty(key) && indexOf.call(this.options.userPropertiesForEvent, key) > -1) {
-                event.properties["user_" + key] = userProperties[key];
-            }
-        }
-
+        object.merge(event.properties, this.options.superProperties);
         object.merge(event.properties, apiProperties);
         object.merge(event.properties, eventProperties);
 
@@ -714,7 +690,7 @@ Rakam.prototype.removeEvents = function (maxEventId) {
 Rakam.prototype.sendEvents = function (callback) {
     if (!this._sending && !this.options.optOut && this._unsentEvents.length > 0) {
         this._sending = true;
-        var url = ('https:' === window.location.protocol ? 'https' : 'http') + '://' + this.options.apiEndpoint + this.options.apiEndpointPath;
+        var url = ('https:' === window.location.protocol ? 'https' : 'http') + '://' + this.options.apiEndpoint + this.options.eventEndpointPath;
 
         // Determine how many events to send and track the maximum event id sent in this batch.
         var numEvents = Math.min(this._unsentEvents.length, this.options.uploadBatchSize);

@@ -12,10 +12,10 @@
       rakam._q.push([fn].concat(Array.prototype.slice.call(arguments, 0)));
     };
   }
-  var funcs = ["init", "logEvent", "logInlinedEvent", "setUserId", "getUserId", "getDeviceId", "setUserProperties",
+  var funcs = ["init", "logEvent", "logInlinedEvent", "setUserId", "getUserId", "getDeviceId", "setSuperProperties",
                "setOptOut", "setVersionName", "setDomain", "setDeviceId", "onload",
                "onEvent", "getTimeOnPreviousPage", "getTimeOnPage", "startTimer", "isReturningUser",
-               "setGlobalUserProperties"];
+               "User"];
   for (var i = 0; i < funcs.length; i++) {
     proxy(funcs[i]);
   }

@@ -1,18 +1,15 @@
 [![Build Status](https://travis-ci.org/buremba/rakam-javascript.svg?branch=master)](https://travis-ci.org/buremba/rakam-javascript)
 
-Rakam-Javascript
-====================
-
 # Setup #
 1. If you haven't already, go to http://rakam.com and register for an account. You will receive an API Key.
 2. On every page that uses analytics, paste the following Javascript code between the `<head>` and `</head>` tags:
 
         <script type="text/javascript">
           (function(e,t){var r=e.rakam||{};var n=t.createElement("script");n.type="text/javascript";
-          n.async=true;n.src="http://127.0.0.1:8080/dist/rakam-2.4.0.js";var s=t.getElementsByTagName("script")[0];
-          s.parentNode.insertBefore(n,s);r._q=[];function a(e){r[e]=function(){r._q.push([e].concat(Array.prototype.slice.call(arguments,0)));
-          }}var i=["init","logEvent","logInlinedEvent","setUserId","getUserId","getDeviceId","setUserProperties","setOptOut","setVersionName","setDomain","setDeviceId","onload","onEvent","getTimeOnPreviousPage","getTimeOnPage","startTimer","isReturningUser","setGlobalUserProperties"];
-          for(var o=0;o<i.length;o++){a(i[o])}e.rakam=r})(window,document);
+          n.async=true;n.src="http://127.0.0.1:8080/dist/rakam-2.4.0.js";var a=t.getElementsByTagName("script")[0];
+          a.parentNode.insertBefore(n,a);r._q=[];function s(e){r[e]=function(){r._q.push([e].concat(Array.prototype.slice.call(arguments,0)));
+          }}var i=["init","logEvent","logInlinedEvent","setUserId","getUserId","getDeviceId","setSuperProperties","setOptOut","setVersionName","setDomain","setDeviceId","onload","onEvent","getTimeOnPreviousPage","getTimeOnPage","startTimer","isReturningUser","User"];
+          for(var o=0;o<i.length;o++){s(i[o])}e.rakam=r})(window,document);
 
           rakam.init("YOUR_PROJECT_HERE", "USER_ID_HERE", { 
                 apiEndpoint:"127.0.0.1:9999", 
@@ -60,6 +57,13 @@ To add properties that are tracked in every event, you can set properties for a 
 If your app has its own login system that you want to track users with, you can call `setUserId` at any time:
 
     rakam.setUserId("USER_ID_HERE");
+
+# User API #
+
+You can set user properties via this command:
+    rakam.User.set({'property', 'value'}, callback);
+
+Currently, we have `set`, `setOnce`, `increment` and `unset` methods in User API.
 
 A user's data will be merged on the backend so that any events up to that point from the same browser will be tracked under the same user.
 

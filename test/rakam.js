@@ -83,28 +83,54 @@ describe('Rakam', function () {
         });
 
         it('should set user properties', function () {
-            rakam.setUserProperties({'prop': true});
-            assert.propertyVal(rakam.options.userProperties, 'prop', true);
+            rakam.User().set({'prop': true});
+            server.respondWith("1");
+
+            assert.equal(server.requests[0].url, 'http://api.rakam.com/user/set_properties');
+            assert.equal(server.requests[0].method, 'POST');
+            assert.equal(server.requests[0].async, true);
+            assert.deepEqual(JSON.parse(server.requests[0].requestBody).properties, {'prop': true});
         });
 
-        it('should merge user properties by default', function () {
-            rakam.setUserProperties({'prop': true, 'prop2': true});
-            assert.propertyVal(rakam.options.userProperties, 'prop', true);
+        it('should set once user properties', function () {
+            rakam.User().setOnce({'prop': true});
+            server.respondWith("1");
 
-            rakam.setUserProperties({'prop': false, 'prop3': false});
-            assert.propertyVal(rakam.options.userProperties, 'prop', false);
-            assert.propertyVal(rakam.options.userProperties, 'prop2', true);
-            assert.propertyVal(rakam.options.userProperties, 'prop3', false);
+            assert.equal(server.requests[0].url, 'http://api.rakam.com/user/set_properties_once');
+            assert.equal(server.requests[0].method, 'POST');
+            assert.equal(server.requests[0].async, true);
+            assert.deepEqual(JSON.parse(server.requests[0].requestBody).properties, {'prop': true});
         });
 
-        it('should allow overwriting user properties', function () {
-            rakam.setUserProperties({'prop': true, 'prop2': true});
-            assert.propertyVal(rakam.options.userProperties, 'prop', true);
+        it('should increment user properties', function () {
+            rakam.User().increment('prop', 1);
+            server.respondWith("1");
 
-            rakam.setUserProperties({'prop': false, 'prop3': false}, true);
-            assert.notProperty(rakam.options.userProperties, 'prop2');
-            assert.propertyVal(rakam.options.userProperties, 'prop', false);
-            assert.propertyVal(rakam.options.userProperties, 'prop3', false);
+            assert.equal(server.requests[0].url, 'http://api.rakam.com/user/increment_property');
+            assert.equal(server.requests[0].method, 'POST');
+            assert.equal(server.requests[0].async, true);
+            assert.deepEqual(JSON.parse(server.requests[0].requestBody).property, 'prop');
+            assert.deepEqual(JSON.parse(server.requests[0].requestBody).value, 1);
+        });
+
+        it('should unset user properties when propery is not array', function () {
+            rakam.User().unset('prop');
+            server.respondWith("1");
+
+            assert.equal(server.requests[0].url, 'http://api.rakam.com/user/unset_properties');
+            assert.equal(server.requests[0].method, 'POST');
+            assert.equal(server.requests[0].async, true);
+            assert.deepEqual(JSON.parse(server.requests[0].requestBody).properties, ['prop']);
+        });
+
+        it('should unset user properties', function () {
+            rakam.User().unset(['prop']);
+            server.respondWith("1");
+
+            assert.equal(server.requests[0].url, 'http://api.rakam.com/user/unset_properties');
+            assert.equal(server.requests[0].method, 'POST');
+            assert.equal(server.requests[0].async, true);
+            assert.deepEqual(JSON.parse(server.requests[0].requestBody).properties, ['prop']);
         });
     });
 
@@ -701,15 +727,15 @@ describe('Rakam', function () {
             reset();
             rakam.init(apiKey, undefined, {});
 
-            rakam.setUserProperties({user_prop: true});
+            rakam.setSuperProperties({user_prop: true});
             rakam.logEvent('UTM Test Event', {});
             assert.lengthOf(server.requests, 1);
             var events = JSON.parse(server.requests[0].requestBody);
-            assert.equal(events.events[0].properties.user_utm_campaign, undefined);
-            assert.equal(events.events[0].properties.user_utm_content, undefined);
-            assert.equal(events.events[0].properties.user_utm_medium, undefined);
-            assert.equal(events.events[0].properties.user_utm_source, undefined);
-            assert.equal(events.events[0].properties.user_utm_term, undefined);
+            assert.equal(events.events[0].properties.utm_campaign, undefined);
+            assert.equal(events.events[0].properties.utm_content, undefined);
+            assert.equal(events.events[0].properties.utm_medium, undefined);
+            assert.equal(events.events[0].properties.utm_source, undefined);
+            assert.equal(events.events[0].properties.utm_term, undefined);
         });
 
         it('should send utm data when the includeUtm flag is true', function () {
@@ -721,8 +747,8 @@ describe('Rakam', function () {
 
             assert.lengthOf(server.requests, 1);
             var events = JSON.parse(server.requests[0].requestBody);
-            assert.equal(events.events[0].properties.user_utm_campaign, 'new');
-            assert.equal(events.events[0].properties.user_utm_content, 'top');
+            assert.equal(events.events[0].properties.utm_campaign, 'new');
+            assert.equal(events.events[0].properties.utm_content, 'top');
         });
 
         it('should add utm params to the user properties', function () {
@@ -731,17 +757,17 @@ describe('Rakam', function () {
             var utmParams = '?utm_source=rakam&utm_medium=email&utm_term=terms';
             rakam._initUtmData(utmParams);
 
-            rakam.setUserProperties({prop: true}, true, ['prop']);
+            rakam.setSuperProperties({prop: true});
             rakam.logEvent('UTM Test Event', {});
 
             assert.lengthOf(server.requests, 1);
             var events = JSON.parse(server.requests[0].requestBody);
-            assert.equal(events.events[0].properties.user_prop, true);
-            assert.equal(events.events[0].properties.user_utm_campaign, 'new');
-            assert.equal(events.events[0].properties.user_utm_content, 'top');
-            assert.equal(events.events[0].properties.user_utm_medium, 'email');
-            assert.equal(events.events[0].properties.user_utm_source, 'rakam');
-            assert.equal(events.events[0].properties.user_utm_term, 'terms');
+            assert.equal(events.events[0].properties.prop, true);
+            assert.equal(events.events[0].properties.utm_campaign, 'new');
+            assert.equal(events.events[0].properties.utm_content, 'top');
+            assert.equal(events.events[0].properties.utm_medium, 'email');
+            assert.equal(events.events[0].properties.utm_source, 'rakam');
+            assert.equal(events.events[0].properties.utm_term, 'terms');
         });
 
         it('should get utm params from the query string', function () {
@@ -784,51 +810,6 @@ describe('Rakam', function () {
                 utm_term: 'terms'
             });
         });
-    });
-
-    describe('gatherReferrer', function () {
-        beforeEach(function () {
-            rakam.init(apiKey);
-            sinon.stub(rakam, '_getReferrer').returns('https://rakam.com/contact');
-        });
-
-        afterEach(function () {
-            reset();
-        });
-
-        it('should not send referrer data when the includeReferrer flag is false', function () {
-            rakam.init(apiKey, undefined, {});
-
-            rakam.setUserProperties({user_prop: true});
-            rakam.logEvent('Referrer Test Event', {});
-            assert.lengthOf(server.requests, 1);
-            var events = JSON.parse(server.requests[0].requestBody);
-            assert.equal(events.events[0].properties.user_referrer, undefined);
-        });
-
-        //it('should send referrer data when the includeReferrer flag is true', function () {
-        //    reset();
-        //    rakam.init(apiKey, undefined, {includeReferrer: true});
-        //
-        //    rakam.logEvent('Referrer Test Event', {});
-        //
-        //    assert.lengthOf(server.requests, 1);
-        //    var events = JSON.parse(server.requests[0].requestBody);
-        //    assert.equal(events.events[0].properties.user_referrer, 'https://rakam.com/contact');
-        //});
-
-        //it('should add referrer data to the user properties', function () {
-        //    reset();
-        //    rakam.init(apiKey, undefined, {includeReferrer: true});
-        //
-        //    rakam.setUserProperties({prop: true}, true, ['prop']);
-        //    rakam.logEvent('Referrer Test Event', {});
-        //
-        //    assert.lengthOf(server.requests, 1);
-        //    var events = JSON.parse(server.requests[0].requestBody);
-        //    assert.equal(events.events[0].properties.user_referrer, 'https://rakam.com/contact');
-        //    assert.equal(events.events[0].properties.user_prop, true);
-        //});
     });
 
     describe('sessionId', function () {

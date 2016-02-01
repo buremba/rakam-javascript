@@ -1,4 +1,5 @@
 var type = require('./type');
+var Request = require('./xhr');
 
 /*
  * Wrapper for a user properties JSON object that supports operations.
@@ -6,51 +7,85 @@ var type = require('./type');
  * only the first operation will be saved, and the rest will be ignored.
  */
 
-var log = function(s) {
-    console.log('[Rakam] ' + s);
+var API_VERSION = 1;
+var log = function (s, opts) {
+    console.log('[Rakam] ' + s, opts);
 };
 
-var User = function() {
-    this.userPropertiesOperations = {};
-    this.properties = []; // keep track of keys that have been added
+var wrapCallback = function (operation, props, callback) {
+    return function (status, response, headers) {
+        log("Successfully sent " + operation, props);
+        callback(status, response, headers);
+    };
 };
 
-User.prototype.add = function(property, value) {
-    if (type(value) === 'number' || type(value) === 'string') {
-        this._addOperation('add', property, value);
-    } else {
-        log('Unsupported type for value: ' + type(value) + ', expecting number or string');
-    }
+var getUrl = function (options) {
+    return ('https:' === window.location.protocol ? 'https' : 'http') + '://' + options.apiEndpoint + "/user";
+};
+
+var User = function () {};
+
+User.prototype.init = function (options) {
+    this.options = options;
+};
+
+
+User.prototype.set = function (properties, callback) {
+    new Request(getUrl(this.options) + "/set_properties", {
+        api: {
+            "apiVersion": API_VERSION,
+            "writeKey": this.options.writeKey
+        },
+        project: this.options.apiKey,
+        user: this.options.userId || this.options.deviceId,
+        properties: properties
+    }).send(wrapCallback("set_properties", properties, callback));
+
     return this;
 };
 
-User.prototype.set = function(property, value) {
-    this._addOperation('set', property, value);
+User.prototype.setOnce = function (properties, callback) {
+    new Request(getUrl(this.options) + "/set_properties_once", {
+        api: {
+            "apiVersion": API_VERSION,
+            "writeKey": this.options.writeKey
+        },
+        user: this.options.userId || this.options.deviceId,
+        project: this.options.apiKey,
+        properties: properties
+    }).send(wrapCallback("set_properties_once", properties, callback));
+
     return this;
 };
 
-User.prototype.setOnce = function(property, value) {
-    this._addOperation('setOnce', property, value);
+
+User.prototype.increment = function (property, value, callback) {
+    new Request(getUrl(this.options) + "/increment_property", {
+        api: {
+            "apiVersion": API_VERSION,
+            "writeKey": this.options.writeKey
+        },
+        user: this.options.userId || this.options.deviceId,
+        project: this.options.apiKey,
+        property: property,
+        value: value
+    }).send(wrapCallback("increment_property", property + " by " + value, callback));
+
     return this;
 };
 
-User.prototype.unset = function(property) {
-    this._addOperation('unset', property, '-');
+User.prototype.unset = function (properties, callback) {
+    new Request(getUrl(this.options) + "/unset_properties", {
+        api: {
+            "apiVersion": API_VERSION,
+            "writeKey": this.options.writeKey
+        },
+        user: this.options.userId || this.options.deviceId,
+        project: this.options.apiKey,
+        properties: type(properties) === "array" ? properties : [properties]
+    }).send(wrapCallback("unset_properties", properties, callback));
+
     return this;
-};
-
-User.prototype._addOperation = function(operation, property, value) {
-    // check that property wasn't already used in this Identify
-    if (this.properties.indexOf(property) !== -1) {
-        log('User property "' + property + '" already used in this identify, skipping operation ' + operation);
-        return;
-    }
-
-    if (!(operation in this.userPropertiesOperations)){
-        this.userPropertiesOperations[operation] = {};
-    }
-    this.userPropertiesOperations[operation][property] = value;
-    this.properties.push(property);
 };
 
 module.exports = User;

@@ -119,6 +119,7 @@ var object = require('object');
 var Request = require('./xhr');
 var UUID = require('./uuid');
 var version = require('./version');
+var User = require('./user');
 var ifvisible = require('../node_modules/ifvisible.js/src/ifvisible.min.js');
 
 var log = function (s) {
@@ -140,7 +141,7 @@ if (!Array.prototype.indexOf) {
 var API_VERSION = 1;
 var DEFAULT_OPTIONS = {
     apiEndpoint: 'api.rakam.com',
-    apiEndpointPath: '/event/batch',
+    eventEndpointPath: '/event/batch',
     writeKey: undefined,
     cookieExpiration: 365 * 10,
     cookieName: 'rakam_id',
@@ -189,7 +190,6 @@ Rakam.prototype._newSession = false;
  * opt_config Configuration options
  *   - saveEvents (boolean) Whether to save events to local storage. Defaults to true.
  *   - includeUtm (boolean) Whether to send utm parameters with events. Defaults to false.
- *   - includeReferrer (boolean) Whether to send referrer info with events. Defaults to false.
  */
 Rakam.prototype.init = function (apiKey, opt_userId, opt_config, callback) {
     try {
@@ -197,6 +197,13 @@ Rakam.prototype.init = function (apiKey, opt_userId, opt_config, callback) {
             throw new Error("apiKey is null");
         }
         this.options.apiKey = apiKey;
+
+        var user = new User();
+        user.init(this.options);
+        this.User = function() {
+            return user;
+        };
+
         if (opt_config) {
             this.options.apiEndpoint = opt_config.apiEndpoint || this.options.apiEndpoint;
 
@@ -218,9 +225,6 @@ Rakam.prototype.init = function (apiKey, opt_userId, opt_config, callback) {
             if (opt_config.trackForms !== undefined) {
                 this.options.trackForms = !!opt_config.trackForms;
             }
-            if (opt_config.includeReferrer !== undefined) {
-                this.options.includeReferrer = !!opt_config.includeReferrer;
-            }
             if (opt_config.batchEvents !== undefined) {
                 this.options.batchEvents = !!opt_config.batchEvents;
             }
@@ -231,7 +235,7 @@ Rakam.prototype.init = function (apiKey, opt_userId, opt_config, callback) {
             this.options.eventUploadThreshold = opt_config.eventUploadThreshold || this.options.eventUploadThreshold;
             this.options.savedMaxCount = opt_config.savedMaxCount || this.options.savedMaxCount;
             this.options.eventUploadPeriodMillis = opt_config.eventUploadPeriodMillis || this.options.eventUploadPeriodMillis;
-            this.options.userPropertiesForEvent = opt_config.userPropertiesForEvent || [];
+            this.options.superProperties = opt_config.superProperties || [];
         }
 
         Cookie.options({
@@ -472,11 +476,8 @@ var _loadCookieData = function (scope) {
         if (cookieData.userId) {
             scope.options.userId = cookieData.userId;
         }
-        if (cookieData.userProps) {
-            scope.options.userProperties = cookieData.userProps;
-        }
-        if (cookieData.eventProps) {
-            scope.options.userPropertiesForEvent = cookieData.eventProps;
+        if (cookieData.superProps) {
+            scope.options.superProperties = cookieData.superProps;
         }
         if (cookieData.optOut !== undefined) {
             scope.options.optOut = cookieData.optOut;
@@ -488,8 +489,7 @@ var _saveCookieData = function (scope) {
     Cookie.set(scope.options.cookieName, {
         deviceId: scope.options.deviceId,
         userId: scope.options.userId,
-        userProps: scope.options.userProperties,
-        eventProps: scope.options.userPropertiesForEvent,
+        superProps: scope.options.superProperties,
         optOut: scope.options.optOut
     });
 };
@@ -528,9 +528,9 @@ Rakam.prototype._initUtmData = function (queryParams, cookieParams) {
     this._utmProperties = Rakam._getUtmData(cookieParams, queryParams);
     var utmData = ['utm_campaign', 'utm_content', 'utm_medium', 'utm_source', 'utm_term'];
 
-    this.options.userPropertiesForEvent = this.options.userPropertiesForEvent || [];
+    this.options.superProperties = this.options.superProperties || [];
     for (var i=0; i < utmData.length; i++) {
-        this.options.userPropertiesForEvent.push(utmData[i]);
+        this.options.superProperties.push(utmData[i]);
     }
 };
 
@@ -619,10 +619,6 @@ Rakam.prototype._initTrackClicks = function () {
     });
 };
 
-Rakam.prototype._getReferrer = function () {
-    return document.referrer;
-};
-
 Rakam.prototype.saveEvents = function () {
     try {
         localStorage.setItem(this.options.unsentKey, JSON.stringify(this._unsentEvents));
@@ -684,22 +680,20 @@ Rakam.prototype.setDeviceId = function (deviceId) {
     }
 };
 
-Rakam.prototype.setUserProperties = function (userProperties, opt_replace, eventProps) {
+Rakam.prototype.setSuperProperties = function (eventProps, opt_replace) {
     try {
-        if (opt_replace) {
-            this.options.userProperties = userProperties;
-        } else {
-            this.options.userProperties = object.merge(this.options.userProperties || {}, userProperties);
-        }
-        this.options.userPropertiesForEvent = this.options.userPropertiesForEvent || [];
-        if(eventProps && eventProps.length > 0) {
-            for (var i=0; i < eventProps.length; i++) {
-                this.options.userPropertiesForEvent.push(eventProps[i]);
+        this.options.superProperties = this.options.superProperties || {};
+        for (var property in eventProps) {
+            if (eventProps.hasOwnProperty(property)) {
+                if(opt_replace === false && this.options.superProperties[property] !== undefined) {
+                    continue;
+                }
+                this.options.superProperties[property] = eventProps[property];
             }
         }
 
         _saveCookieData(this);
-        log('set userProperties=' + JSON.stringify(userProperties));
+        log('set super properties=' + JSON.stringify(eventProps));
     } catch (e) {
         log(e);
     }
@@ -739,21 +733,12 @@ Rakam.prototype._logEvent = function (eventType, eventProperties, apiProperties,
         localStorage.setItem(LocalStorageKeys.LAST_EVENT_TIME, this._lastEventTime);
         localStorage.setItem(LocalStorageKeys.LAST_ID, eventId);
 
-        var userProperties = {};
-        object.merge(userProperties, this.options.userProperties || {});
-
-        // Add the utm properties, if any, onto the user properties.
-        object.merge(userProperties, this._utmProperties);
-
-        // Add referral info onto the user properties
-        if (this.options.includeReferrer) {
-            object.merge(userProperties, {
-                'referrer': this._getReferrer()
-            });
-        }
-
         apiProperties = apiProperties || {};
         eventProperties = eventProperties || {};
+
+        // Add the utm properties, if any, onto the user properties.
+        object.merge(eventProperties, this._utmProperties);
+
         var event = {
             collection: eventType,
             properties: {
@@ -768,16 +753,7 @@ Rakam.prototype._logEvent = function (eventType, eventProperties, apiProperties,
             }
         };
 
-        //if (typeof window.performance === 'object' && typeof window.performance.timing === 'object') {
-        //    event.properties.load_time = window.performance.timing.domContentLoadedEventEnd - window.performance.timing.navigationStart;
-        //}
-
-        for (var key in userProperties) {
-            if (userProperties.hasOwnProperty(key) && indexOf.call(this.options.userPropertiesForEvent, key) > -1) {
-                event.properties["user_" + key] = userProperties[key];
-            }
-        }
-
+        object.merge(event.properties, this.options.superProperties);
         object.merge(event.properties, apiProperties);
         object.merge(event.properties, eventProperties);
 
@@ -826,7 +802,7 @@ Rakam.prototype.removeEvents = function (maxEventId) {
 Rakam.prototype.sendEvents = function (callback) {
     if (!this._sending && !this.options.optOut && this._unsentEvents.length > 0) {
         this._sending = true;
-        var url = ('https:' === window.location.protocol ? 'https' : 'http') + '://' + this.options.apiEndpoint + this.options.apiEndpointPath;
+        var url = ('https:' === window.location.protocol ? 'https' : 'http') + '://' + this.options.apiEndpoint + this.options.eventEndpointPath;
 
         // Determine how many events to send and track the maximum event id sent in this batch.
         var numEvents = Math.min(this._unsentEvents.length, this.options.uploadBatchSize);
@@ -909,7 +885,7 @@ Rakam.prototype.__VERSION__ = version;
 
 module.exports = Rakam;
 
-}, {"./cookie":3,"json":4,"./language":5,"./localstorage":6,"object":7,"./xhr":8,"./uuid":9,"./version":10,"../node_modules/ifvisible.js/src/ifvisible.min.js":11}],
+}, {"./cookie":3,"json":4,"./language":5,"./localstorage":6,"object":7,"./xhr":8,"./uuid":9,"./version":10,"./user":11,"../node_modules/ifvisible.js/src/ifvisible.min.js":12}],
 3: [function(require, module, exports) {
 /*
  * Cookie data
@@ -1036,8 +1012,8 @@ module.exports = {
 
 };
 
-}, {"./base64":12,"json":4,"top-domain":13}],
-12: [function(require, module, exports) {
+}, {"./base64":13,"json":4,"top-domain":14}],
+13: [function(require, module, exports) {
 /* jshint bitwise: false */
 /* global escape, unescape */
 
@@ -1136,8 +1112,8 @@ var Base64 = {
 
 module.exports = Base64;
 
-}, {"./utf8":14}],
-14: [function(require, module, exports) {
+}, {"./utf8":15}],
+15: [function(require, module, exports) {
 /* jshint bitwise: false */
 
 /*
@@ -1207,8 +1183,8 @@ module.exports = parse && stringify
   ? JSON
   : require('json-fallback');
 
-}, {"json-fallback":15}],
-15: [function(require, module, exports) {
+}, {"json-fallback":16}],
+16: [function(require, module, exports) {
 /*
     json2.js
     2014-02-04
@@ -1698,7 +1674,7 @@ module.exports = parse && stringify
 }());
 
 }, {}],
-13: [function(require, module, exports) {
+14: [function(require, module, exports) {
 
 /**
  * Module dependencies.
@@ -1746,8 +1722,8 @@ function domain(url){
   return match ? match[0] : '';
 };
 
-}, {"url":16}],
-16: [function(require, module, exports) {
+}, {"url":17}],
+17: [function(require, module, exports) {
 
 /**
  * Parse the given `url`.
@@ -2136,6 +2112,146 @@ module.exports = '2.4.0';
 
 }, {}],
 11: [function(require, module, exports) {
+var type = require('./type');
+var Request = require('./xhr');
+
+/*
+ * Wrapper for a user properties JSON object that supports operations.
+ * Note: if a user property is used in multiple operations on the same User object,
+ * only the first operation will be saved, and the rest will be ignored.
+ */
+
+var API_VERSION = 1;
+var log = function (s, opts) {
+    console.log('[Rakam] ' + s, opts);
+};
+
+var wrapCallback = function (operation, props, callback) {
+    return function (status, response, headers) {
+        log("Successfully sent " + operation, props);
+        callback(status, response, headers);
+    };
+};
+
+var getUrl = function (options) {
+    return ('https:' === window.location.protocol ? 'https' : 'http') + '://' + options.apiEndpoint + "/user";
+};
+
+var User = function () {};
+
+User.prototype.init = function (options) {
+    this.options = options;
+};
+
+
+User.prototype.set = function (properties, callback) {
+    new Request(getUrl(this.options) + "/set_properties", {
+        api: {
+            "apiVersion": API_VERSION,
+            "writeKey": this.options.writeKey
+        },
+        project: this.options.apiKey,
+        user: this.options.userId || this.options.deviceId,
+        properties: properties
+    }).send(wrapCallback("set_properties", properties, callback));
+
+    return this;
+};
+
+User.prototype.setOnce = function (properties, callback) {
+    new Request(getUrl(this.options) + "/set_properties_once", {
+        api: {
+            "apiVersion": API_VERSION,
+            "writeKey": this.options.writeKey
+        },
+        user: this.options.userId || this.options.deviceId,
+        project: this.options.apiKey,
+        properties: properties
+    }).send(wrapCallback("set_properties_once", properties, callback));
+
+    return this;
+};
+
+
+User.prototype.increment = function (property, value, callback) {
+    new Request(getUrl(this.options) + "/increment_property", {
+        api: {
+            "apiVersion": API_VERSION,
+            "writeKey": this.options.writeKey
+        },
+        user: this.options.userId || this.options.deviceId,
+        project: this.options.apiKey,
+        property: property,
+        value: value
+    }).send(wrapCallback("increment_property", property + " by " + value, callback));
+
+    return this;
+};
+
+User.prototype.unset = function (properties, callback) {
+    new Request(getUrl(this.options) + "/unset_properties", {
+        api: {
+            "apiVersion": API_VERSION,
+            "writeKey": this.options.writeKey
+        },
+        user: this.options.userId || this.options.deviceId,
+        project: this.options.apiKey,
+        properties: type(properties) === "array" ? properties : [properties]
+    }).send(wrapCallback("unset_properties", properties, callback));
+
+    return this;
+};
+
+module.exports = User;
+}, {"./type":18,"./xhr":8}],
+18: [function(require, module, exports) {
+/* Taken from: https://github.com/component/type */
+
+/**
+ * toString ref.
+ */
+
+var toString = Object.prototype.toString;
+
+/**
+ * Return the type of `val`.
+ *
+ * @param {Mixed} val
+ * @return {String}
+ * @api public
+ */
+
+module.exports = function(val){
+    switch (toString.call(val)) {
+        case '[object Date]': return 'date';
+        case '[object RegExp]': return 'regexp';
+        case '[object Arguments]': return 'arguments';
+        case '[object Array]': return 'array';
+        case '[object Error]': return 'error';
+    }
+
+    if (val === null) {
+        return 'null';
+    }
+    if (val === undefined) {
+        return 'undefined';
+    }
+    if (val !== val) {
+        return 'nan';
+    }
+    if (val && val.nodeType === 1) {
+        return 'element';
+    }
+
+    if (typeof Buffer !== 'undefined' && Buffer.isBuffer(val)) {
+        return 'buffer';
+    }
+
+    val = val.valueOf ? val.valueOf() : Object.prototype.valueOf.apply(val);
+    return typeof val;
+};
+}, {}],
+12: [function(require, module, exports) {
 (function(){!function(a,b){return"function"==typeof define&&define.amd?define(function(){return b()}):"object"==typeof exports?module.exports=b():a.ifvisible=b()}(this,function(){var a,b,c,d,e,f,g,h,i,j,k,l,m,n;return i={},c=document,k=!1,l="active",g=6e4,f=!1,b=function(){var a,b,c,d,e,f,g;return a=function(){return(65536*(1+Math.random())|0).toString(16).substring(1)},e=function(){return a()+a()+"-"+a()+"-"+a()+"-"+a()+"-"+a()+a()+a()},f={},c="__ceGUID",b=function(a,b,d){return a[c]=void 0,a[c]||(a[c]="ifvisible.object.event.identifier"),f[a[c]]||(f[a[c]]={}),f[a[c]][b]||(f[a[c]][b]=[]),f[a[c]][b].push(d)},d=function(a,b,d){var e,g,h,i,j;if(a[c]&&f[a[c]]&&f[a[c]][b]){for(i=f[a[c]][b],j=[],g=0,h=i.length;h>g;g++)e=i[g],j.push(e(d||{}));return j}},g=function(a,b,d){var e,g,h,i,j;if(d){if(a[c]&&f[a[c]]&&f[a[c]][b])for(j=f[a[c]][b],g=h=0,i=j.length;i>h;g=++h)if(e=j[g],e===d)return f[a[c]][b].splice(g,1),e}else if(a[c]&&f[a[c]]&&f[a[c]][b])return delete f[a[c]][b]},{add:b,remove:g,fire:d}}(),a=function(){var a;return a=!1,function(b,c,d){return a||(a=b.addEventListener?function(a,b,c){return a.addEventListener(b,c,!1)}:b.attachEvent?function(a,b,c){return a.attachEvent("on"+b,c,!1)}:function(a,b,c){return a["on"+b]=c}),a(b,c,d)}}(),d=function(a,b){var d;return c.createEventObject?a.fireEvent("on"+b,d):(d=c.createEvent("HTMLEvents"),d.initEvent(b,!0,!0),!a.dispatchEvent(d))},h=function(){var a,b,d,e,f;for(e=void 0,f=3,d=c.createElement("div"),a=d.getElementsByTagName("i"),b=function(){return d.innerHTML="<!--[if gt IE "+ ++f+"]><i></i><![endif]-->",a[0]};b(););return f>4?f:e}(),e=!1,n=void 0,"undefined"!=typeof c.hidden?(e="hidden",n="visibilitychange"):"undefined"!=typeof c.mozHidden?(e="mozHidden",n="mozvisibilitychange"):"undefined"!=typeof c.msHidden?(e="msHidden",n="msvisibilitychange"):"undefined"!=typeof c.webkitHidden&&(e="webkitHidden",n="webkitvisibilitychange"),m=function(){var b,d;return b=!1,d=function(){return clearTimeout(b),"active"!==l&&i.wakeup(),f=+new Date,b=setTimeout(function(){return"active"===l?i.idle():void 0},g)},d(),a(c,"mousemove",d),a(c,"keyup",d),a(window,"scroll",d),i.focus(d),i.wakeup(d)},j=function(){var b;return k?!0:(e===!1?(b="blur",9>h&&(b="focusout"),a(window,b,function(){return i.blur()}),a(window,"focus",function(){return i.focus()})):a(c,n,function(){return c[e]?i.blur():i.focus()},!1),k=!0,m())},i={setIdleDuration:function(a){return g=1e3*a},getIdleDuration:function(){return g},getIdleInfo:function(){var a,b;return a=+new Date,b={},"idle"===l?(b.isIdle=!0,b.idleFor=a-f,b.timeLeft=0,b.timeLeftPer=100):(b.isIdle=!1,b.idleFor=a-f,b.timeLeft=f+g-a,b.timeLeftPer=(100-100*b.timeLeft/g).toFixed(2)),b},focus:function(a){return"function"==typeof a?this.on("focus",a):(l="active",b.fire(this,"focus"),b.fire(this,"wakeup"),b.fire(this,"statusChanged",{status:l}))},blur:function(a){return"function"==typeof a?this.on("blur",a):(l="hidden",b.fire(this,"blur"),b.fire(this,"idle"),b.fire(this,"statusChanged",{status:l}))},idle:function(a){return"function"==typeof a?this.on("idle",a):(l="idle",b.fire(this,"idle"),b.fire(this,"statusChanged",{status:l}))},wakeup:function(a){return"function"==typeof a?this.on("wakeup",a):(l="active",b.fire(this,"wakeup"),b.fire(this,"statusChanged",{status:l}))},on:function(a,c){return j(),b.add(this,a,c)},off:function(a,c){return j(),b.remove(this,a,c)},onEvery:function(a,b){var c,d;return j(),c=!1,b&&(d=setInterval(function(){return"active"===l&&c===!1?b():void 0},1e3*a)),{stop:function(){return clearInterval(d)},pause:function(){return c=!0},resume:function(){return c=!1},code:d,callback:b}},now:function(a){return j(),l===(a||"active")}}})}).call(this);
 }, {}]}, {}, {"1":""})
 );
