@@ -530,12 +530,6 @@ Rakam.prototype._initUtmData = function (queryParams, cookieParams) {
     queryParams = queryParams || location.search;
     cookieParams = cookieParams || Cookie.get('__utmz');
     this._utmProperties = Rakam._getUtmData(cookieParams, queryParams);
-    var utmData = ['utm_campaign', 'utm_content', 'utm_medium', 'utm_source', 'utm_term'];
-
-    this.options.superProperties = this.options.superProperties || [];
-    for (var i=0; i < utmData.length; i++) {
-        this.options.superProperties.push(utmData[i]);
-    }
 };
 
 Rakam.prototype._initTrackForms = function () {
@@ -656,7 +650,7 @@ Rakam.prototype.setUserId = function (userId) {
 };
 
 Rakam.prototype.getUserId = function () {
-    return this._eventId > 0 ? this.options.userId : null;
+    return this.options.userId;
 };
 
 Rakam.prototype.getDeviceId = function () {
@@ -740,7 +734,7 @@ Rakam.prototype._logEvent = function (eventType, eventProperties, apiProperties,
         apiProperties = apiProperties || {};
         eventProperties = eventProperties || {};
 
-        // Add the utm properties, if any, onto the user properties.
+        // Add the utm properties, if any, onto the event properties.
         object.merge(eventProperties, this._utmProperties);
 
         var event = {
