@@ -544,7 +544,7 @@ Rakam.prototype.setUserId = function (userId) {
 };
 
 Rakam.prototype.getUserId = function () {
-    return this._eventId > 0 ? this.options.userId : null;
+    return this.options.userId;
 };
 
 Rakam.prototype.getDeviceId = function () {
