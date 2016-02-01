@@ -35,6 +35,7 @@ var DEFAULT_OPTIONS = {
     cookieName: 'rakam_id',
     domain: undefined,
     includeUtm: false,
+    coalesceDeviceId: true,
     trackForms: false,
     language: language.language,
     optOut: false,
@@ -106,6 +107,9 @@ Rakam.prototype.init = function (apiKey, opt_userId, opt_config, callback) {
             }
             if (opt_config.includeUtm !== undefined) {
                 this.options.includeUtm = !!opt_config.includeUtm;
+            }
+            if (opt_config.coalesceDeviceId !== undefined) {
+                this.options.coalesceDeviceId = !!opt_config.coalesceDeviceId;
             }
             if (opt_config.trackClicks !== undefined) {
                 this.options.trackClicks = !!opt_config.trackClicks;
@@ -631,13 +635,13 @@ Rakam.prototype._logEvent = function (eventType, eventProperties, apiProperties,
             collection: eventType,
             properties: {
                 device_id: this.options.deviceId,
-                _user: this.options.userId,
+                _user: this.options.coalesceDeviceId ? this.options.userId || this.options.deviceId : this.options.userId,
                 // use seconds
                 _time: parseInt(eventTime/1000)*1000,
                 session_id: this._sessionId || -1,
                 platform: this.options.platform,
                 language: this.options.language
-                //uuid: UUID() 
+                //uuid: UUID()
             }
         };
 
