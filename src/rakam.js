@@ -631,13 +631,13 @@ Rakam.prototype._logEvent = function (eventType, eventProperties, apiProperties,
             collection: eventType,
             properties: {
                 device_id: this.options.deviceId,
-                _user: this.options.userId || this.options.deviceId,
+                _user: this.options.userId,
                 // use seconds
                 _time: parseInt(eventTime/1000)*1000,
                 session_id: this._sessionId || -1,
                 platform: this.options.platform,
                 language: this.options.language
-                //uuid: UUID()
+                //uuid: UUID() 
             }
         };
 
