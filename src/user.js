@@ -15,7 +15,9 @@ var log = function (s, opts) {
 var wrapCallback = function (operation, props, callback) {
     return function (status, response, headers) {
         log("Successfully sent " + operation, props);
-        callback && callback(status, response, headers); 
+        if(callback !== undefined) {
+            callback(status, response, headers);
+        }
     };
 };
 
