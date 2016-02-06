@@ -128,9 +128,11 @@ var log = function (s) {
 
 var indexOf;
 if (!Array.prototype.indexOf) {
-    indexOf = function(obj, start) {
+    indexOf = function (obj, start) {
         for (var i = (start || 0), j = this.length; i < j; i++) {
-            if (this[i] === obj) { return i; }
+            if (this[i] === obj) {
+                return i;
+            }
         }
         return -1;
     };
@@ -201,7 +203,7 @@ Rakam.prototype.init = function (apiKey, opt_userId, opt_config, callback) {
 
         var user = new User();
         user.init(this.options);
-        this.User = function() {
+        this.User = function () {
             return user;
         };
 
@@ -250,7 +252,7 @@ Rakam.prototype.init = function (apiKey, opt_userId, opt_config, callback) {
 
         _loadCookieData(this);
 
-        if((opt_config && opt_config.deviceId !== undefined && opt_config.deviceId !== null && opt_config.deviceId) || this.options.deviceId) {
+        if ((opt_config && opt_config.deviceId !== undefined && opt_config.deviceId !== null && opt_config.deviceId) || this.options.deviceId) {
             this.options.deviceId = this.options.deviceId;
         } else {
             this.deviceIdCreatedAt = new Date();
@@ -293,7 +295,7 @@ Rakam.prototype.init = function (apiKey, opt_userId, opt_config, callback) {
         this._eventId = localStorage.getItem(LocalStorageKeys.LAST_ID) || 0;
         var now = new Date().getTime();
         if (!this._sessionId || !this._lastEventTime || now - this._lastEventTime > this.options.sessionTimeout) {
-            if(this._sessionId !== null || this.options.userId !==null) {
+            if (this._sessionId !== null || this.options.userId !== null) {
                 localStorage.setItem(LocalStorageKeys.RETURNING_SESSION, true);
                 this._returningUser = true;
             }
@@ -305,12 +307,13 @@ Rakam.prototype.init = function (apiKey, opt_userId, opt_config, callback) {
         }
         this._lastEventTime = now;
         localStorage.setItem(LocalStorageKeys.LAST_EVENT_TIME, this._lastEventTime);
+
     } catch (e) {
         log(e);
     }
 
     if (callback && typeof(callback) === 'function') {
-        setTimeout(function() {
+        setTimeout(function () {
             callback();
         }, 1);
     }
@@ -322,32 +325,29 @@ Rakam.prototype.onEvent = function (callback) {
 };
 
 
-var transformValue = function(attribute, value, type) {
-    if(type !== null) {
+var transformValue = function (attribute, value, type) {
+    if (type !== null) {
         type = type.toLowerCase();
     }
-    if(type === 'long' || type === 'time' || type === 'timestamp' || type === 'date') {
+    if (type === 'long' || type === 'time' || type === 'timestamp' || type === 'date') {
         value = parseInt(value);
-        if(isNaN(value) || !isFinite(value)) {
-            log("ignoring "+attribute+": the value must be a number");
+        if (isNaN(value) || !isFinite(value)) {
+            log("ignoring " + attribute + ": the value must be a number");
             value = null;
         }
-    } else
-    if(type === 'double') {
+    } else if (type === 'double') {
         value = parseFloat(value);
-        if(isNaN(value) || !isFinite(value)) {
-            log("ignoring "+attribute+": the value is not double");
+        if (isNaN(value) || !isFinite(value)) {
+            log("ignoring " + attribute + ": the value is not double");
             value = null;
         }
-    }else
-    if(type === 'boolean') {
-        if(type === "true" || type === "1") {
+    } else if (type === 'boolean') {
+        if (type === "true" || type === "1") {
             value = true;
-        } else
-        if(type === "false" || type === "0") {
+        } else if (type === "false" || type === "0") {
             value = false;
         } else {
-            log("ignoring "+attribute+": the value is not boolean");
+            log("ignoring " + attribute + ": the value is not boolean");
             value = null;
         }
     }
@@ -382,10 +382,10 @@ Rakam.prototype.logInlinedEvent = function (collection, extraProperties, callbac
                 value = element.value;
             } else if (element.tagName === 'SELECT') {
                 var option = element.options[element.selectedIndex];
-                if(option.value !== null && option.value !== "") {
+                if (option.value !== null && option.value !== "") {
                     var attr = element.getAttribute('rakam-attribute-value');
 
-                    if(attr !== "value") {
+                    if (attr !== "value") {
                         value = option.value;
                     } else {
                         value = option.text;
@@ -417,25 +417,25 @@ Rakam.prototype.startTimer = function (saveOnClose) {
 
     startTime = (new Date()).getTime();
 
-    ifvisible.on("idle", function(){
+    ifvisible.on("idle", function () {
         idleTime = (new Date()).getTime();
     });
 
-    ifvisible.on("wakeup", function(){
+    ifvisible.on("wakeup", function () {
         gapMillis += (new Date()).getTime() - idleTime;
         idleTime = null;
     });
 
-    if(saveOnClose) {
+    if (saveOnClose) {
         var func;
-        if(window.onbeforeunload !== null) {
+        if (window.onbeforeunload !== null) {
             func = window.onbeforeunload;
         }
         var _this = this;
         window.onbeforeunload = function (e) {
             Cookie.set("_rakam_time", _this.getTimeOnPage());
 
-            if(func) {
+            if (func) {
                 func(e);
             }
         };
@@ -443,7 +443,7 @@ Rakam.prototype.startTimer = function (saveOnClose) {
 };
 
 Rakam.prototype.getTimeOnPage = function () {
-    return ((idleTime > 0 ? idleTime : (new Date()).getTime()) - startTime - gapMillis)/1000;
+    return ((idleTime > 0 ? idleTime : (new Date()).getTime()) - startTime - gapMillis) / 1000;
 };
 
 Rakam.prototype.getTimeOnPreviousPage = function () {
@@ -541,14 +541,14 @@ Rakam.prototype._initUtmData = function (queryParams, cookieParams) {
 };
 
 Rakam.prototype._initTrackForms = function () {
-    document.addEventListener('submit', function(event) {
+    document.addEventListener('submit', function (event) {
         var targetElement = event.target || event.srcElement;
         var collection = targetElement.getAttribute('rakam-event-form');
-        if(targetElement.tagName === 'FORM' && collection) {
+        if (targetElement.tagName === 'FORM' && collection) {
             var properties = {};
 
             var extraAttributes = targetElement.getAttribute("rakam-event-extra");
-            if(extraAttributes !== null) {
+            if (extraAttributes !== null) {
                 for (var key in JSON.parse(extraAttributes)) {
                     if (extraAttributes.hasOwnProperty(key)) {
                         properties[key] = extraAttributes[key];
@@ -556,45 +556,43 @@ Rakam.prototype._initTrackForms = function () {
                 }
             }
 
-            for(var i=0; i<targetElement.elements.length; i++) {
+            for (var i = 0; i < targetElement.elements.length; i++) {
                 var element = targetElement.elements[i];
 
                 var type = element.getAttribute('rakam-event-attribute-type');
                 var formElemType;
-                if(element.hasAttribute('type')) {
-                    formElemType =  element.getAttribute('type').toLowerCase();
+                if (element.hasAttribute('type')) {
+                    formElemType = element.getAttribute('type').toLowerCase();
                 }
 
-                if(formElemType === "password") {
+                if (formElemType === "password") {
                     continue;
                 }
 
-                if(type === null && element.tagName === 'INPUT' && formElemType === 'number') {
+                if (type === null && element.tagName === 'INPUT' && formElemType === 'number') {
                     type = "long";
                 }
 
-                if(element.hasAttribute("rakam-event-form-element-ignore")) {
+                if (element.hasAttribute("rakam-event-form-element-ignore")) {
                     continue;
                 }
 
                 var attribute;
-                if(element.hasAttribute("rakam-event-attribute")) {
+                if (element.hasAttribute("rakam-event-attribute")) {
                     attribute = element.getAttribute("rakam-event-attribute");
                 } else {
                     attribute = element.getAttribute("name");
                 }
 
 
-                if(element.hasAttribute("rakam-event-attribute-value")) {
+                if (element.hasAttribute("rakam-event-attribute-value")) {
                     properties[attribute] = transformValue(attribute, element.getAttribute('rakam-event-attribute-value'), type);
-                } else
-                if(element.tagName === 'SELECT') {
+                } else if (element.tagName === 'SELECT') {
                     properties[attribute] = transformValue(attribute, element.options[element.selectedIndex].value, type);
-                } else
-                if(element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+                } else if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
                     properties[attribute] = transformValue(attribute, element.value, type);
                 } else {
-                    log("Couldn't get value of form element: "+attribute);
+                    log("Couldn't get value of form element: " + attribute);
                 }
 
             }
@@ -605,14 +603,14 @@ Rakam.prototype._initTrackForms = function () {
 };
 
 Rakam.prototype._initTrackClicks = function () {
-    document.addEventListener('click', function(event) {
+    document.addEventListener('click', function (event) {
         var targetElement = event.target || event.srcElement;
         var collection = targetElement.getAttribute('rakam-event-track');
-        if(targetElement.tagName === 'FORM' && collection) {
+        if (targetElement.tagName === 'FORM' && collection) {
             var properties = {};
 
             var extraAttributes = targetElement.getAttribute("rakam-event-properties");
-            if(extraAttributes !== null) {
+            if (extraAttributes !== null) {
                 for (var key in JSON.parse(extraAttributes)) {
                     if (extraAttributes.hasOwnProperty(key)) {
                         properties[key] = extraAttributes[key];
@@ -649,8 +647,12 @@ Rakam.prototype.setDomain = function (domain) {
 
 Rakam.prototype.setUserId = function (userId) {
     try {
-        if(this._eventId > 0 && this.options.userId === null) {
-            this.User()._merge(this.deviceIdCreatedAt);
+        if ((this._eventId > 0 && this.options.userId === null) || (this.options.userId !== null && this.deviceIdCreatedAt !== undefined)) {
+            var _this = this;
+            this.User()._merge(this.deviceIdCreatedAt, function () {
+                _this.deviceIdCreatedAt = undefined;
+                _saveCookieData(_this);
+            });
         }
         this.options.userId = (userId !== undefined && userId !== null && ('' + userId)) || null;
         _saveCookieData(this);
@@ -695,7 +697,7 @@ Rakam.prototype.setSuperProperties = function (eventProps, opt_replace) {
         this.options.superProperties = this.options.superProperties || {};
         for (var property in eventProps) {
             if (eventProps.hasOwnProperty(property)) {
-                if(opt_replace === false && this.options.superProperties[property] !== undefined) {
+                if (opt_replace === false && this.options.superProperties[property] !== undefined) {
                     continue;
                 }
                 this.options.superProperties[property] = eventProps[property];
@@ -755,7 +757,7 @@ Rakam.prototype._logEvent = function (eventType, eventProperties, apiProperties,
                 device_id: this.options.deviceId,
                 _user: this.options.coalesceDeviceId ? this.options.userId || this.options.deviceId : this.options.userId,
                 // use seconds
-                _time: parseInt(eventTime/1000)*1000,
+                _time: parseInt(eventTime / 1000) * 1000,
                 session_id: this._sessionId || -1,
                 platform: this.options.platform,
                 language: this.options.language
@@ -819,7 +821,7 @@ Rakam.prototype.sendEvents = function (callback) {
         var maxEventId = this._unsentEvents[numEvents - 1].id;
 
         this._unsentEvents.slice(0, numEvents);
-        var events = this._unsentEvents.slice(0, numEvents).map(function(e)  {
+        var events = this._unsentEvents.slice(0, numEvents).map(function (e) {
             return e.event;
         });
         var uploadTime = new Date().getTime();
@@ -832,7 +834,11 @@ Rakam.prototype.sendEvents = function (callback) {
         };
 
         var scope = this;
-        new Request(url, {api: api, "project": this.options.apiKey, events: events}).send(function (status, response, headers) {
+        new Request(url, {
+            api: api,
+            "project": this.options.apiKey,
+            events: events
+        }).send(function (status, response, headers) {
             scope._sending = false;
             try {
                 if (status === 200 && response === '1') {
@@ -884,7 +890,7 @@ Rakam.prototype.sendEvents = function (callback) {
 };
 
 Rakam.prototype.onload = function (callback) {
-    setTimeout(function() {
+    setTimeout(function () {
         callback();
         log("executed callback", callback);
     }, 1);
