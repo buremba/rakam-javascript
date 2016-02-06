@@ -2183,7 +2183,7 @@ User.prototype._merge = function (createdAt, callback) {
             "writeKey": this.options.writeKey
         },
         project: this.options.apiKey,
-        id: this.options.deviceId,
+        anonymous_id: this.options.deviceId,
         user: this.options.userId,
         created_at: createdAt,
         merged_at: new Date().getTime()
