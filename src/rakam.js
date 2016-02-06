@@ -538,7 +538,7 @@ Rakam.prototype.setDomain = function (domain) {
 Rakam.prototype.setUserId = function (userId) {
     try {
         if(this._eventId > 0 && this.options.userId === null) {
-            User()._merge();
+            this.User()._merge(this.deviceIdCreatedAt);
         }
         this.options.userId = (userId !== undefined && userId !== null && ('' + userId)) || null;
         _saveCookieData(this);
