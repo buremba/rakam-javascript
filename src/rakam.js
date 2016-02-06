@@ -387,7 +387,7 @@ var _loadCookieData = function (scope) {
 var _saveCookieData = function (scope) {
     Cookie.set(scope.options.cookieName, {
         deviceId: scope.options.deviceId,
-        deviceIdCreatedAt: scope.deviceIdCreatedAt ? scope.deviceIdCreatedAt.getTime() : null,
+        deviceIdCreatedAt: scope.deviceIdCreatedAt ? scope.deviceIdCreatedAt.getTime() : undefined,
         userId: scope.options.userId,
         superProps: scope.options.superProperties,
         optOut: scope.options.optOut
@@ -543,7 +543,6 @@ Rakam.prototype.setUserId = function (userId) {
             });
         }
         this.options.userId = (userId !== undefined && userId !== null && ('' + userId)) || null;
-        _saveCookieData(this);
         log('set userId=' + userId);
     } catch (e) {
         log(e);
