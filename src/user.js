@@ -44,6 +44,22 @@ User.prototype.set = function (properties, callback) {
     return this;
 };
 
+User.prototype._merge = function (createdAt, callback) {
+    new Request(getUrl(this.options) + "/merge", {
+        api: {
+            "apiVersion": API_VERSION,
+            "writeKey": this.options.writeKey
+        },
+        project: this.options.apiKey,
+        id: this.options.deviceId,
+        user: this.options.userId,
+        created_at: createdAt,
+        merged_at: new Date().getTime()
+    }).send(wrapCallback("merge", null, callback));
+
+    return this;
+};
+
 User.prototype.setOnce = function (properties, callback) {
     new Request(getUrl(this.options) + "/set_properties_once", {
         api: {

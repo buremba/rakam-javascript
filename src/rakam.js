@@ -138,9 +138,13 @@ Rakam.prototype.init = function (apiKey, opt_userId, opt_config, callback) {
 
         _loadCookieData(this);
 
-        this.options.deviceId = (opt_config && opt_config.deviceId !== undefined &&
-        opt_config.deviceId !== null && opt_config.deviceId) ||
-        this.options.deviceId || UUID().replace(/\-/g, "").substring(0, 16);
+        if((opt_config && opt_config.deviceId !== undefined && opt_config.deviceId !== null && opt_config.deviceId) || this.options.deviceId) {
+            this.options.deviceId = this.options.deviceId;
+        } else {
+            this.deviceIdCreatedAt = new Date();
+            this.options.deviceId = UUID();
+        }
+
         this.options.userId = (opt_userId !== undefined && opt_userId !== null && opt_userId) || this.options.userId || null;
         _saveCookieData(this);
 
@@ -374,12 +378,16 @@ var _loadCookieData = function (scope) {
         if (cookieData.optOut !== undefined) {
             scope.options.optOut = cookieData.optOut;
         }
+        if (cookieData.deviceIdCreatedAt !== undefined) {
+            scope.deviceIdCreatedAt = new Date(parseInt(cookieData.deviceIdCreatedAt));
+        }
     }
 };
 
 var _saveCookieData = function (scope) {
     Cookie.set(scope.options.cookieName, {
         deviceId: scope.options.deviceId,
+        deviceIdCreatedAt: scope.deviceIdCreatedAt ? scope.deviceIdCreatedAt.getTime() : null,
         userId: scope.options.userId,
         superProps: scope.options.superProperties,
         optOut: scope.options.optOut
@@ -529,6 +537,9 @@ Rakam.prototype.setDomain = function (domain) {
 
 Rakam.prototype.setUserId = function (userId) {
     try {
+        if(this._eventId > 0 && this.options.userId === null) {
+            User()._merge();
+        }
         this.options.userId = (userId !== undefined && userId !== null && ('' + userId)) || null;
         _saveCookieData(this);
         log('set userId=' + userId);
@@ -559,6 +570,7 @@ Rakam.prototype.setDeviceId = function (deviceId) {
     try {
         if (deviceId) {
             this.options.deviceId = ('' + deviceId);
+            console.log(this.options, deviceId);
             _saveCookieData(this);
         }
     } catch (e) {
