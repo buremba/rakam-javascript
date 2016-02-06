@@ -499,7 +499,7 @@ var _loadCookieData = function (scope) {
 var _saveCookieData = function (scope) {
     Cookie.set(scope.options.cookieName, {
         deviceId: scope.options.deviceId,
-        deviceIdCreatedAt: scope.deviceIdCreatedAt ? scope.deviceIdCreatedAt.getTime() : null,
+        deviceIdCreatedAt: scope.deviceIdCreatedAt ? scope.deviceIdCreatedAt.getTime() : undefined,
         userId: scope.options.userId,
         superProps: scope.options.superProperties,
         optOut: scope.options.optOut
@@ -647,15 +647,16 @@ Rakam.prototype.setDomain = function (domain) {
 
 Rakam.prototype.setUserId = function (userId) {
     try {
-        if ((this._eventId > 0 && this.options.userId === null) || (this.options.userId !== null && this.deviceIdCreatedAt !== undefined)) {
+        var previousUserId = this.options.userId;
+        this.options.userId = (userId !== undefined && userId !== null && ('' + userId)) || null;
+
+        if ((this._eventId > 0 && previousUserId === null) || (previousUserId !== null && this.deviceIdCreatedAt !== undefined)) {
             var _this = this;
             this.User()._merge(this.deviceIdCreatedAt, function () {
                 _this.deviceIdCreatedAt = undefined;
                 _saveCookieData(_this);
             });
         }
-        this.options.userId = (userId !== undefined && userId !== null && ('' + userId)) || null;
-        _saveCookieData(this);
         log('set userId=' + userId);
     } catch (e) {
         log(e);
@@ -2186,7 +2187,7 @@ User.prototype._merge = function (createdAt, callback) {
         anonymous_id: this.options.deviceId,
         user: this.options.userId,
         created_at: createdAt,
-        merged_at: new Date().getTime()
+        merged_at: new Date()
     }).send(wrapCallback("merge", null, callback));
 
     return this;
