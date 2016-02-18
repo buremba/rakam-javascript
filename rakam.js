@@ -121,6 +121,7 @@ var UUID = require('./uuid');
 var version = require('./version');
 var User = require('./user');
 var ifvisible = require('../node_modules/ifvisible.js/src/ifvisible.min.js');
+var type = require('./type');
 
 var log = function (s) {
     console.log('[Rakam] ' + s);
@@ -897,12 +898,22 @@ Rakam.prototype.onload = function (callback) {
     }, 1);
 };
 
+Rakam.prototype.runQueuedFunctions = function () {
+    for (var i = 0; i < this._q.length; i++) {
+        var fn = this[this._q[i][0]];
+        if (fn && type(fn) === 'function') {
+            fn.apply(this, this._q[i].slice(1));
+        }
+    }
+    this._q = []; // clear function queue after running
+};
+
 
 Rakam.prototype.__VERSION__ = version;
 
 module.exports = Rakam;
 
-}, {"./cookie":3,"json":4,"./language":5,"./localstorage":6,"object":7,"./xhr":8,"./uuid":9,"./version":10,"./user":11,"../node_modules/ifvisible.js/src/ifvisible.min.js":12}],
+}, {"./cookie":3,"json":4,"./language":5,"./localstorage":6,"object":7,"./xhr":8,"./uuid":9,"./version":10,"./user":11,"../node_modules/ifvisible.js/src/ifvisible.min.js":12,"./type":13}],
 3: [function(require, module, exports) {
 /*
  * Cookie data
@@ -1029,8 +1040,8 @@ module.exports = {
 
 };
 
-}, {"./base64":13,"json":4,"top-domain":14}],
-13: [function(require, module, exports) {
+}, {"./base64":14,"json":4,"top-domain":15}],
+14: [function(require, module, exports) {
 /* jshint bitwise: false */
 /* global escape, unescape */
 
@@ -1129,8 +1140,8 @@ var Base64 = {
 
 module.exports = Base64;
 
-}, {"./utf8":15}],
-15: [function(require, module, exports) {
+}, {"./utf8":16}],
+16: [function(require, module, exports) {
 /* jshint bitwise: false */
 
 /*
@@ -1200,8 +1211,8 @@ module.exports = parse && stringify
   ? JSON
   : require('json-fallback');
 
-}, {"json-fallback":16}],
-16: [function(require, module, exports) {
+}, {"json-fallback":17}],
+17: [function(require, module, exports) {
 /*
     json2.js
     2014-02-04
@@ -1691,7 +1702,7 @@ module.exports = parse && stringify
 }());
 
 }, {}],
-14: [function(require, module, exports) {
+15: [function(require, module, exports) {
 
 /**
  * Module dependencies.
@@ -1739,8 +1750,8 @@ function domain(url){
   return match ? match[0] : '';
 };
 
-}, {"url":17}],
-17: [function(require, module, exports) {
+}, {"url":18}],
+18: [function(require, module, exports) {
 
 /**
  * Parse the given `url`.
@@ -2238,8 +2249,8 @@ User.prototype.unset = function (properties, callback) {
 };
 
 module.exports = User;
-}, {"./type":18,"./xhr":8}],
-18: [function(require, module, exports) {
+}, {"./type":13,"./xhr":8}],
+13: [function(require, module, exports) {
 /* Taken from: https://github.com/component/type */
 
 /**

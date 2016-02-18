@@ -9,6 +9,7 @@ var UUID = require('./uuid');
 var version = require('./version');
 var User = require('./user');
 var ifvisible = require('../node_modules/ifvisible.js/src/ifvisible.min.js');
+var type = require('./type');
 
 var log = function (s) {
     console.log('[Rakam] ' + s);
@@ -783,6 +784,16 @@ Rakam.prototype.onload = function (callback) {
         callback();
         log("executed callback", callback);
     }, 1);
+};
+
+Rakam.prototype.runQueuedFunctions = function () {
+    for (var i = 0; i < this._q.length; i++) {
+        var fn = this[this._q[i][0]];
+        if (fn && type(fn) === 'function') {
+            fn.apply(this, this._q[i].slice(1));
+        }
+    }
+    this._q = []; // clear function queue after running
 };
 
 
