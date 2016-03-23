@@ -691,10 +691,13 @@ Rakam.prototype.logEvent = function (eventType, eventProperties, callback) {
  * Remove events in storage with event ids up to and including maxEventId. Does
  * a true filter in case events get out of order or old events are removed.
  */
-Rakam.prototype.removeEvents = function (maxEventId) {
+Rakam.prototype.removeEvents = function (maxEventId, errors) {
     var filteredEvents = [];
+    var errorList = errors || [];
+
     for (var i = 0; i < this._unsentEvents.length; i++) {
-        if (this._unsentEvents[i].id > maxEventId) {
+        var id = this._unsentEvents[i].id;
+        if (errorList.indexOf(id) > -1 || id > maxEventId) {
             filteredEvents.push(this._unsentEvents[i]);
         }
     }
@@ -726,14 +729,16 @@ Rakam.prototype.sendEvents = function (callback) {
         var scope = this;
         new Request(url, {
             api: api,
-            "project": this.options.apiKey,
+            project: this.options.apiKey,
             events: events
         }).send(function (status, response, headers) {
             scope._sending = false;
+
             try {
-                if (status === 200 && response === '1') {
+                if (status === 200 || status === 409) {
                     log('successful upload');
-                    scope.removeEvents(maxEventId);
+
+                    scope.removeEvents(maxEventId, status === 409 ? JSON.parse(response) : null);
 
                     // Update the event cache after the removal of sent events.
                     if (scope.options.saveEvents) {
