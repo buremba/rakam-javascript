@@ -6,7 +6,7 @@
 
         <script type="text/javascript">
           (function(e,t){var n=e.rakam||{};var r=t.createElement("script");r.type="text/javascript";
-          r.async=true;r.src="http://127.0.0.1:8080/dist/rakam-2.4.0.js";r.onload=function(){
+          r.async=true;r.src="https://cdn.rawgit.com/buremba/rakam-javascript/master/rakam.min.js";r.onload=function(){
           e.rakam.runQueuedFunctions()};var a=t.getElementsByTagName("script")[0];a.parentNode.insertBefore(r,a);
           var s=function(){this._q=[];return this};function i(e){s.prototype[e]=function(){
           this._q.push([e].concat(Array.prototype.slice.call(arguments,0)));return this}}var o=["set","setOnce","increment","unset"];

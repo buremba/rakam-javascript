@@ -3,7 +3,7 @@
     var as = document.createElement('script');
     as.type = 'text/javascript';
     as.async = true;
-    as.src = 'http://127.0.0.1:8080/dist/rakam-2.4.0.js';
+    as.src = 'https://cdn.rawgit.com/buremba/rakam-javascript/master/rakam.min.js';
     as.onload = function () {
         window.rakam.runQueuedFunctions();
     };
