@@ -96,18 +96,11 @@
 var Rakam = require('./rakam');
 
 var old = window.rakam || {};
-var q = old._q || [];
 var instance = new Rakam();
-
-// Apply the queued commands
-for (var i = 0; i < q.length; i++) {
-    var fn = instance[q[i][0]];
-    fn && fn.apply(instance, q[i].slice(1));
-}
+instance._q = old._q || [];
 
 // export the instance
 module.exports = instance;
-
 }, {"./rakam":2}],
 2: [function(require, module, exports) {
 var Cookie = require('./cookie');

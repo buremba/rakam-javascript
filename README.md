@@ -5,14 +5,15 @@
 2. On every page that uses analytics, paste the following Javascript code between the `<head>` and `</head>` tags:
 
         <script type="text/javascript">
-          (function(e,t){var n=e.rakam||{};var r=t.createElement("script");r.type="text/javascript";
-          r.async=true;r.src="https://cdn.rawgit.com/buremba/rakam-javascript/master/rakam.min.js";r.onload=function(){
-          e.rakam.runQueuedFunctions()};var a=t.getElementsByTagName("script")[0];a.parentNode.insertBefore(r,a);
-          var s=function(){this._q=[];return this};function i(e){s.prototype[e]=function(){
-          this._q.push([e].concat(Array.prototype.slice.call(arguments,0)));return this}}var o=["set","setOnce","increment","unset"];
-          for(var c=0;c<o.length;c++){i(o[c])}n.User=s;n._q=[];function u(e){n[e]=function(){
-          n._q.push([e].concat(Array.prototype.slice.call(arguments,0)))}}var p=["init","logEvent","logInlinedEvent","setUserId","getUserId","getDeviceId","setSuperProperties","setOptOut","setVersionName","setDomain","setDeviceId","onload","onEvent","getTimeOnPreviousPage","getTimeOnPage","startTimer","isReturningUser"];
-          for(var m=0;m<p.length;m++){u(p[m])}e.rakam=n})(window,document);
+          (function(e,t){var r=e.rakam||{};var n=t.createElement("script");n.type="text/javascript";
+          n.async=true;n.src="https://cdn.rawgit.com/buremba/rakam-javascript/master/rakam.min.js";
+          n.onload=function(){e.rakam.runQueuedFunctions()};var a=t.getElementsByTagName("script")[0];
+          a.parentNode.insertBefore(n,a);var s=function(){this._q=[];return this};function i(e){
+          s.prototype[e]=function(){this._q.push([e].concat(Array.prototype.slice.call(arguments,0)));
+          return this}}var o=["set","setOnce","increment","unset"];for(var c=0;c<o.length;c++){
+          i(o[c])}r.User=s;r._q=[];function u(e){r[e]=function(){r._q.push([e].concat(Array.prototype.slice.call(arguments,0)));
+          }}var m=["init","logEvent","logInlinedEvent","setUserId","getUserId","getDeviceId","setSuperProperties","setOptOut","setVersionName","setDomain","setDeviceId","onload","onEvent","getTimeOnPreviousPage","getTimeOnPage","startTimer","isReturningUser"];
+          for(var p=0;p<m.length;p++){u(m[p])}e.rakam=r})(window,document);
 
           rakam.init("YOUR_PROJECT_HERE", "USER_ID_HERE", { 
                 apiEndpoint:"127.0.0.1:9999", 
@@ -47,7 +48,7 @@ You can attach additional data to any event by passing a Javascript object as th
 
 To add properties to a user you can use the User API.
 
-    rakam.User.set({'property', 'value'}, callback);
+    new rakam.User().set({'property', 'value'}, callback);
 
 Currently, we have `set`, `setOnce`, `increment` and `unset` methods in User API.
 
