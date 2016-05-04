@@ -36,9 +36,8 @@ User.prototype.set = function (properties, callback) {
     new Request(getUrl(this.options) + "/set_properties", {
         api: {
             "apiVersion": API_VERSION,
-            "writeKey": this.options.writeKey
+            "writeKey": this.options.apiKey
         },
-        project: this.options.apiKey,
         user: this.options.userId || this.options.deviceId,
         properties: properties
     }).send(wrapCallback("set_properties", properties, callback));
@@ -50,9 +49,8 @@ User.prototype._merge = function (createdAt, callback) {
     new Request(getUrl(this.options) + "/merge", {
         api: {
             "apiVersion": API_VERSION,
-            "writeKey": this.options.writeKey
+            "writeKey": this.options.apiKey
         },
-        project: this.options.apiKey,
         anonymous_id: this.options.deviceId,
         user: this.options.userId,
         created_at: createdAt,
@@ -66,10 +64,9 @@ User.prototype.setOnce = function (properties, callback) {
     new Request(getUrl(this.options) + "/set_properties_once", {
         api: {
             "apiVersion": API_VERSION,
-            "writeKey": this.options.writeKey
+            "writeKey": this.options.apiKey
         },
         user: this.options.userId || this.options.deviceId,
-        project: this.options.apiKey,
         properties: properties
     }).send(wrapCallback("set_properties_once", properties, callback));
 
@@ -81,10 +78,9 @@ User.prototype.increment = function (property, value, callback) {
     new Request(getUrl(this.options) + "/increment_property", {
         api: {
             "apiVersion": API_VERSION,
-            "writeKey": this.options.writeKey
+            "writeKey": this.options.apiKey
         },
         user: this.options.userId || this.options.deviceId,
-        project: this.options.apiKey,
         property: property,
         value: value
     }).send(wrapCallback("increment_property", property + " by " + value, callback));
@@ -96,10 +92,9 @@ User.prototype.unset = function (properties, callback) {
     new Request(getUrl(this.options) + "/unset_properties", {
         api: {
             "apiVersion": API_VERSION,
-            "writeKey": this.options.writeKey
+            "writeKey": this.options.apiKey
         },
         user: this.options.userId || this.options.deviceId,
-        project: this.options.apiKey,
         properties: type(properties) === "array" ? properties : [properties]
     }).send(wrapCallback("unset_properties", properties, callback));
 

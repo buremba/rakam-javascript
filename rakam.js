@@ -138,7 +138,6 @@ var API_VERSION = 1;
 var DEFAULT_OPTIONS = {
     apiEndpoint: 'api.rakam.com',
     eventEndpointPath: '/event/batch',
-    writeKey: undefined,
     cookieExpiration: 365 * 10,
     cookieName: 'rakam_id',
     domain: undefined,
@@ -206,9 +205,6 @@ Rakam.prototype.init = function (apiKey, opt_userId, opt_config, callback) {
 
             if (opt_config.saveEvents !== undefined) {
                 this.options.saveEvents = !!opt_config.saveEvents;
-            }
-            if (opt_config.writeKey !== undefined) {
-                this.options.writeKey = opt_config.writeKey;
             }
             if (opt_config.domain !== undefined) {
                 this.options.domain = opt_config.domain;
@@ -827,14 +823,13 @@ Rakam.prototype.sendEvents = function (callback) {
         var api = {
             "uploadTime": uploadTime,
             "apiVersion": API_VERSION,
-            "writeKey": this.options.writeKey
+            "writeKey": this.options.apiKey
             //"checksum": md5(API_VERSION + JSON.stringify(events) + uploadTime).toUpperCase()
         };
 
         var scope = this;
         new Request(url, {
             api: api,
-            project: this.options.apiKey,
             events: events
         }).send(function (status, response, headers) {
             scope._sending = false;
@@ -2176,9 +2171,8 @@ User.prototype.set = function (properties, callback) {
     new Request(getUrl(this.options) + "/set_properties", {
         api: {
             "apiVersion": API_VERSION,
-            "writeKey": this.options.writeKey
+            "writeKey": this.options.apiKey
         },
-        project: this.options.apiKey,
         user: this.options.userId || this.options.deviceId,
         properties: properties
     }).send(wrapCallback("set_properties", properties, callback));
@@ -2190,9 +2184,8 @@ User.prototype._merge = function (createdAt, callback) {
     new Request(getUrl(this.options) + "/merge", {
         api: {
             "apiVersion": API_VERSION,
-            "writeKey": this.options.writeKey
+            "writeKey": this.options.apiKey
         },
-        project: this.options.apiKey,
         anonymous_id: this.options.deviceId,
         user: this.options.userId,
         created_at: createdAt,
@@ -2206,10 +2199,9 @@ User.prototype.setOnce = function (properties, callback) {
     new Request(getUrl(this.options) + "/set_properties_once", {
         api: {
             "apiVersion": API_VERSION,
-            "writeKey": this.options.writeKey
+            "writeKey": this.options.apiKey
         },
         user: this.options.userId || this.options.deviceId,
-        project: this.options.apiKey,
         properties: properties
     }).send(wrapCallback("set_properties_once", properties, callback));
 
@@ -2221,10 +2213,9 @@ User.prototype.increment = function (property, value, callback) {
     new Request(getUrl(this.options) + "/increment_property", {
         api: {
             "apiVersion": API_VERSION,
-            "writeKey": this.options.writeKey
+            "writeKey": this.options.apiKey
         },
         user: this.options.userId || this.options.deviceId,
-        project: this.options.apiKey,
         property: property,
         value: value
     }).send(wrapCallback("increment_property", property + " by " + value, callback));
@@ -2236,10 +2227,9 @@ User.prototype.unset = function (properties, callback) {
     new Request(getUrl(this.options) + "/unset_properties", {
         api: {
             "apiVersion": API_VERSION,
-            "writeKey": this.options.writeKey
+            "writeKey": this.options.apiKey
         },
         user: this.options.userId || this.options.deviceId,
-        project: this.options.apiKey,
         properties: type(properties) === "array" ? properties : [properties]
     }).send(wrapCallback("unset_properties", properties, callback));
 
