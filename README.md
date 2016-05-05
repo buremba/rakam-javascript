@@ -15,17 +15,16 @@
           }}var m=["init","logEvent","logInlinedEvent","setUserId","getUserId","getDeviceId","setSuperProperties","setOptOut","setVersionName","setDomain","setDeviceId","onload","onEvent","getTimeOnPreviousPage","getTimeOnPage","startTimer","isReturningUser"];
           for(var p=0;p<m.length;p++){u(m[p])}e.rakam=r})(window,document);
 
-          rakam.init("YOUR_PROJECT_HERE", "USER_ID_HERE", { 
+          rakam.init("YOUR_API_KEY_HERE", "USER_ID_HERE", {
                 apiEndpoint:"127.0.0.1:9999", 
-                writeKey: "YOUR_PROJECT_WRITE_KEY", 
-                includeUtm: true, 
+                includeUtm: true,
                 trackClicks: true, 
                 trackForms: true, 
                 includeReferrer: true 
            });
         </script>
 
-3. Replace `YOUR_PROJECT_HERE` with the API Key given to you.
+3. Replace `YOUR_API_KEY_HERE` with the Write API Key given to you.
 4. To track an event anywhere on the page, call:
 
         rakam.logEvent("EVENT_IDENTIFIER_HERE");
