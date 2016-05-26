@@ -66,7 +66,7 @@ User.prototype.setOnce = function (properties, callback) {
             "apiVersion": API_VERSION,
             "writeKey": this.options.apiKey
         },
-        user: this.options.userId || this.options.deviceId,
+        id: this.options.userId || this.options.deviceId,
         properties: properties
     }).send(wrapCallback("set_properties_once", properties, callback));
 
@@ -80,7 +80,7 @@ User.prototype.increment = function (property, value, callback) {
             "apiVersion": API_VERSION,
             "writeKey": this.options.apiKey
         },
-        user: this.options.userId || this.options.deviceId,
+        id: this.options.userId || this.options.deviceId,
         property: property,
         value: value
     }).send(wrapCallback("increment_property", property + " by " + value, callback));
@@ -94,7 +94,7 @@ User.prototype.unset = function (properties, callback) {
             "apiVersion": API_VERSION,
             "writeKey": this.options.apiKey
         },
-        user: this.options.userId || this.options.deviceId,
+        id: this.options.userId || this.options.deviceId,
         properties: type(properties) === "array" ? properties : [properties]
     }).send(wrapCallback("unset_properties", properties, callback));
 

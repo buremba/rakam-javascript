@@ -637,16 +637,16 @@ Rakam.prototype.setDomain = function (domain) {
 
 Rakam.prototype.setUserId = function (userId) {
     try {
-        var previousUserId = this.options.userId;
+        // var previousUserId = this.options.userId;
         this.options.userId = (userId !== undefined && userId !== null && ('' + userId)) || null;
 
-        if ((this._eventId > 0 && previousUserId === null) || (previousUserId !== null && this.deviceIdCreatedAt !== undefined)) {
-            var _this = this;
-            this.User()._merge(this.deviceIdCreatedAt, function () {
-                _this.deviceIdCreatedAt = undefined;
-                _saveCookieData(_this);
-            });
-        }
+        // if ((this._eventId > 0 && previousUserId === null) || (previousUserId !== null && this.deviceIdCreatedAt !== undefined)) {
+        //     var _this = this;
+        //     this.User()._merge(this.deviceIdCreatedAt, function () {
+        //         _this.deviceIdCreatedAt = undefined;
+        //         _saveCookieData(_this);
+        //     });
+        // }
         log('set userId=' + userId);
     } catch (e) {
         log(e);
@@ -2201,7 +2201,7 @@ User.prototype.setOnce = function (properties, callback) {
             "apiVersion": API_VERSION,
             "writeKey": this.options.apiKey
         },
-        user: this.options.userId || this.options.deviceId,
+        id: this.options.userId || this.options.deviceId,
         properties: properties
     }).send(wrapCallback("set_properties_once", properties, callback));
 
@@ -2215,7 +2215,7 @@ User.prototype.increment = function (property, value, callback) {
             "apiVersion": API_VERSION,
             "writeKey": this.options.apiKey
         },
-        user: this.options.userId || this.options.deviceId,
+        id: this.options.userId || this.options.deviceId,
         property: property,
         value: value
     }).send(wrapCallback("increment_property", property + " by " + value, callback));
@@ -2229,7 +2229,7 @@ User.prototype.unset = function (properties, callback) {
             "apiVersion": API_VERSION,
             "writeKey": this.options.apiKey
         },
-        user: this.options.userId || this.options.deviceId,
+        id: this.options.userId || this.options.deviceId,
         properties: type(properties) === "array" ? properties : [properties]
     }).send(wrapCallback("unset_properties", properties, callback));
 
