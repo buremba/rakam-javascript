@@ -17,7 +17,7 @@
 
           rakam.init("YOUR_PROJECT_HERE", "USER_ID_HERE", { 
                 apiEndpoint:"127.0.0.1:9999", 
-                writeKey: "YOUR_PROJECT_WRITE_KEY", 
+                write_key: "YOUR_PROJECT_WRITE_KEY", 
                 includeUtm: true, 
                 trackClicks: true, 
                 trackForms: true, 

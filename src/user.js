@@ -15,7 +15,7 @@ var log = function (s, opts) {
 var wrapCallback = function (operation, props, callback) {
     return function (status, response, headers) {
         log("Successfully sent " + operation, props);
-        if(callback !== undefined) {
+        if (callback !== undefined) {
             callback(status, response, headers);
         }
     };
@@ -25,7 +25,8 @@ var getUrl = function (options) {
     return ('https:' === window.location.protocol ? 'https' : 'http') + '://' + options.apiEndpoint + "/user";
 };
 
-var User = function () {};
+var User = function () {
+};
 
 User.prototype.init = function (options) {
     this.options = options;
@@ -35,8 +36,8 @@ User.prototype.init = function (options) {
 User.prototype.set = function (properties, callback) {
     new Request(getUrl(this.options) + "/set_properties", {
         api: {
-            "apiVersion": API_VERSION,
-            "writeKey": this.options.apiKey
+            "api_version": API_VERSION,
+            "api_key": this.options.apiKey
         },
         user: this.options.userId || this.options.deviceId,
         properties: properties
@@ -48,8 +49,8 @@ User.prototype.set = function (properties, callback) {
 User.prototype._merge = function (createdAt, callback) {
     new Request(getUrl(this.options) + "/merge", {
         api: {
-            "apiVersion": API_VERSION,
-            "writeKey": this.options.apiKey
+            "api_version": API_VERSION,
+            "api_key": this.options.apiKey
         },
         anonymous_id: this.options.deviceId,
         user: this.options.userId,
@@ -63,8 +64,8 @@ User.prototype._merge = function (createdAt, callback) {
 User.prototype.setOnce = function (properties, callback) {
     new Request(getUrl(this.options) + "/set_properties_once", {
         api: {
-            "apiVersion": API_VERSION,
-            "writeKey": this.options.apiKey
+            "api_version": API_VERSION,
+            "api_key": this.options.apiKey
         },
         id: this.options.userId || this.options.deviceId,
         properties: properties
@@ -77,8 +78,8 @@ User.prototype.setOnce = function (properties, callback) {
 User.prototype.increment = function (property, value, callback) {
     new Request(getUrl(this.options) + "/increment_property", {
         api: {
-            "apiVersion": API_VERSION,
-            "writeKey": this.options.apiKey
+            "api_version": API_VERSION,
+            "api_key": this.options.apiKey
         },
         id: this.options.userId || this.options.deviceId,
         property: property,
@@ -91,8 +92,8 @@ User.prototype.increment = function (property, value, callback) {
 User.prototype.unset = function (properties, callback) {
     new Request(getUrl(this.options) + "/unset_properties", {
         api: {
-            "apiVersion": API_VERSION,
-            "writeKey": this.options.apiKey
+            "api_version": API_VERSION,
+            "api_key": this.options.apiKey
         },
         id: this.options.userId || this.options.deviceId,
         properties: type(properties) === "array" ? properties : [properties]

@@ -3,9 +3,10 @@ var JSON = require('json'); // jshint ignore:line
 /*
  * Simple AJAX request object
  */
-var Request = function (url, data) {
+var Request = function (url, data, headers) {
     this.url = url;
     this.data = data || {};
+    this.headers = headers || {};
 };
 
 function parseResponseHeaders(headerStr) {
@@ -49,11 +50,13 @@ Request.prototype.send = function (callback) {
             }
         };
         xhr.setRequestHeader('Content-Type', 'text/plain');
-        //for (var key in this.headers) {
-        //    if (this.headers.hasOwnProperty(key)) {
-        //        xhr.setRequestHeader(key, this.headers[key]);
-        //    }
-        //}
+        
+        for (var key in this.headers) {
+           if (this.headers.hasOwnProperty(key)) {
+               xhr.setRequestHeader(key, this.headers[key]);
+           }
+        }
+        
         xhr.send(JSON.stringify(this.data));
     }
 };

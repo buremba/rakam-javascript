@@ -142,7 +142,6 @@ var DEFAULT_OPTIONS = {
     cookieName: 'rakam_id',
     domain: undefined,
     includeUtm: false,
-    coalesceDeviceId: true,
     trackForms: false,
     language: language.language,
     optOut: false,
@@ -211,9 +210,6 @@ Rakam.prototype.init = function (apiKey, opt_userId, opt_config, callback) {
             }
             if (opt_config.includeUtm !== undefined) {
                 this.options.includeUtm = !!opt_config.includeUtm;
-            }
-            if (opt_config.coalesceDeviceId !== undefined) {
-                this.options.coalesceDeviceId = !!opt_config.coalesceDeviceId;
             }
             if (opt_config.trackClicks !== undefined) {
                 this.options.trackClicks = !!opt_config.trackClicks;
@@ -746,7 +742,7 @@ Rakam.prototype._logEvent = function (eventType, eventProperties, apiProperties,
             collection: eventType,
             properties: {
                 device_id: this.options.deviceId,
-                _user: this.options.coalesceDeviceId ? this.options.userId || this.options.deviceId : this.options.userId,
+                _user: this.options.userId,
                 // use seconds
                 _time: parseInt(eventTime / 1000) * 1000,
                 session_id: this._sessionId || -1,
@@ -818,13 +814,13 @@ Rakam.prototype.sendEvents = function (callback) {
         var events = this._unsentEvents.slice(0, numEvents).map(function (e) {
             return e.event;
         });
-        var uploadTime = new Date().getTime();
+        var upload_time = new Date().getTime();
 
         var api = {
-            "uploadTime": uploadTime,
-            "apiVersion": API_VERSION,
-            "writeKey": this.options.apiKey
-            //"checksum": md5(API_VERSION + JSON.stringify(events) + uploadTime).toUpperCase()
+            "upload_time": upload_time,
+            "api_version": API_VERSION,
+            "api_key": this.options.apiKey
+            //"checksum": md5(API_VERSION + JSON.stringify(events) + upload_time).toUpperCase()
         };
 
         var scope = this;
@@ -2036,9 +2032,10 @@ var JSON = require('json'); // jshint ignore:line
 /*
  * Simple AJAX request object
  */
-var Request = function (url, data) {
+var Request = function (url, data, headers) {
     this.url = url;
     this.data = data || {};
+    this.headers = headers || {};
 };
 
 function parseResponseHeaders(headerStr) {
@@ -2082,11 +2079,13 @@ Request.prototype.send = function (callback) {
             }
         };
         xhr.setRequestHeader('Content-Type', 'text/plain');
-        //for (var key in this.headers) {
-        //    if (this.headers.hasOwnProperty(key)) {
-        //        xhr.setRequestHeader(key, this.headers[key]);
-        //    }
-        //}
+        
+        for (var key in this.headers) {
+           if (this.headers.hasOwnProperty(key)) {
+               xhr.setRequestHeader(key, this.headers[key]);
+           }
+        }
+        
         xhr.send(JSON.stringify(this.data));
     }
 };
@@ -2150,7 +2149,7 @@ var log = function (s, opts) {
 var wrapCallback = function (operation, props, callback) {
     return function (status, response, headers) {
         log("Successfully sent " + operation, props);
-        if(callback !== undefined) {
+        if (callback !== undefined) {
             callback(status, response, headers);
         }
     };
@@ -2160,7 +2159,8 @@ var getUrl = function (options) {
     return ('https:' === window.location.protocol ? 'https' : 'http') + '://' + options.apiEndpoint + "/user";
 };
 
-var User = function () {};
+var User = function () {
+};
 
 User.prototype.init = function (options) {
     this.options = options;
@@ -2170,8 +2170,8 @@ User.prototype.init = function (options) {
 User.prototype.set = function (properties, callback) {
     new Request(getUrl(this.options) + "/set_properties", {
         api: {
-            "apiVersion": API_VERSION,
-            "writeKey": this.options.apiKey
+            "api_version": API_VERSION,
+            "api_key": this.options.apiKey
         },
         user: this.options.userId || this.options.deviceId,
         properties: properties
@@ -2183,8 +2183,8 @@ User.prototype.set = function (properties, callback) {
 User.prototype._merge = function (createdAt, callback) {
     new Request(getUrl(this.options) + "/merge", {
         api: {
-            "apiVersion": API_VERSION,
-            "writeKey": this.options.apiKey
+            "api_version": API_VERSION,
+            "api_key": this.options.apiKey
         },
         anonymous_id: this.options.deviceId,
         user: this.options.userId,
@@ -2198,8 +2198,8 @@ User.prototype._merge = function (createdAt, callback) {
 User.prototype.setOnce = function (properties, callback) {
     new Request(getUrl(this.options) + "/set_properties_once", {
         api: {
-            "apiVersion": API_VERSION,
-            "writeKey": this.options.apiKey
+            "api_version": API_VERSION,
+            "api_key": this.options.apiKey
         },
         id: this.options.userId || this.options.deviceId,
         properties: properties
@@ -2212,8 +2212,8 @@ User.prototype.setOnce = function (properties, callback) {
 User.prototype.increment = function (property, value, callback) {
     new Request(getUrl(this.options) + "/increment_property", {
         api: {
-            "apiVersion": API_VERSION,
-            "writeKey": this.options.apiKey
+            "api_version": API_VERSION,
+            "api_key": this.options.apiKey
         },
         id: this.options.userId || this.options.deviceId,
         property: property,
@@ -2226,8 +2226,8 @@ User.prototype.increment = function (property, value, callback) {
 User.prototype.unset = function (properties, callback) {
     new Request(getUrl(this.options) + "/unset_properties", {
         api: {
-            "apiVersion": API_VERSION,
-            "writeKey": this.options.apiKey
+            "api_version": API_VERSION,
+            "api_key": this.options.apiKey
         },
         id: this.options.userId || this.options.deviceId,
         properties: type(properties) === "array" ? properties : [properties]

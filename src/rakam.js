@@ -37,7 +37,6 @@ var DEFAULT_OPTIONS = {
     cookieName: 'rakam_id',
     domain: undefined,
     includeUtm: false,
-    coalesceDeviceId: true,
     trackForms: false,
     language: language.language,
     optOut: false,
@@ -106,9 +105,6 @@ Rakam.prototype.init = function (apiKey, opt_userId, opt_config, callback) {
             }
             if (opt_config.includeUtm !== undefined) {
                 this.options.includeUtm = !!opt_config.includeUtm;
-            }
-            if (opt_config.coalesceDeviceId !== undefined) {
-                this.options.coalesceDeviceId = !!opt_config.coalesceDeviceId;
             }
             if (opt_config.trackClicks !== undefined) {
                 this.options.trackClicks = !!opt_config.trackClicks;
@@ -641,7 +637,7 @@ Rakam.prototype._logEvent = function (eventType, eventProperties, apiProperties,
             collection: eventType,
             properties: {
                 device_id: this.options.deviceId,
-                _user: this.options.coalesceDeviceId ? this.options.userId || this.options.deviceId : this.options.userId,
+                _user: this.options.userId,
                 // use seconds
                 _time: parseInt(eventTime / 1000) * 1000,
                 session_id: this._sessionId || -1,
@@ -713,13 +709,13 @@ Rakam.prototype.sendEvents = function (callback) {
         var events = this._unsentEvents.slice(0, numEvents).map(function (e) {
             return e.event;
         });
-        var uploadTime = new Date().getTime();
+        var upload_time = new Date().getTime();
 
         var api = {
-            "uploadTime": uploadTime,
-            "apiVersion": API_VERSION,
-            "writeKey": this.options.apiKey
-            //"checksum": md5(API_VERSION + JSON.stringify(events) + uploadTime).toUpperCase()
+            "upload_time": upload_time,
+            "api_version": API_VERSION,
+            "api_key": this.options.apiKey
+            //"checksum": md5(API_VERSION + JSON.stringify(events) + upload_time).toUpperCase()
         };
 
         var scope = this;
