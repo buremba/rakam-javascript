@@ -3,10 +3,8 @@
     var as = document.createElement('script');
     as.type = 'text/javascript';
     as.async = true;
-    as.src = 'https://cdn.rawgit.com/buremba/rakam-javascript/master/rakam.min.js';
-    as.onload = function () {
-        window.rakam.runQueuedFunctions();
-    };
+    as.src = 'https://rawgit.com/buremba/rakam-javascript/master/rakam.min.js';
+    as.onload = function() {window.rakam.runQueuedFunctions();};
     var s = document.getElementsByTagName('script')[0];
     s.parentNode.insertBefore(as, s);
     var User = function () {

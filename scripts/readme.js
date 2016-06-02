@@ -11,9 +11,8 @@ var snippet = fs.readFileSync(snippetFilename, 'utf-8');
 var script =
 '        <script type="text/javascript">\n' +
 snippet.trim().replace(/^/gm, '          ') + '\n\n' +
-'          rakam.init("YOUR_PROJECT_HERE", "USER_ID_HERE", { \n\
+'          rakam.init("YOUR_PROJECT_WRITE_KEY", "USER_ID_HERE", { \n\
                 apiEndpoint:"127.0.0.1:9999", \n\
-                write_key: "YOUR_PROJECT_WRITE_KEY", \n\
                 includeUtm: true, \n\
                 trackClicks: true, \n\
                 trackForms: true, \n\

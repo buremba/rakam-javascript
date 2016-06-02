@@ -6,7 +6,7 @@
 
         <script type="text/javascript">
           (function(e,t){var r=e.rakam||{};var n=t.createElement("script");n.type="text/javascript";
-          n.async=true;n.src="https://cdn.rawgit.com/buremba/rakam-javascript/master/rakam.min.js";
+          n.async=true;n.src="https://rawgit.com/buremba/rakam-javascript/master/rakam.min.js";
           n.onload=function(){e.rakam.runQueuedFunctions()};var a=t.getElementsByTagName("script")[0];
           a.parentNode.insertBefore(n,a);var s=function(){this._q=[];return this};function i(e){
           s.prototype[e]=function(){this._q.push([e].concat(Array.prototype.slice.call(arguments,0)));
@@ -15,9 +15,8 @@
           }}var m=["init","logEvent","logInlinedEvent","setUserId","getUserId","getDeviceId","setSuperProperties","setOptOut","setVersionName","setDomain","setDeviceId","onload","onEvent","getTimeOnPreviousPage","getTimeOnPage","startTimer","isReturningUser"];
           for(var p=0;p<m.length;p++){u(m[p])}e.rakam=r})(window,document);
 
-          rakam.init("YOUR_PROJECT_HERE", "USER_ID_HERE", { 
+          rakam.init("YOUR_PROJECT_WRITE_KEY", "USER_ID_HERE", { 
                 apiEndpoint:"127.0.0.1:9999", 
-                write_key: "YOUR_PROJECT_WRITE_KEY", 
                 includeUtm: true, 
                 trackClicks: true, 
                 trackForms: true, 

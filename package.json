@@ -1,7 +1,7 @@
 {
   "name": "rakam-js",
   "author": "Rakam <support@rakam.com>",
-  "version": "2.4.0",
+  "version": "2.5.0",
   "license": "MIT",
   "description": "Javascript library for Rakam Analytics",
   "keywords": [
@@ -11,7 +11,8 @@
   "repository": "git://github.com/rakam/rakam-javascript.git",
   "main": "lib/rakam.js",
   "dependencies": {
-    "ifvisible.js": "1.0.4"
+    "ifvisible.js": "1.0.4",
+    "phantomjs": "^2.1.7"
   },
   "devDependencies": {
     "duo": "0.8",

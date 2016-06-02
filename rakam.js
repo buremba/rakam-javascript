@@ -2128,7 +2128,7 @@ module.exports = uuid;
 
 }, {}],
 10: [function(require, module, exports) {
-module.exports = '2.4.0';
+module.exports = '2.5.0';
 
 }, {}],
 11: [function(require, module, exports) {
@@ -2173,7 +2173,7 @@ User.prototype.set = function (properties, callback) {
             "api_version": API_VERSION,
             "api_key": this.options.apiKey
         },
-        user: this.options.userId || this.options.deviceId,
+        id: this.options.userId || this.options.deviceId,
         properties: properties
     }).send(wrapCallback("set_properties", properties, callback));
 
@@ -2187,7 +2187,7 @@ User.prototype._merge = function (createdAt, callback) {
             "api_key": this.options.apiKey
         },
         anonymous_id: this.options.deviceId,
-        user: this.options.userId,
+        id: this.options.userId,
         created_at: createdAt,
         merged_at: new Date()
     }).send(wrapCallback("merge", null, callback));
