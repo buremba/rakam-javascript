@@ -136,7 +136,7 @@ if (!Array.prototype.indexOf) {
 
 var API_VERSION = 1;
 var DEFAULT_OPTIONS = {
-    apiEndpoint: 'api.rakam.com',
+    apiEndpoint: 'app.rakam.io',
     eventEndpointPath: '/event/batch',
     cookieExpiration: 365 * 10,
     cookieName: 'rakam_id',
@@ -643,7 +643,17 @@ Rakam.prototype.setUserId = function (userId) {
         //         _saveCookieData(_this);
         //     });
         // }
+
+        _saveCookieData(this);
         log('set userId=' + userId);
+    } catch (e) {
+        log(e);
+    }
+};
+
+Rakam.prototype.setUserProperties = function (parameters) {
+    try {
+        return new this.User().set(parameters);
     } catch (e) {
         log(e);
     }
@@ -741,14 +751,13 @@ Rakam.prototype._logEvent = function (eventType, eventProperties, apiProperties,
         var event = {
             collection: eventType,
             properties: {
-                device_id: this.options.deviceId,
+                _device_id: this.options.deviceId,
                 _user: this.options.userId,
                 // use seconds
                 _time: parseInt(eventTime / 1000) * 1000,
-                session_id: this._sessionId || -1,
-                platform: this.options.platform,
-                language: this.options.language
-                //uuid: UUID()
+                _session_id: this._sessionId || -1,
+                _platform: this.options.platform,
+                _language: this.options.language
             }
         };
 
