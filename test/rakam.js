@@ -86,7 +86,7 @@ describe('Rakam', function () {
             rakam.User().set({'prop': true});
             server.respondWith("1");
 
-            assert.equal(server.requests[0].url, 'http://api.rakam.com/user/set_properties');
+            assert.equal(server.requests[0].url, 'http://app.rakam.io/user/set_properties');
             assert.equal(server.requests[0].method, 'POST');
             assert.equal(server.requests[0].async, true);
             assert.deepEqual(JSON.parse(server.requests[0].requestBody).properties, {'prop': true});
@@ -96,7 +96,7 @@ describe('Rakam', function () {
             rakam.User().setOnce({'prop': true});
             server.respondWith("1");
 
-            assert.equal(server.requests[0].url, 'http://api.rakam.com/user/set_properties_once');
+            assert.equal(server.requests[0].url, 'http://app.rakam.io/user/set_properties_once');
             assert.equal(server.requests[0].method, 'POST');
             assert.equal(server.requests[0].async, true);
             assert.deepEqual(JSON.parse(server.requests[0].requestBody).properties, {'prop': true});
@@ -106,7 +106,7 @@ describe('Rakam', function () {
             rakam.User().increment('prop', 1);
             server.respondWith("1");
 
-            assert.equal(server.requests[0].url, 'http://api.rakam.com/user/increment_property');
+            assert.equal(server.requests[0].url, 'http://app.rakam.io/user/increment_property');
             assert.equal(server.requests[0].method, 'POST');
             assert.equal(server.requests[0].async, true);
             assert.deepEqual(JSON.parse(server.requests[0].requestBody).property, 'prop');
@@ -117,7 +117,7 @@ describe('Rakam', function () {
             rakam.User().unset('prop');
             server.respondWith("1");
 
-            assert.equal(server.requests[0].url, 'http://api.rakam.com/user/unset_properties');
+            assert.equal(server.requests[0].url, 'http://app.rakam.io/user/unset_properties');
             assert.equal(server.requests[0].method, 'POST');
             assert.equal(server.requests[0].async, true);
             assert.deepEqual(JSON.parse(server.requests[0].requestBody).properties, ['prop']);
@@ -127,7 +127,7 @@ describe('Rakam', function () {
             rakam.User().unset(['prop']);
             server.respondWith("1");
 
-            assert.equal(server.requests[0].url, 'http://api.rakam.com/user/unset_properties');
+            assert.equal(server.requests[0].url, 'http://app.rakam.io/user/unset_properties');
             assert.equal(server.requests[0].method, 'POST');
             assert.equal(server.requests[0].async, true);
             assert.deepEqual(JSON.parse(server.requests[0].requestBody).properties, ['prop']);
@@ -182,7 +182,7 @@ describe('Rakam', function () {
         it('should send request', function () {
             rakam.logEvent('Event Type 1');
             assert.lengthOf(server.requests, 1);
-            assert.equal(server.requests[0].url, 'http://api.rakam.com/event/batch');
+            assert.equal(server.requests[0].url, 'http://app.rakam.io/event/batch');
             assert.equal(server.requests[0].method, 'POST');
             assert.equal(server.requests[0].async, true);
         });
