@@ -829,14 +829,15 @@ describe('Rakam', function () {
 
         it('should create new session IDs on timeout', function () {
             var sessionId = rakam._sessionId;
+
             clock.tick(30 * 60 * 1000 + 1);
             rakam.logEvent('Event Type 1');
             assert.lengthOf(server.requests, 1);
             var events = JSON.parse(server.requests[0].requestBody);
             assert.equal(events.events.length, 1);
-            assert.notEqual(events.events[0].session_id, sessionId);
+            assert.notEqual(events.events[0]._session_id, sessionId);
             assert.notEqual(rakam._sessionId, sessionId);
-            assert.equal(events.events[0].properties.session_id, rakam._sessionId);
+            assert.equal(events.events[0].properties._session_id, rakam._sessionId);
         });
     });
 });

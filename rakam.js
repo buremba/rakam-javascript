@@ -249,7 +249,9 @@ Rakam.prototype.init = function (apiKey, opt_userId, opt_config, callback) {
         _saveCookieData(this);
 
         log('initialized with apiKey=' + apiKey);
-        //opt_userId !== undefined && opt_userId !== null && log('initialized with userId=' + opt_userId);
+        if(opt_userId !== undefined && opt_userId !== null) {
+            log('initialized with userId=' + opt_userId);
+        }
 
         if (this.options.saveEvents) {
             var savedUnsentEventsString = localStorage.getItem(this.options.unsentKey);
@@ -278,6 +280,7 @@ Rakam.prototype.init = function (apiKey, opt_userId, opt_config, callback) {
 
         this._lastEventTime = parseInt(localStorage.getItem(LocalStorageKeys.LAST_EVENT_TIME)) || null;
         this._sessionId = parseInt(localStorage.getItem(LocalStorageKeys.SESSION_ID)) || null;
+
         this._eventId = localStorage.getItem(LocalStorageKeys.LAST_ID) || 0;
         var now = new Date().getTime();
         if (!this._sessionId || !this._lastEventTime || now - this._lastEventTime > this.options.sessionTimeout) {
@@ -2137,7 +2140,7 @@ module.exports = uuid;
 
 }, {}],
 10: [function(require, module, exports) {
-module.exports = '2.5.0';
+module.exports = 'undefined';
 
 }, {}],
 11: [function(require, module, exports) {
