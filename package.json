@@ -1,14 +1,16 @@
 {
   "name": "rakam-js",
   "author": "Rakam <support@rakam.com>",
-  "version": "2.5.0",
   "license": "MIT",
   "description": "Javascript library for Rakam Analytics",
   "keywords": [
     "analytics",
     "rakam"
   ],
-  "repository": "git://github.com/rakam/rakam-javascript.git",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/buremba/rakam-javascript.git"
+  },
   "main": "lib/rakam.js",
   "dependencies": {
     "ifvisible.js": "1.0.4",
@@ -20,9 +22,11 @@
     "fs-extra": "^0.15.0",
     "jshint": "^2.6.3",
     "mocha-phantomjs": "^3.6.0",
-    "uglify-js": ">= 1.3.4"
+    "uglify-js": ">= 1.3.4",
+    "semantic-release": "^4.3.5"
   },
   "scripts": {
-    "test": "make test"
+    "test": "make test",
+    "semantic-release": "semantic-release pre && npm publish && semantic-release post"
   }
 }
