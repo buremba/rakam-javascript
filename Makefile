@@ -95,4 +95,4 @@ release: $(OUT) $(SNIPPET_OUT) README.md
 	node scripts/release
 
 .PHONY: clean
-#.PHONY: test
+.PHONY: test
