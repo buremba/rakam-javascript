@@ -531,16 +531,16 @@ Rakam.prototype.setDomain = function (domain) {
 
 Rakam.prototype.setUserId = function (userId) {
     try {
-        // var previousUserId = this.options.userId;
+        var previousUserId = this.options.userId;
         this.options.userId = (userId !== undefined && userId !== null && ('' + userId)) || null;
 
-        // if ((this._eventId > 0 && previousUserId === null) || (previousUserId !== null && this.deviceIdCreatedAt !== undefined)) {
-        //     var _this = this;
-        //     this.User()._merge(this.deviceIdCreatedAt, function () {
-        //         _this.deviceIdCreatedAt = undefined;
-        //         _saveCookieData(_this);
-        //     });
-        // }
+        if ((this._eventId > 0 && previousUserId === null) || (previousUserId !== null && this.deviceIdCreatedAt !== undefined)) {
+            var _this = this;
+            this.User()._merge(previousUserId, this.deviceIdCreatedAt, function () {
+                _this.deviceIdCreatedAt = undefined;
+                _saveCookieData(_this);
+            });
+        }
 
         _saveCookieData(this);
         log('set userId=' + userId);

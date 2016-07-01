@@ -46,16 +46,17 @@ User.prototype.set = function (properties, callback) {
     return this;
 };
 
-User.prototype._merge = function (createdAt, callback) {
+User.prototype._merge = function (previousUserId, createdAt, callback) {
     new Request(getUrl(this.options) + "/merge", {
         api: {
             "api_version": API_VERSION,
-            "api_key": this.options.apiKey
+            "api_key": this.options.apiKey,
+            "upload_time": new Date().getTime()
         },
-        anonymous_id: this.options.deviceId,
+        anonymous_id: previousUserId,
         id: this.options.userId,
-        created_at: createdAt,
-        merged_at: new Date()
+        created_at: createdAt.getTime(),
+        merged_at: new Date().getTime()
     }).send(wrapCallback("merge", null, callback));
 
     return this;

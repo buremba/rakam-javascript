@@ -636,16 +636,16 @@ Rakam.prototype.setDomain = function (domain) {
 
 Rakam.prototype.setUserId = function (userId) {
     try {
-        // var previousUserId = this.options.userId;
+        var previousUserId = this.options.userId;
         this.options.userId = (userId !== undefined && userId !== null && ('' + userId)) || null;
 
-        // if ((this._eventId > 0 && previousUserId === null) || (previousUserId !== null && this.deviceIdCreatedAt !== undefined)) {
-        //     var _this = this;
-        //     this.User()._merge(this.deviceIdCreatedAt, function () {
-        //         _this.deviceIdCreatedAt = undefined;
-        //         _saveCookieData(_this);
-        //     });
-        // }
+        if ((this._eventId > 0 && previousUserId === null) || (previousUserId !== null && this.deviceIdCreatedAt !== undefined)) {
+            var _this = this;
+            this.User()._merge(previousUserId, this.deviceIdCreatedAt, function () {
+                _this.deviceIdCreatedAt = undefined;
+                _saveCookieData(_this);
+            });
+        }
 
         _saveCookieData(this);
         log('set userId=' + userId);
@@ -2192,16 +2192,17 @@ User.prototype.set = function (properties, callback) {
     return this;
 };
 
-User.prototype._merge = function (createdAt, callback) {
+User.prototype._merge = function (previousUserId, createdAt, callback) {
     new Request(getUrl(this.options) + "/merge", {
         api: {
             "api_version": API_VERSION,
-            "api_key": this.options.apiKey
+            "api_key": this.options.apiKey,
+            "upload_time": new Date().getTime()
         },
-        anonymous_id: this.options.deviceId,
+        anonymous_id: previousUserId,
         id: this.options.userId,
-        created_at: createdAt,
-        merged_at: new Date()
+        created_at: createdAt.getTime(),
+        merged_at: new Date().getTime()
     }).send(wrapCallback("merge", null, callback));
 
     return this;
