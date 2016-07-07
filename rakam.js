@@ -248,7 +248,6 @@ Rakam.prototype.init = function (apiKey, opt_userId, opt_config, callback) {
         _saveCookieData(this);
 
         log('initialized with apiKey=' + apiKey);
-        this.setUserId(opt_userId);
 
         if (this.options.saveEvents) {
             var savedUnsentEventsString = localStorage.getItem(this.options.unsentKey);
@@ -293,10 +292,11 @@ Rakam.prototype.init = function (apiKey, opt_userId, opt_config, callback) {
         }
         this._lastEventTime = now;
         localStorage.setItem(LocalStorageKeys.LAST_EVENT_TIME, this._lastEventTime);
-
     } catch (e) {
         log(e);
     }
+
+    this.setUserId(opt_userId);
 
     if (callback && typeof(callback) === 'function') {
         setTimeout(function () {
