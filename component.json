@@ -3,7 +3,6 @@
   "main": "src/index.js",
   "repo": "rakam/rakam-javascript",
   "description": "Javascript library for Rakam Analytics",
-  "version": "2.5.0",
   "keywords": [
     "analytics",
     "rakam"

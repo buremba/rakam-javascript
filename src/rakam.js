@@ -140,13 +140,10 @@ Rakam.prototype.init = function (apiKey, opt_userId, opt_config, callback) {
             this.options.deviceId = UUID();
         }
 
-        this.options.userId = (opt_userId !== undefined && opt_userId !== null && opt_userId) || this.options.userId || null;
         _saveCookieData(this);
 
         log('initialized with apiKey=' + apiKey);
-        if(opt_userId !== undefined && opt_userId !== null) {
-            log('initialized with userId=' + opt_userId);
-        }
+        this.setUserId(opt_userId);
 
         if (this.options.saveEvents) {
             var savedUnsentEventsString = localStorage.getItem(this.options.unsentKey);
@@ -534,7 +531,8 @@ Rakam.prototype.setUserId = function (userId) {
         var previousUserId = this.options.userId;
         this.options.userId = (userId !== undefined && userId !== null && ('' + userId)) || null;
 
-        if ((this._eventId > 0 && previousUserId === null) || (previousUserId !== null && this.deviceIdCreatedAt !== undefined)) {
+        if (userId !== null && userId !== undefined && ((this._eventId > 0 && previousUserId === null) ||
+            (previousUserId !== null && this.deviceIdCreatedAt !== undefined))) {
             var _this = this;
             this.User()._merge(previousUserId, this.deviceIdCreatedAt, function () {
                 _this.deviceIdCreatedAt = undefined;
