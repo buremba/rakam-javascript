@@ -55,7 +55,7 @@ User.prototype._merge = function (previousUserId, createdAt, callback) {
         },
         anonymous_id: previousUserId,
         id: this.options.userId,
-        created_at: createdAt.getTime(),
+        created_at: createdAt ? createdAt.getTime() : null,
         merged_at: new Date().getTime()
     }).send(wrapCallback("merge", null, callback));
 

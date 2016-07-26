@@ -535,7 +535,7 @@ Rakam.prototype.setUserId = function (userId) {
             (previousUserId !== null && previousUserId !== undefined && this.deviceIdCreatedAt !== undefined))) {
             var _this = this;
             this.User()._merge(previousUserId, this.deviceIdCreatedAt, function () {
-                _this.deviceIdCreatedAt = undefined;
+                _this.deviceIdCreatedAt = new Date();
                 _saveCookieData(_this);
             });
         }
