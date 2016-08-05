@@ -531,7 +531,7 @@ Rakam.prototype.setUserId = function (userId) {
         var previousUserId = this.options.userId;
         this.options.userId = (userId !== undefined && userId !== null && ('' + userId)) || null;
 
-        if (userId !== null && userId !== undefined && ((this._eventId > 0 && (previousUserId === null || previousUserId === undefined)) ||
+        if (userId !== null && userId !== '' && userId !== undefined && ((this._eventId > 0 && (previousUserId === null || previousUserId === undefined)) ||
             (previousUserId !== null && previousUserId !== undefined && this.deviceIdCreatedAt !== undefined))) {
             var _this = this;
             this.User()._merge(previousUserId, this.deviceIdCreatedAt, function () {
