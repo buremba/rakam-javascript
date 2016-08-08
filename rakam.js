@@ -143,6 +143,7 @@ var DEFAULT_OPTIONS = {
     domain: undefined,
     includeUtm: false,
     trackForms: false,
+    mergeDeviceId: false,
     language: language.language,
     optOut: false,
     platform: 'Web',
@@ -220,6 +221,7 @@ Rakam.prototype.init = function (apiKey, opt_userId, opt_config, callback) {
             if (opt_config.batchEvents !== undefined) {
                 this.options.batchEvents = !!opt_config.batchEvents;
             }
+            this.options.mergeDeviceId = opt_config.mergeDeviceId || this.options.mergeDeviceId;
             this.options.platform = opt_config.platform || this.options.platform;
             this.options.language = opt_config.language || this.options.language;
             this.options.sessionTimeout = opt_config.sessionTimeout || this.options.sessionTimeout;
@@ -633,14 +635,14 @@ Rakam.prototype.setDomain = function (domain) {
 
 Rakam.prototype.setUserId = function (userId) {
     try {
-        var deviceId = this.options.deviceId;
+        var previousId = this.options.mergeDeviceId ? this.options.deviceId : this.options.userId;
         this.options.userId = (userId !== undefined && userId !== null && ('' + userId)) || null;
 
         if (this.deviceIdCreatedAt !== null && userId !== null && userId !== '' && userId !== undefined &&
-            ((this._eventId > 0 && (deviceId === null || deviceId === undefined)) ||
-            (deviceId !== null && deviceId !== undefined && this.deviceIdCreatedAt !== undefined))) {
+            ((this._eventId > 0 && (previousId === null || previousId === undefined)) ||
+            (previousId !== null && previousId !== undefined && this.deviceIdCreatedAt !== undefined))) {
             var _this = this;
-            this.User()._merge(deviceId, this.deviceIdCreatedAt, function () {
+            this.User()._merge(previousId, this.deviceIdCreatedAt, function () {
                 _this.deviceIdCreatedAt = null;
                 _saveCookieData(_this);
             });
