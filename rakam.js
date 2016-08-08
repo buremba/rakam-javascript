@@ -633,14 +633,15 @@ Rakam.prototype.setDomain = function (domain) {
 
 Rakam.prototype.setUserId = function (userId) {
     try {
-        var previousUserId = this.options.userId;
+        var deviceId = this.options.deviceId;
         this.options.userId = (userId !== undefined && userId !== null && ('' + userId)) || null;
 
-        if (userId !== null && previousUserId !== userId && userId !== '' && userId !== undefined && ((this._eventId > 0 && (previousUserId === null || previousUserId === undefined)) ||
-            (previousUserId !== null && previousUserId !== undefined && this.deviceIdCreatedAt !== undefined))) {
+        if (this.deviceIdCreatedAt !== null && userId !== null && userId !== '' && userId !== undefined &&
+            ((this._eventId > 0 && (deviceId === null || deviceId === undefined)) ||
+            (deviceId !== null && deviceId !== undefined && this.deviceIdCreatedAt !== undefined))) {
             var _this = this;
-            this.User()._merge(previousUserId, this.deviceIdCreatedAt, function () {
-                _this.deviceIdCreatedAt = new Date();
+            this.User()._merge(deviceId, this.deviceIdCreatedAt, function () {
+                _this.deviceIdCreatedAt = null;
                 _saveCookieData(_this);
             });
         }
@@ -2189,14 +2190,14 @@ User.prototype.set = function (properties, callback) {
     return this;
 };
 
-User.prototype._merge = function (previousUserId, createdAt, callback) {
+User.prototype._merge = function (deviceId, createdAt, callback) {
     new Request(getUrl(this.options) + "/merge", {
         api: {
             "api_version": API_VERSION,
             "api_key": this.options.apiKey,
             "upload_time": new Date().getTime()
         },
-        anonymous_id: previousUserId,
+        anonymous_id: deviceId,
         id: this.options.userId,
         created_at: createdAt ? createdAt.getTime() : null,
         merged_at: new Date().getTime()

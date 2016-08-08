@@ -531,12 +531,12 @@ Rakam.prototype.setUserId = function (userId) {
         var deviceId = this.options.deviceId;
         this.options.userId = (userId !== undefined && userId !== null && ('' + userId)) || null;
 
-        if (userId !== null && userId !== '' && userId !== undefined &&
+        if (this.deviceIdCreatedAt !== null && userId !== null && userId !== '' && userId !== undefined &&
             ((this._eventId > 0 && (deviceId === null || deviceId === undefined)) ||
             (deviceId !== null && deviceId !== undefined && this.deviceIdCreatedAt !== undefined))) {
             var _this = this;
             this.User()._merge(deviceId, this.deviceIdCreatedAt, function () {
-                _this.deviceIdCreatedAt = new Date();
+                _this.deviceIdCreatedAt = null;
                 _saveCookieData(_this);
             });
         }
