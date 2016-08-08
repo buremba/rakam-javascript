@@ -8,7 +8,7 @@ var Request = require('./xhr');
 var UUID = require('./uuid');
 var version = require('./version');
 var User = require('./user');
-var ifvisible = require('../node_modules/ifvisible.js/src/ifvisible.min.js');
+var ifvisible = require('../node_modules/ifvisible.js/src/ifvisible.js');
 var type = require('./type');
 
 var log = function (s) {
@@ -528,13 +528,14 @@ Rakam.prototype.setDomain = function (domain) {
 
 Rakam.prototype.setUserId = function (userId) {
     try {
-        var previousUserId = this.options.userId;
+        var deviceId = this.options.deviceId;
         this.options.userId = (userId !== undefined && userId !== null && ('' + userId)) || null;
 
-        if (userId !== null && userId !== '' && userId !== undefined && ((this._eventId > 0 && (previousUserId === null || previousUserId === undefined)) ||
-            (previousUserId !== null && previousUserId !== undefined && this.deviceIdCreatedAt !== undefined))) {
+        if (userId !== null && userId !== '' && userId !== undefined &&
+            ((this._eventId > 0 && (deviceId === null || deviceId === undefined)) ||
+            (deviceId !== null && deviceId !== undefined && this.deviceIdCreatedAt !== undefined))) {
             var _this = this;
-            this.User()._merge(previousUserId, this.deviceIdCreatedAt, function () {
+            this.User()._merge(deviceId, this.deviceIdCreatedAt, function () {
                 _this.deviceIdCreatedAt = new Date();
                 _saveCookieData(_this);
             });
