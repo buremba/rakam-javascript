@@ -282,7 +282,7 @@ Rakam.prototype.init = function (apiKey, opt_userId, opt_config, callback) {
         this._eventId = localStorage.getItem(LocalStorageKeys.LAST_ID) || 0;
         var now = new Date().getTime();
         if (!this._sessionId || !this._lastEventTime || now - this._lastEventTime > this.options.sessionTimeout) {
-            if (this._sessionId !== null || this.options.userId !== null) {
+            if (this._sessionId !== null) {
                 localStorage.setItem(LocalStorageKeys.RETURNING_SESSION, true);
                 this._returningUser = true;
             }
