@@ -533,7 +533,7 @@ Rakam.prototype.setUserId = function (userId) {
 
         if (userId !== null && userId !== '' && userId !== undefined &&
             ((this._eventId > 0 && (previousId === null || previousId === undefined)) ||
-            (previousId !== null && previousId !== undefined && this.deviceIdCreatedAt !== undefined))) {
+            (previousId !== null && previousId !== undefined))) {
             var _this = this;
             this.User()._merge(previousId, this.deviceIdCreatedAt, function () {
                 _this.deviceIdCreatedAt = null;
