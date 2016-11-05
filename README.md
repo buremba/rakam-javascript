@@ -22,7 +22,7 @@
            });
         </script>
 
-3. Replace `YOUR_API_KEY_HERE` with the Write API Key given to you.
+3. Replace `YOUR_PROJECT_WRITE_KEY` with the write API key of your project. If you know the user id (it may be e-mail, database id or any other identifier), you can pass it in `USER_ID_HERE`, otherwise you can just use `null` value.
 4. To track an event anywhere on the page, call:
 
         rakam.logEvent("EVENT_IDENTIFIER_HERE");
