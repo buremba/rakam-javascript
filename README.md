@@ -45,7 +45,7 @@ You can attach additional data to any event by passing a Javascript object as th
 
 To add properties to a user you can use the User API.
 
-    new rakam.User().set({'property', 'value'}, callback);
+    new rakam.User().set({'property': 'value'}, callback);
 
 Currently, we have `set`, `setOnce`, `increment` and `unset` methods in User API.
 
