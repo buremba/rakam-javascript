@@ -35,22 +35,22 @@ It's important to think about what types of events you care about as a developer
 
 Here is an example for a typical setup:
 
-        rakam.init("YOUR_PROJECT_WRITE_KEY", "USER_ID_HERE", { 
-                apiEndpoint:"127.0.0.1:9999", 
-                includeUtm: true, 
-                trackClicks: true, 
-                trackForms: true, 
-                includeReferrer: true 
-        }, function() {
-                var e = document.documentElement, g = document.getElementsByTagName('body')[0],
-                        x = window.innerWidth || e.clientWidth || g.clientWidth,
-                        y = window.innerHeight|| e.clientHeight|| g.clientHeight; 
+    rakam.init("YOUR_PROJECT_WRITE_KEY", "USER_ID_HERE", { 
+        apiEndpoint:"127.0.0.1:9999", 
+        includeUtm: true, 
+        trackClicks: true, 
+        trackForms: true, 
+        includeReferrer: true 
+    }, function() {
+        var e = document.documentElement, g = document.getElementsByTagName('body')[0],
+                x = window.innerWidth || e.clientWidth || g.clientWidth,
+                y = window.innerHeight|| e.clientHeight|| g.clientHeight; 
 
-                rakam.logEvent("pageview", {url: window.location.pathname, time_on_page: rakam.getTimeOnPreviousPage(), returning_session: rakam.isReturningUser(), color_depth: window.screen.colorDepth, viewport: x + ' × ' + y, title: document.title});
-        });
-        rakam.startTimer(true);
+        rakam.logEvent("pageview", {url: window.location.pathname, time_on_page: rakam.getTimeOnPreviousPage(), returning_session: rakam.isReturningUser(), color_depth: window.screen.colorDepth, viewport: x + ' × ' + y, title: document.title});
+    });
+    rakam.startTimer(true);
 
-        rakam.setSuperProperties({platform: 'Web', _ip: true, _user_agent:true, _referrer:document.referrer, resolution: window.screen.width+" × "+window.screen.height}, true);
+    rakam.setSuperProperties({platform: 'Web', _ip: true, _user_agent:true, _referrer:document.referrer, resolution: window.screen.width+" × "+window.screen.height}, true);
 
 # Setting Event Properties #
 
