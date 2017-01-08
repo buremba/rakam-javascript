@@ -50,7 +50,7 @@ Here is an example for a typical setup:
         });
         rakam.startTimer(true);
 
-        rakam.setSuperProperties({platform: 'Web', _ip: true, lang: "tr-tr", _user_agent:true, _referrer:document.referrer, resolution: window.screen.width+" × "+window.screen.height}, true);
+        rakam.setSuperProperties({platform: 'Web', _ip: true, _user_agent:true, _referrer:document.referrer, resolution: window.screen.width+" × "+window.screen.height}, true);
 
 # Setting Event Properties #
 
