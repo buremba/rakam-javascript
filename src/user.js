@@ -8,13 +8,9 @@ var Request = require('./xhr');
  */
 
 var API_VERSION = 1;
-var log = function (s, opts) {
-    console.log('[Rakam] ' + s, opts);
-};
 
 var wrapCallback = function (operation, props, callback) {
     return function (status, response, headers) {
-        log("Successfully sent " + operation, props);
         if (callback !== undefined) {
             callback(status, response, headers);
         }
@@ -31,7 +27,6 @@ var User = function () {
 User.prototype.init = function (options) {
     this.options = options;
 };
-
 
 User.prototype.set = function (properties, callback) {
     new Request(getUrl(this.options) + "/set_properties", {

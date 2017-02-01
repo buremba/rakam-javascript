@@ -11,10 +11,6 @@ var User = require('./user');
 var ifvisible = require('../node_modules/ifvisible.js/src/ifvisible.js');
 var type = require('./type');
 
-var log = function (s) {
-    console.log('[Rakam] ' + s);
-};
-
 var indexOf;
 if (!Array.prototype.indexOf) {
     indexOf = function (obj, start) {
@@ -73,6 +69,12 @@ Rakam.prototype._lastEventTime = null;
 Rakam.prototype._sessionId = null;
 Rakam.prototype._newSession = false;
 
+Rakam.prototype.log = function (s) {
+    if(this.options.debug === true) {
+        console.log('[Rakam] ' + s);
+    }
+};
+
 /**
  * Initializes Rakam.
  * apiKey The API Key for your app
@@ -96,6 +98,7 @@ Rakam.prototype.init = function (apiKey, opt_userId, opt_config, callback) {
 
         if (opt_config) {
             this.options.apiEndpoint = opt_config.apiEndpoint || this.options.apiEndpoint;
+            this.options.debug = opt_config.debug || this.options.debug === true;
 
             if (opt_config.saveEvents !== undefined) {
                 this.options.saveEvents = !!opt_config.saveEvents;
@@ -142,7 +145,7 @@ Rakam.prototype.init = function (apiKey, opt_userId, opt_config, callback) {
 
         _saveCookieData(this);
 
-        log('initialized with apiKey=' + apiKey);
+        this.log('initialized with apiKey=' + apiKey);
 
         if (this.options.saveEvents) {
             var savedUnsentEventsString = localStorage.getItem(this.options.unsentKey);
@@ -150,7 +153,7 @@ Rakam.prototype.init = function (apiKey, opt_userId, opt_config, callback) {
                 try {
                     this._unsentEvents = JSON.parse(savedUnsentEventsString);
                 } catch (e) {
-                    log(e);
+                    this.log(e);
                 }
             }
         }
@@ -188,7 +191,7 @@ Rakam.prototype.init = function (apiKey, opt_userId, opt_config, callback) {
         this._lastEventTime = now;
         localStorage.setItem(LocalStorageKeys.LAST_EVENT_TIME, this._lastEventTime);
     } catch (e) {
-        log(e);
+        this.log(e);
     }
 
     this.setUserId(opt_userId);
@@ -206,20 +209,20 @@ Rakam.prototype.onEvent = function (callback) {
 };
 
 
-var transformValue = function (attribute, value, type) {
+var transformValue = function (_this, attribute, value, type) {
     if (type !== null) {
         type = type.toLowerCase();
     }
     if (type === 'long' || type === 'time' || type === 'timestamp' || type === 'date') {
         value = parseInt(value);
         if (isNaN(value) || !isFinite(value)) {
-            log("ignoring " + attribute + ": the value must be a number");
+            _this.log("ignoring " + attribute + ": the value must be a number");
             value = null;
         }
     } else if (type === 'double') {
         value = parseFloat(value);
         if (isNaN(value) || !isFinite(value)) {
-            log("ignoring " + attribute + ": the value is not double");
+            _this.log("ignoring " + attribute + ": the value is not double");
             value = null;
         }
     } else if (type === 'boolean') {
@@ -228,7 +231,7 @@ var transformValue = function (attribute, value, type) {
         } else if (type === "false" || type === "0") {
             value = false;
         } else {
-            log("ignoring " + attribute + ": the value is not boolean");
+            _this.log("ignoring " + attribute + ": the value is not boolean");
             value = null;
         }
     }
@@ -275,11 +278,11 @@ Rakam.prototype.logInlinedEvent = function (collection, extraProperties, callbac
             } else if (element.innerText) {
                 value = element.innerText.replace(/^\s+|\s+$/g, '');
             } else {
-                log('Could find value of DOM element.', element);
+                this.log('Could find value of DOM element.', element);
             }
         }
         if (value !== null && value !== '') {
-            properties[attribute] = transformValue(attribute, value, type);
+            properties[attribute] = transformValue(this, attribute, value, type);
         }
 
     }
@@ -467,13 +470,13 @@ Rakam.prototype._initTrackForms = function () {
 
 
                 if (element.hasAttribute("rakam-event-attribute-value")) {
-                    properties[attribute] = transformValue(attribute, element.getAttribute('rakam-event-attribute-value'), type);
+                    properties[attribute] = transformValue(this, attribute, element.getAttribute('rakam-event-attribute-value'), type);
                 } else if (element.tagName === 'SELECT') {
-                    properties[attribute] = transformValue(attribute, element.options[element.selectedIndex].value, type);
+                    properties[attribute] = transformValue(this, attribute, element.options[element.selectedIndex].value, type);
                 } else if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
-                    properties[attribute] = transformValue(attribute, element.value, type);
+                    properties[attribute] = transformValue(this, attribute, element.value, type);
                 } else {
-                    log("Couldn't get value of form element: " + attribute);
+                    this.log("Couldn't get value of form element: " + attribute);
                 }
 
             }
@@ -508,7 +511,7 @@ Rakam.prototype.saveEvents = function () {
     try {
         localStorage.setItem(this.options.unsentKey, JSON.stringify(this._unsentEvents));
     } catch (e) {
-        log(e);
+        this.log(e);
     }
 };
 
@@ -520,9 +523,9 @@ Rakam.prototype.setDomain = function (domain) {
         this.options.domain = Cookie.options().domain;
         _loadCookieData(this);
         _saveCookieData(this);
-        log('set domain=' + domain);
+        this.log('set domain=' + domain);
     } catch (e) {
-        log(e);
+        this.log(e);
     }
 };
 
@@ -542,9 +545,9 @@ Rakam.prototype.setUserId = function (userId) {
         }
 
         _saveCookieData(this);
-        log('set userId=' + userId);
+        this.log('set userId=' + userId);
     } catch (e) {
-        log(e);
+        this.log(e);
     }
 };
 
@@ -552,7 +555,7 @@ Rakam.prototype.setUserProperties = function (parameters) {
     try {
         return new this.User().set(parameters);
     } catch (e) {
-        log(e);
+        this.log(e);
     }
 };
 
@@ -568,9 +571,9 @@ Rakam.prototype.setOptOut = function (enable) {
     try {
         this.options.optOut = enable;
         _saveCookieData(this);
-        log('set optOut=' + enable);
+        this.log('set optOut=' + enable);
     } catch (e) {
-        log(e);
+        this.log(e);
     }
 };
 
@@ -578,11 +581,10 @@ Rakam.prototype.setDeviceId = function (deviceId) {
     try {
         if (deviceId) {
             this.options.deviceId = ('' + deviceId);
-            console.log(this.options, deviceId);
             _saveCookieData(this);
         }
     } catch (e) {
-        log(e);
+        this.log(e);
     }
 };
 
@@ -599,18 +601,18 @@ Rakam.prototype.setSuperProperties = function (eventProps, opt_replace) {
         }
 
         _saveCookieData(this);
-        log('set super properties=' + JSON.stringify(eventProps));
+        this.log('set super properties=' + JSON.stringify(eventProps));
     } catch (e) {
-        log(e);
+        this.log(e);
     }
 };
 
 Rakam.prototype.setVersionName = function (versionName) {
     try {
         this.options.versionName = versionName;
-        log('set versionName=' + versionName);
+        this.log('set versionName=' + versionName);
     } catch (e) {
-        log(e);
+        this.log(e);
     }
 };
 
@@ -662,7 +664,7 @@ Rakam.prototype._logEvent = function (eventType, eventProperties, apiProperties,
         object.merge(event.properties, apiProperties);
         object.merge(event.properties, eventProperties);
 
-        log('logged eventType=' + eventType + ', properties=' + JSON.stringify(eventProperties));
+        this.log('logged eventType=' + eventType + ', properties=' + JSON.stringify(eventProperties));
 
         this._unsentEvents.push({id: eventId, event: event});
 
@@ -682,7 +684,7 @@ Rakam.prototype._logEvent = function (eventType, eventProperties, apiProperties,
 
         return eventId;
     } catch (e) {
-        log(e);
+        this.log(e);
     }
 };
 
@@ -738,7 +740,7 @@ Rakam.prototype.sendEvents = function (callback) {
 
             try {
                 if (status === 200 || status === 409) {
-                    log('successful upload');
+                    this.log('successful upload');
 
                     scope.removeEvents(maxEventId, status === 409 ? JSON.parse(response) : null);
 
@@ -753,7 +755,7 @@ Rakam.prototype.sendEvents = function (callback) {
                     }
 
                 } else if (status === 413) {
-                    log('request too large');
+                    this.log('request too large');
                     // Can't even get this one massive event through. Drop it.
                     if (scope.options.uploadBatchSize === 1) {
                         scope.removeEvents(maxEventId);
@@ -768,7 +770,7 @@ Rakam.prototype.sendEvents = function (callback) {
                     callback(status, response);
                 }
             } catch (e) {
-                log('failed upload');
+                this.log('failed upload');
             }
 
             if (scope.options.eventCallbacks) {
@@ -777,7 +779,7 @@ Rakam.prototype.sendEvents = function (callback) {
                         scope.options.eventCallbacks[i](status, response, headers);
                     }
                 } catch (e) {
-                    log('callback throwed an exception', e);
+                    this.log('callback throwed an exception', e);
                 }
             }
         });
@@ -789,7 +791,7 @@ Rakam.prototype.sendEvents = function (callback) {
 Rakam.prototype.onload = function (callback) {
     setTimeout(function () {
         callback();
-        log("executed callback", callback);
+        this.log("executed callback", callback);
     }, 1);
 };
 
