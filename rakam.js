@@ -530,6 +530,7 @@ Rakam.prototype._initUtmData = function (queryParams, cookieParams) {
 };
 
 Rakam.prototype._initTrackForms = function () {
+    var _this = this;
     document.addEventListener('submit', function (event) {
         var targetElement = event.target || event.srcElement;
         var collection = targetElement.getAttribute('rakam-event-form');
@@ -581,17 +582,18 @@ Rakam.prototype._initTrackForms = function () {
                 } else if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
                     properties[attribute] = transformValue(this, attribute, element.value, type);
                 } else {
-                    this.log("Couldn't get value of form element: " + attribute);
+                    _this.log("Couldn't get value of form element: " + attribute);
                 }
 
             }
 
-            this.logEvent(collection, properties);
+            _this.logEvent(collection, properties);
         }
     });
 };
 
 Rakam.prototype._initTrackClicks = function () {
+    var _this = this;
     document.addEventListener('click', function (event) {
         var targetElement = event.target || event.srcElement;
         var collection = targetElement.getAttribute('rakam-event-track');
@@ -607,7 +609,7 @@ Rakam.prototype._initTrackClicks = function () {
                 }
             }
 
-            this.logEvent(collection, properties);
+            _this.logEvent(collection, properties);
         }
     });
 };
@@ -815,6 +817,7 @@ Rakam.prototype.removeEvents = function (maxEventId, errors) {
 };
 
 Rakam.prototype.sendEvents = function (callback) {
+    var _this = this;
     if (!this._sending && !this.options.optOut && this._unsentEvents.length > 0) {
         this._sending = true;
         var url = ('https:' === window.location.protocol ? 'https' : 'http') + '://' + this.options.apiEndpoint + this.options.eventEndpointPath;
@@ -845,7 +848,7 @@ Rakam.prototype.sendEvents = function (callback) {
 
             try {
                 if (status === 200 || status === 409) {
-                    this.log('successful upload');
+                    _this.log('successful upload');
 
                     scope.removeEvents(maxEventId, status === 409 ? JSON.parse(response) : null);
 
@@ -860,7 +863,7 @@ Rakam.prototype.sendEvents = function (callback) {
                     }
 
                 } else if (status === 413) {
-                    this.log('request too large');
+                    _this.log('request too large');
                     // Can't even get this one massive event through. Drop it.
                     if (scope.options.uploadBatchSize === 1) {
                         scope.removeEvents(maxEventId);
@@ -875,7 +878,7 @@ Rakam.prototype.sendEvents = function (callback) {
                     callback(status, response);
                 }
             } catch (e) {
-                this.log('failed upload');
+                _this.log('failed upload');
             }
 
             if (scope.options.eventCallbacks) {
@@ -884,7 +887,7 @@ Rakam.prototype.sendEvents = function (callback) {
                         scope.options.eventCallbacks[i](status, response, headers);
                     }
                 } catch (e) {
-                    this.log('callback throwed an exception', e);
+                    _this.log('callback throws an exception', e);
                 }
             }
         });
@@ -894,9 +897,10 @@ Rakam.prototype.sendEvents = function (callback) {
 };
 
 Rakam.prototype.onload = function (callback) {
+    var _this = this;
     setTimeout(function () {
         callback();
-        this.log("executed callback", callback);
+        _this.log("executed callback", callback);
     }, 1);
 };
 

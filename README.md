@@ -6,7 +6,7 @@
 
         <script type="text/javascript">
           (function(e,t){var r=e.rakam||{};var n=t.createElement("script");n.type="text/javascript";
-          n.async=true;n.src="https://d2f7xo8n6nlhxf.cloudfront.net/rakam.min.js";
+          n.async=true;n.src="https://cdn.rawgit.com/buremba/rakam-javascript/master/rakam.js";
           n.onload=function(){e.rakam.runQueuedFunctions()};var a=t.getElementsByTagName("script")[0];
           a.parentNode.insertBefore(n,a);function s(e,t){e[t]=function(){this._q.push([t].concat(Array.prototype.slice.call(arguments,0)));
           return this}}var i=function(){this._q=[];return this};var o=["set","setOnce","increment","unset"];
@@ -14,7 +14,7 @@
           for(var m=0;m<u.length;m++){s(r,u[m])}e.rakam=r})(window,document);
 
           rakam.init("YOUR_PROJECT_WRITE_KEY", "USER_ID_HERE", { 
-                apiEndpoint:"YOUR_RAKAM_API_URL", // if you're in managed tier, you do not need to set value, it's app.rakam.io by default.
+                apiEndpoint:"127.0.0.1:9999", 
                 includeUtm: true, 
                 trackClicks: true, 
                 trackForms: true, 

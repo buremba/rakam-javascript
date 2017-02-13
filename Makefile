@@ -79,6 +79,7 @@ $(SEGMENT_SNIPPET_OUT): $(SRC) $(SNIPPET) version
 
 #
 # Target for `tests-build.js` file.
+
 #
 
 build: $(TESTS) $(OUT) $(SNIPPET_OUT) $(SEGMENT_SNIPPET_OUT) README.md
