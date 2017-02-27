@@ -5,15 +5,6 @@
 2. On every page that uses analytics, paste the following Javascript code between the `<head>` and `</head>` tags:
 
         <script type="text/javascript">
-<<<<<<< Updated upstream
-          (function(e,t){var r=e.rakam||{};var n=t.createElement("script");n.type="text/javascript";
-          n.async=true;n.src="https://d2f7xo8n6nlhxf.cloudfront.net/rakam.min.js";
-          n.onload=function(){e.rakam.runQueuedFunctions()};var a=t.getElementsByTagName("script")[0];
-          a.parentNode.insertBefore(n,a);function s(e,t){e[t]=function(){this._q.push([t].concat(Array.prototype.slice.call(arguments,0)));
-          return this}}var i=function(){this._q=[];return this};var o=["set","setOnce","increment","unset"];
-          for(var c=0;c<o.length;c++){s(i.prototype,o[c])}r.User=i;r._q=[];var u=["init","logEvent","logInlinedEvent","setUserId","getUserId","getDeviceId","setSuperProperties","setOptOut","setVersionName","setDomain","setUserProperties","setDeviceId","onload","onEvent","getTimeOnPreviousPage","getTimeOnPage","startTimer","isReturningUser"];
-          for(var m=0;m<u.length;m++){s(r,u[m])}e.rakam=r})(window,document);
-=======
           (function(e,t){var n=e.rakam||{};var r=t.createElement("script");r.type="text/javascript";
           r.async=true;r.src="https://d2f7xo8n6nlhxf.cloudfront.net/rakam.min.js";r.onload=function(){
           e.rakam.runQueuedFunctions()};var o=t.getElementsByTagName("script")[0];o.parentNode.insertBefore(r,o);
@@ -24,7 +15,6 @@
           var v=(e.console?e.console.error||e.console.log:null)||function(){};var d=function(e){
           return function(){v("The method rakam."+e+"() must be called inside rakam.init callback function!");
           }};for(l=0;l<m.length;l++){n[m[l]]=d(m[l]);a(n,m[l])}e.rakam=n})(window,document);
->>>>>>> Stashed changes
 
           rakam.init("YOUR_PROJECT_WRITE_KEY", "USER_ID_HERE", { 
                 apiEndpoint:"127.0.0.1:9999", 
