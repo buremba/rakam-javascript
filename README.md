@@ -14,7 +14,7 @@
           for(var l=0;l<u.length;l++){a(n,u[l])}var m=["getTimeOnPreviousPage","getTimeOnPage","isReturningUser"];
           var v=(e.console?e.console.error||e.console.log:null)||function(){};var d=function(e){
           return function(){v("The method rakam."+e+"() must be called inside rakam.init callback function!");
-          }};for(l=0;l<m.length;l++){n[m[l]]=d(m[l]);a(n,m[l])}e.rakam=n})(window,document);
+          }};for(l=0;l<m.length;l++){n[m[l]]=d(m[l])}e.rakam=n})(window,document);
 
           rakam.init("YOUR_PROJECT_WRITE_KEY", "USER_ID_HERE", { 
                 apiEndpoint:"127.0.0.1:9999", 

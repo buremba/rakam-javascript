@@ -8,7 +8,6 @@
     var s = document.getElementsByTagName('script')[0];
     s.parentNode.insertBefore(as, s);
 
-
     function proxy(obj, fn) {
         obj[fn] = function () {
             this._q.push([fn].concat(Array.prototype.slice.call(arguments, 0)));
@@ -44,7 +43,6 @@
 
     for (j = 0; j < nofuncs.length; j++) {
         rakam[nofuncs[j]] = notifyFunc(nofuncs[j]);
-        proxy(rakam, nofuncs[j]);
     }
 
     window.rakam = rakam;
