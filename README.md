@@ -17,7 +17,7 @@
           }};for(l=0;l<m.length;l++){n[m[l]]=d(m[l])}e.rakam=n})(window,document);
 
           rakam.init("YOUR_PROJECT_WRITE_KEY", "USER_ID_HERE", { 
-                apiEndpoint:"127.0.0.1:9999", 
+                apiEndpoint:"YOUR_PROJECT_API_URL", 
                 includeUtm: true, 
                 trackClicks: true, 
                 trackForms: true, 
@@ -25,7 +25,7 @@
            });
         </script>
 
-3. Replace `YOUR_PROJECT_WRITE_KEY` with the write API key of your project. If you know the user id (it may be e-mail, database id or any other identifier), you can pass it in `USER_ID_HERE`, otherwise you can just use `null` value.
+3. Replace `YOUR PROJECT WRITE KEY` with the write_key key of your project. If you know the user id (it may be e-mail, database id or any other identifier), you can pass it in `USER_ID_HERE`, otherwise you can just use `null` value.
 4. To track an event anywhere on the page, call:
 
         rakam.logEvent("EVENT_IDENTIFIER_HERE");
@@ -39,7 +39,7 @@ It's important to think about what types of events you care about as a developer
 Here is an example for a typical setup:
 
     rakam.init("YOUR_PROJECT_WRITE_KEY", "USER_ID_HERE", { 
-        apiEndpoint:"127.0.0.1:9999", 
+        apiEndpoint:"YOUR_PROJECT_API_URL", 
         includeUtm: true, 
         trackClicks: true, 
         trackForms: true, 
