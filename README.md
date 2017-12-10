@@ -160,6 +160,16 @@ You can also use `rakam-event-attribute`, `rakam-event-attribute-type` and `raka
 
 If the form element is an INPUT and the type is PASSWORD, it will be ignored automatically.
 
+Here is a simple example:
+```
+<form rakam-event-form="subscribe_mail_list">
+  <input type="text" name="email">
+  <input type="hidden" rakam-event-extra='{"source": "website"}'>
+  <input type="submit" name="Send">
+</form>
+```
+When the user submits the form, the tracker will automatically send a new event with collection name `subscribe_mail_list` and with attributes `email` and `source`.
+
 # Event Hooks #
 
 You can add event hooks with `rakam.onEvent` method. The callback function will be executed when the events that are succesfully collected by the Rakam, the function parameters include the response data that is returned by the server.
