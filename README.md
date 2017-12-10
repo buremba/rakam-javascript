@@ -4,31 +4,35 @@
 1. If you haven't already, go to http://rakam.io and register for an account. You will receive an API Key.
 2. On every page that uses analytics, paste the following Javascript code between the `<head>` and `</head>` tags:
 
-        <script type="text/javascript">
-          (function(e,t){var n=e.rakam||{};var r=t.createElement("script");r.type="text/javascript";
-          r.async=true;r.src="https://d2f7xo8n6nlhxf.cloudfront.net/rakam.min.js";r.onload=function(){
-          e.rakam.runQueuedFunctions()};var o=t.getElementsByTagName("script")[0];o.parentNode.insertBefore(r,o);
-          function a(e,t){e[t]=function(){this._q.push([t].concat(Array.prototype.slice.call(arguments,0)));
-          return this}}var s=function(){this._q=[];return this};var i=["set","setOnce","increment","unset"];
-          for(var c=0;c<i.length;c++){a(s.prototype,i[c])}n.User=s;n._q=[];var u=["init","logEvent","logInlinedEvent","setUserId","getUserId","getDeviceId","setSuperProperties","setOptOut","setVersionName","setDomain","setUserProperties","setDeviceId","onload","onEvent","startTimer"];
-          for(var l=0;l<u.length;l++){a(n,u[l])}var m=["getTimeOnPreviousPage","getTimeOnPage","isReturningUser"];
-          var v=(e.console?e.console.error||e.console.log:null)||function(){};var d=function(e){
-          return function(){v("The method rakam."+e+"() must be called inside rakam.init callback function!");
-          }};for(l=0;l<m.length;l++){n[m[l]]=d(m[l])}e.rakam=n})(window,document);
+```
+<script type="text/javascript">
+   (function(e,t){var n=e.rakam||{};var r=t.createElement("script");r.type="text/javascript";
+   r.async=true;r.src="https://d2f7xo8n6nlhxf.cloudfront.net/rakam.min.js";r.onload=function(){
+   e.rakam.runQueuedFunctions()};var o=t.getElementsByTagName("script")[0];o.parentNode.insertBefore(r,o);
+   function a(e,t){e[t]=function(){this._q.push([t].concat(Array.prototype.slice.call(arguments,0)));
+   return this}}var s=function(){this._q=[];return this};var i=["set","setOnce","increment","unset"];
+   for(var c=0;c<i.length;c++){a(s.prototype,i[c])}n.User=s;n._q=[];var u=["init","logEvent","logInlinedEvent","setUserId","getUserId","getDeviceId","setSuperProperties","setOptOut","setVersionName","setDomain","setUserProperties","setDeviceId","onload","onEvent","startTimer"];
+   for(var l=0;l<u.length;l++){a(n,u[l])}var m=["getTimeOnPreviousPage","getTimeOnPage","isReturningUser"];
+   var v=(e.console?e.console.error||e.console.log:null)||function(){};var d=function(e){
+   return function(){v("The method rakam."+e+"() must be called inside rakam.init callback function!");
+   }};for(l=0;l<m.length;l++){n[m[l]]=d(m[l])}e.rakam=n})(window,document);
 
-          rakam.init("YOUR_PROJECT_WRITE_KEY", "USER_ID_HERE", { 
-                apiEndpoint:"YOUR_PROJECT_API_URL", 
-                includeUtm: true, 
-                trackClicks: true, 
-                trackForms: true, 
-                includeReferrer: true 
-           });
-        </script>
+   rakam.init("YOUR_PROJECT_WRITE_KEY", "USER_ID_HERE", { 
+         apiEndpoint:"YOUR_PROJECT_API_URL", 
+         includeUtm: true, 
+         trackClicks: true, 
+         trackForms: true, 
+         includeReferrer: true 
+    });
+ </script>
+```
 
 3. Replace `YOUR PROJECT WRITE KEY` with the write_key key of your project. If you know the user id (it may be e-mail, database id or any other identifier), you can pass it in `USER_ID_HERE`, otherwise you can just use `null` value.
 4. To track an event anywhere on the page, call:
 
-        rakam.logEvent("EVENT_IDENTIFIER_HERE");
+```
+rakam.logEvent("EVENT_IDENTIFIER_HERE");
+```
 
 5. Events are uploaded immediately and saved to the browser's local storage until the server confirms the upload. After calling logEvent in your app, you will immediately see data appear on Rakam.
 
