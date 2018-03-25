@@ -69,6 +69,10 @@ You can attach additional data to any event by passing a Javascript object as th
 
 # Setting User Properties #
 
+```
+Please note that you need to call `rakam.setUserId` before setting any user property.
+```
+
 To add properties to a user you can use the User API.
 
     rakam.User().set({'property': 'value'});
