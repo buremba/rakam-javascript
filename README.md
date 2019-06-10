@@ -27,7 +27,7 @@
  </script>
 ```
 
-3. Replace `YOUR PROJECT WRITE KEY` with the write_key key of your project. If you know the user id (it may be e-mail, database id or any other identifier), you can pass it in `USER_ID_HERE`, otherwise you can just use `null` value.
+3. Replace `YOUR PROJECT WRITE KEY` with the write_key key of your project. If you know the user id (it may be e-mail, database id or any other identifier), you can pass it in `USER_ID_HERE`, otherwise you can just use `null` value. Please note that `YOUR_PROJECT_API_URL` should be used without http and https prefix. (i.e. `rakam.myapp.com`)
 4. To track an event anywhere on the page, call:
 
 ```
