@@ -2,8 +2,8 @@ SRC = $(wildcard src/*.js)
 SNIPPET = src/rakam-snippet.js
 TESTS = $(wildcard test/*.js)
 BINS = node_modules/.bin
-DUO = $(BINS)/duo
 MINIFY = $(BINS)/uglifyjs
+JSDOC = $(BINS)/jsdoc
 JSHINT = $(BINS)/jshint
 BUILD_DIR = build
 PROJECT = rakam
@@ -12,6 +12,8 @@ SNIPPET_OUT = $(PROJECT)-snippet.min.js
 SEGMENT_SNIPPET_OUT = $(PROJECT)-segment-snippet.min.js
 MIN_OUT = $(PROJECT).min.js
 MOCHA = $(BINS)/mocha-phantomjs
+KARMA = $(BINS)/karma
+ROLLUP = $(BINS)/rollup
 
 #
 # Default target.
@@ -24,7 +26,6 @@ default: test
 #
 
 clean:
-	@-rm -rf components
 	@-rm -f rakam.js rakam.min.js
 	@-rm -rf node_modules npm-debug.log
 
@@ -33,9 +34,11 @@ clean:
 # Test.
 #
 
-test: build test/browser/index.html
-	@$(MOCHA) test/browser/index.html
-	@$(MOCHA) test/browser/snippet.html
+test: build
+	@$(KARMA) start karma.conf.js
+
+test-sauce: build
+	@$(KARMA) start karma.conf.js
 
 
 #
@@ -43,12 +46,13 @@ test: build test/browser/index.html
 #
 
 node_modules: package.json
-	@npm install
+	@yarn
 
 #
 # Target for updating version.
 
-version: component.json package.json src/version.js
+version: package.json src/version.js
+	@$(ROLLUP) src/version.js -o build/version.js -f cjs
 	node scripts/version
 
 #
@@ -61,10 +65,10 @@ README.md: $(SNIPPET_OUT) version
 # Target for `rakam.js` file.
 #
 
-$(OUT): node_modules $(SRC) version
+$(OUT): node_modules $(SRC) version rollup.config.js rollup.min.js
 	@$(JSHINT) --verbose $(SRC)
-	@$(DUO) --standalone rakam src/index.js > $(OUT)
-	@$(MINIFY) $(OUT) --output $(MIN_OUT)
+	@NODE_ENV=production $(ROLLUP) --config rollup.config.js
+	@NODE_ENV=production $(ROLLUP) --config rollup.min.js
 
 #
 # Target for minified `rakam-snippet.js` file.
@@ -79,13 +83,14 @@ $(SEGMENT_SNIPPET_OUT): $(SRC) $(SNIPPET) version
 
 #
 # Target for `tests-build.js` file.
-
 #
 
 build: $(TESTS) $(OUT) $(SNIPPET_OUT) $(SEGMENT_SNIPPET_OUT) README.md
-	@-mkdir -p build
-	@$(DUO) --development test/tests.js > build/tests.js
-	@$(DUO) --development test/snippet-tests.js > build/snippet-tests.js
+	@$(ROLLUP) --config rollup.test.js
+	@$(ROLLUP) --config rollup.snippet-tests.js
+
+docs:
+	@$(JSDOC) -d ./documentation/ src/*.js
 
 #
 # Target for release.

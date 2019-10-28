@@ -29,7 +29,7 @@
 
     var funcs = ["init", "logEvent", "logInlinedEvent", "setUserId", "getUserId", "getDeviceId", "setSuperProperties",
                  "setOptOut", "setVersionName", "setDomain", "setUserProperties", "setDeviceId", "onload",
-                 "onEvent", "startTimer"];
+                 "onEvent", "startTimer", "resetTimer"];
     for (var j = 0; j < funcs.length; j++) {
         proxy(rakam, funcs[j]);
     }

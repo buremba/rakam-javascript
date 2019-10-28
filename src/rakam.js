@@ -3,7 +3,7 @@ var JSON = require('json'); // jshint ignore:line
 var language = require('./language');
 var localStorage = require('./localstorage');  // jshint ignore:line
 //var md5 = require('JavaScript-MD5');
-var object = require('object');
+var objectMerge = require('./object-merge');
 var Request = require('./xhr');
 var UUID = require('./uuid');
 var version = require('./version');
@@ -58,7 +58,7 @@ var LocalStorageKeys = {
  */
 var Rakam = function () {
     this._unsentEvents = [];
-    this.options = object.merge({}, DEFAULT_OPTIONS);
+    this.options = objectMerge({}, DEFAULT_OPTIONS);
 };
 
 
@@ -70,7 +70,7 @@ Rakam.prototype._sessionId = null;
 Rakam.prototype._newSession = false;
 
 Rakam.prototype.log = function (s) {
-    if(this.options.debug === true) {
+    if(this.options.debug === true && window.console && window.console.log) {
         console.log('[Rakam] ' + s);
     }
 };
@@ -296,8 +296,22 @@ Rakam.prototype.isReturningUser = function () {
 var gapMillis = 0;
 var startTime = (new Date()).getTime();
 var idleTime;
+var initializedTimer = false;
+
+Rakam.prototype.resetTimer = function () {
+    if(!initializedTimer) {
+        return this.log("Timer is not initialized");
+    }
+
+    idleTime = null;
+    gapMillis = null;
+    startTime = (new Date()).getTime();
+}
 
 Rakam.prototype.startTimer = function (saveOnClose) {
+    if(initializedTimer) {
+        return this.log("Timer is already initialized");
+    }
 
     startTime = (new Date()).getTime();
 
@@ -324,6 +338,8 @@ Rakam.prototype.startTimer = function (saveOnClose) {
             }
         };
     }
+
+    initializedTimer = true
 };
 
 Rakam.prototype.getTimeOnPage = function () {
@@ -492,7 +508,7 @@ Rakam.prototype._initTrackClicks = function () {
     document.addEventListener('click', function (event) {
         var targetElement = event.target || event.srcElement;
         var collection = targetElement.getAttribute('rakam-event-track');
-        if (targetElement.tagName === 'FORM' && collection) {
+        if (collection) {
             var properties = {};
 
             var extraAttributes = targetElement.getAttribute("rakam-event-properties");
@@ -647,7 +663,7 @@ Rakam.prototype._logEvent = function (eventType, eventProperties, apiProperties,
         eventProperties = eventProperties || {};
 
         // Add the utm properties, if any, onto the event properties.
-        object.merge(eventProperties, this._utmProperties);
+        objectMerge(eventProperties, this._utmProperties);
 
         var event = {
             collection: eventType,
@@ -662,9 +678,9 @@ Rakam.prototype._logEvent = function (eventType, eventProperties, apiProperties,
             }
         };
 
-        object.merge(event.properties, this.options.superProperties);
-        object.merge(event.properties, apiProperties);
-        object.merge(event.properties, eventProperties);
+        objectMerge(event.properties, this.options.superProperties);
+        objectMerge(event.properties, apiProperties);
+        objectMerge(event.properties, eventProperties);
 
         this.log('logged eventType=' + eventType + ', properties=' + JSON.stringify(eventProperties));
 

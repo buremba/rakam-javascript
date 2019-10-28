@@ -1,6 +1,5 @@
-  require('./base64.js');
-  require('./language.js');
-  require('./md5.js');
-  require('./uuid.js');
-  require('./cookie.js');
-  require('./rakam.js');
+import './base64.js';
+import './cookie.js';
+import './language.js';
+import './rakam.js';
+import './uuid.js';
