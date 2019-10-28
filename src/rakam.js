@@ -296,8 +296,22 @@ Rakam.prototype.isReturningUser = function () {
 var gapMillis = 0;
 var startTime = (new Date()).getTime();
 var idleTime;
+var initializedTimer = false;
+
+Rakam.prototype.resetTimer = function () {
+    if(!initializedTimer) {
+        return this.log("Timer is not initialized");
+    }
+
+    idleTime = null;
+    gapMillis = null;
+    startTime = (new Date()).getTime();
+}
 
 Rakam.prototype.startTimer = function (saveOnClose) {
+    if(initializedTimer) {
+        return this.log("Timer is already initialized");
+    }
 
     startTime = (new Date()).getTime();
 
@@ -324,9 +338,15 @@ Rakam.prototype.startTimer = function (saveOnClose) {
             }
         };
     }
+
+    initializedTimer = true
 };
 
 Rakam.prototype.getTimeOnPage = function () {
+    if(!initializedTimer) {
+        return this.log("Timer is not initialized, returning null from getTimeOnPage()");
+    }
+
     return ((idleTime > 0 ? idleTime : (new Date()).getTime()) - startTime - gapMillis) / 1000;
 };
 

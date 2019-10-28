@@ -93,97 +93,12 @@ If your app has its own login system that you want to track users with, you can 
 
 A user's data will be merged on the backend so that any events up to that point from the same browser will be tracked under the same user.
 
-# Event tracking based on DOM elements #
-
-Rakam has a specific method that is similar to `rakam.logEvent` but lets you to track events automatically by adding attributes to DOM elements. When you call `rakam.logInlinedEvent` method,  Rakam searches all DOM elements that have `rakam-event-attribute` attribute and include their values to event that is collected. It also works for various elements including for elements such as `SELECT`, `INPUT`, `TEXTAREA`.
-For example, let's say that you want to collect user search events in your website. The search page already includes data that you want to use as attributes of the event so instead of generating event properties manually and using `rakam.logEvent` you may set `rakam-event-attribute` attribute to DOM elements such as result count, category, sorting criteria etc. and call `rakam.logInlinedEvent`.
-
-    rakam.logInlinedEvent("EVENT_COLLECTION_NAME", extraProperties, callback);
-    
-Since all
-
-Full example:
-
-```html
-    <html>
-        <body>
-            <h1>
-                <input type="search" rakam-event-attribute="query_term" value="phones">
-                <span rakam-event-attribute="result_count" rakam-event-attribute-type="long">12</span>
-                results found
-                <span rakam-event-attribute="category">electronics</span>
-                category.
-                <select rakam-event-attribute="sorting_criteria">
-                   <option value="relevance" selected>relevance</option>
-                   <option value="name">name</option>
-                   <option value="price">price</option>
-                </select>
-            </h1>
-        <body>
-    <html>
-    <script>
-    rakam.init("shop");
-    rakam.logInlinedEvent("search");
-    </script>
-```
-
-It produces the following JSON that will be used as event properties:
-
-```json
-    {
-        "project": "shop",
-        "collection": "search",
-        "properties": {
-             "query_term": "phones",
-             "result_count": 12,
-             "category": "electronics",
-             "sorting_criteria": "relevance"
-        }
-   }
-```
-
-| DOM attribute | description | default |
-|------------|----------------------------------------------------------------------------------|-----------|
-| rakam-event-attribute | The value is the event attribute name, if a DOM element doesn't have this attribute it will be ignored. | `null` |
-| rakam-event-attribute-type | The type of the event attribute. The valid values are `string`, `long`, `time` (The format is 24:00:00), `timestamp` and `date` (The value must be epoch unix timestamp), `double`, `boolean`  | `string` |
-| rakam-event-attribute-value | If the attribute is present, the DOM element value will be ignored and the value of this attribute will be used. | `null` |
-
 # Tracking Clicks #
 If you add `rakam-event-track` attribute to the buttons, and enable the config `trackClicks`, Rakam will automatically track the clicks for you. Here is a simple example
 ```
 Click here to show pets:
 <button rakam-event-track="show_pets", rakam-event-properties='{"webpage": "petlist1"}'>
 ```
-
-# Tracking Forms #
-If `trackForms` option is set true, Rakam automatically track forms that have `rakam-event-form` attribute. When a visitor submits a form that has `rakam-event-form` attribute, Rakam visits all the form elements, generate event properties and send event to Rakam. If the form causes page redirection, the event will be saved in `localStorage` and sent after redirection. (If the form redirects to another domain and the visitor never returns to the website, the event will be lost. We may use [sendBeacon](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/sendBeacon) API to fix this issue in the future but unfortunately there is no cross-browser version of this API).
-
-Available options for FORM tag:
-
-| DOM attribute | description | default |
-|------------|----------------------------------------------------------------------------------|-----------|
-| rakam-event-form | If the form that is submitted doesn't have this attribute, Rakam doesn't track it. The value will be the event collection. | `null` |
-| rakam-event-extra | An optional attribute for forms that are tracked by Rakam. If the form that is submitted have this attribute the value will be merged with the generated event properties from the form elements. | `null` (Must be a JSON string) |
-
-Available options for FORM elements:
-
-| DOM attribute | description | default |
-|------------|----------------------------------------------------------------------------------|-----------|
-| rakam-event-form-element-ignore | The form element will be ignored if this is attribute is set. | `string` |
-
-You can also use `rakam-event-attribute`, `rakam-event-attribute-type` and `rakam-event-attribute-value` attributes that are explained in previous section. If `rakam-event-attribute` is not set, the `name` attribute of the form element will be used as event attribute.
-
-If the form element is an INPUT and the type is PASSWORD, it will be ignored automatically.
-
-Here is a simple example:
-```
-<form rakam-event-form="subscribe_mail_list">
-  <input type="text" name="email">
-  <input type="hidden" rakam-event-extra='{"source": "website"}'>
-  <input type="submit" name="Send">
-</form>
-```
-When the user submits the form, the tracker will automatically send a new event with collection name `subscribe_mail_list` and with attributes `email` and `source`.
 
 # Event Hooks #
 

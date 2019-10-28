@@ -644,11 +644,6 @@ Rakam.prototype.setUserId = function (userId) {
         if (userId !== null && userId !== '' && userId !== undefined &&
             ((this._eventId > 0 && (previousId === null || previousId === undefined)) ||
             (previousId !== null && previousId !== undefined))) {
-            var _this = this;
-            this.User()._merge(previousId, this.deviceIdCreatedAt, function () {
-                _this.deviceIdCreatedAt = null;
-                _saveCookieData(_this);
-            });
         }
 
         _saveCookieData(this);
@@ -2187,22 +2182,6 @@ User.prototype.set = function (properties, callback) {
         id: this.options.userId,
         properties: properties
     }).send(wrapCallback("set_properties", properties, callback));
-
-    return this;
-};
-
-User.prototype._merge = function (deviceId, createdAt, callback) {
-    new Request(getUrl(this.options) + "/merge", {
-        api: {
-            "api_version": API_VERSION,
-            "api_key": this.options.apiKey,
-            "upload_time": new Date().getTime()
-        },
-        anonymous_id: deviceId,
-        id: this.options.userId,
-        created_at: createdAt ? createdAt.getTime() : null,
-        merged_at: new Date().getTime()
-    }).send(wrapCallback("merge", null, callback));
 
     return this;
 };
