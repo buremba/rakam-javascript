@@ -7,7 +7,7 @@
 ```
 <script type="text/javascript">
    (function(e,t){var n=e.rakam||{};var r=t.createElement("script");r.type="text/javascript";
-   r.async=true;r.src="https://d2f7xo8n6nlhxf.cloudfront.net/rakam.min.js";r.onload=function(){
+   r.async=true;r.src="https://cdn.rakam.io/sdk/rakam.min.js";r.onload=function(){
    e.rakam.runQueuedFunctions()};var o=t.getElementsByTagName("script")[0];o.parentNode.insertBefore(r,o);
    function a(e,t){e[t]=function(){this._q.push([t].concat(Array.prototype.slice.call(arguments,0)));
    return this}}var s=function(){this._q=[];return this};var i=["set","setOnce","increment","unset"];
