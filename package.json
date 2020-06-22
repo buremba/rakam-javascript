@@ -1,6 +1,7 @@
 {
   "name": "rakam-js",
   "author": "Rakam <support@rakam.io>",
+  "version": "2.6.0",
   "license": "MIT",
   "description": "Javascript library for Rakam Analytics",
   "keywords": [
@@ -13,12 +14,15 @@
   },
   "main": "lib/rakam.js",
   "dependencies": {
-    "ifvisible.js": "1.0.4"
+    "ifvisible.js": "1.0.4",
+    "md5": "2.2.1",
+    "object-merge": "2.5.1"
   },
   "devDependencies": {
-    "duo": "0.8",
+    "duo": "^0.12.0",
     "express": "4.x",
     "fs-extra": "^0.15.0",
+    "phantomjs": "^2.1.7",
     "jsdoc": "3.4.0",
     "jshint": "^2.6.3",
     "mocha-phantomjs": "^3.6.0",

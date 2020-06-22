@@ -85,7 +85,6 @@ $(SEGMENT_SNIPPET_OUT): $(SRC) $(SNIPPET) version
 build: $(TESTS) $(OUT) $(SNIPPET_OUT) $(SEGMENT_SNIPPET_OUT) README.md
 	@-mkdir -p build
 	@$(DUO) --development test/tests.js > build/tests.js
-	@$(DUO) --development test/snippet-tests.js > build/snippet-tests.js
 
 #
 # Target for release.

@@ -168,7 +168,7 @@ will re-enable logging.
 | eventUploadThreshold | Minimum number of events to batch together per request if `batchEvents` is `true`. | 30 |
 | eventUploadPeriodMillis | Amount of time in milliseconds that the SDK waits before uploading events if `batchEvents` is `true`. | 30*1000 |
 | deviceId | Custom device ID to set | Randomly generated UUID |
-
+| useLocalStorageForSessionization | Whether to use localstorage for session ids (useful if you're tracking events from multiple hosts)| true |
 
 # Advanced #
 

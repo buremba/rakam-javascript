@@ -1,8 +1,9 @@
 var Cookie = require('./cookie')
+var JSON = require('json') // jshint ignore:line
 var language = require('./language')
 var localStorage = require('./localstorage')  // jshint ignore:line
-//var md5 = require('md5');
-var object = require('./object')
+//var md5 = require('JavaScript-MD5');
+var object = require('object')
 var Request = require('./xhr')
 var UUID = require('./uuid')
 var version = require('./version')
@@ -43,31 +44,13 @@ var DEFAULT_OPTIONS = {
   uploadBatchSize: 100,
   batchEvents: false,
   eventUploadThreshold: 30,
-  eventUploadPeriodMillis: 30 * 1000, // 30s,
-  useLocalStorageForSessionization: true
+  eventUploadPeriodMillis: 30 * 1000 // 30s
 }
-
-var StorageKeys = {
+var LocalStorageKeys = {
   LAST_ID: 'rakam_lastEventId',
   LAST_EVENT_TIME: 'rakam_lastEventTime',
   SESSION_ID: 'rakam_sessionId',
   RETURNING_SESSION: 'rakam_returning'
-}
-
-var getSessionItem = function (options, key) {
-    if (options.useLocalStorageForSessionization) {
-        return localStorage.getItem(key)
-    } else {
-        return Cookie.get(key, value)
-    }
-}
-
-var setSessionItem = function (options, key, value) {
-  if (options.useLocalStorageForSessionization) {
-    localStorage.setItem(key, value)
-  } else {
-    Cookie.set(key, value)
-  }
 }
 
 /*
@@ -135,7 +118,6 @@ Rakam.prototype.init = function (apiKey, opt_userId, opt_config, callback) {
         this.options.batchEvents = !!opt_config.batchEvents
       }
       this.options.platform = opt_config.platform || this.options.platform
-      this.options.useLocalStorageForSessionization = opt_config.useLocalStorageForSessionization || this.options.useLocalStorageForSessionization
       this.options.language = opt_config.language || this.options.language
       this.options.sessionTimeout = opt_config.sessionTimeout || this.options.sessionTimeout
       this.options.uploadBatchSize = opt_config.uploadBatchSize || this.options.uploadBatchSize
@@ -189,24 +171,24 @@ Rakam.prototype.init = function (apiKey, opt_userId, opt_config, callback) {
       this._initTrackClicks()
     }
 
-    this._lastEventTime = parseInt(getSessionItem(this.options, StorageKeys.LAST_EVENT_TIME)) || null
-    this._sessionId = parseInt(getSessionItem(this.options, StorageKeys.SESSION_ID)) || null
+    this._lastEventTime = parseInt(localStorage.getItem(LocalStorageKeys.LAST_EVENT_TIME)) || null
+    this._sessionId = parseInt(localStorage.getItem(LocalStorageKeys.SESSION_ID)) || null
 
-    this._eventId = localStorage.getItem(StorageKeys.LAST_ID) || 0
+    this._eventId = localStorage.getItem(LocalStorageKeys.LAST_ID) || 0
     var now = new Date().getTime()
     if (!this._sessionId || !this._lastEventTime || now - this._lastEventTime > this.options.sessionTimeout) {
       if (this._sessionId !== null) {
-        setSessionItem(this.options, StorageKeys.RETURNING_SESSION, true)
+        localStorage.setItem(LocalStorageKeys.RETURNING_SESSION, true)
         this._returningUser = true
       }
       this._sessionId = now
       Cookie.remove('_rakam_time')
-      setSessionItem(this.options, StorageKeys.SESSION_ID, this._sessionId)
+      localStorage.setItem(LocalStorageKeys.SESSION_ID, this._sessionId)
     } else {
-      this._returningUser = getSessionItem(this.options, StorageKeys.RETURNING_SESSION) === 'true'
+      this._returningUser = localStorage.getItem(LocalStorageKeys.RETURNING_SESSION) === 'true'
     }
     this._lastEventTime = now
-    setSessionItem(this.options, StorageKeys.LAST_EVENT_TIME, this._lastEventTime)
+    localStorage.setItem(LocalStorageKeys.LAST_EVENT_TIME, this._lastEventTime)
   } catch (e) {
     this.log(e)
   }
@@ -320,7 +302,7 @@ Rakam.prototype.resetTimer = function () {
   }
 
   idleTime = null
-  gapMillis = 0
+  gapMillis = null
   startTime = (new Date()).getTime()
 }
 
@@ -672,11 +654,11 @@ Rakam.prototype._logEvent = function (eventType, eventProperties, apiProperties,
     var eventId = this.nextEventId()
     if (!this._sessionId || !this._lastEventTime || eventTime - this._lastEventTime > this.options.sessionTimeout) {
       this._sessionId = eventTime
-      setSessionItem(this.options, StorageKeys.SESSION_ID, this._sessionId)
+      localStorage.setItem(LocalStorageKeys.SESSION_ID, this._sessionId)
     }
     this._lastEventTime = eventTime
-    setSessionItem(this.options, StorageKeys.LAST_EVENT_TIME, this._lastEventTime)
-    setSessionItem(this.options, StorageKeys.LAST_ID, eventId)
+    localStorage.setItem(LocalStorageKeys.LAST_EVENT_TIME, this._lastEventTime)
+    localStorage.setItem(LocalStorageKeys.LAST_ID, eventId)
 
     apiProperties = apiProperties || {}
     eventProperties = eventProperties || {}
