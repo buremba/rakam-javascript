@@ -2,8 +2,8 @@ SRC = $(wildcard src/*.js)
 SNIPPET = src/rakam-snippet.js
 TESTS = $(wildcard test/*.js)
 BINS = node_modules/.bin
-DUO = $(BINS)/duo
 MINIFY = $(BINS)/uglifyjs
+JSDOC = $(BINS)/jsdoc
 JSHINT = $(BINS)/jshint
 BUILD_DIR = build
 PROJECT = rakam
@@ -12,6 +12,8 @@ SNIPPET_OUT = $(PROJECT)-snippet.min.js
 SEGMENT_SNIPPET_OUT = $(PROJECT)-segment-snippet.min.js
 MIN_OUT = $(PROJECT).min.js
 MOCHA = $(BINS)/mocha-phantomjs
+KARMA = $(BINS)/karma
+ROLLUP = $(BINS)/rollup
 
 #
 # Default target.
@@ -24,7 +26,6 @@ default: test
 #
 
 clean:
-	@-rm -rf components
 	@-rm -f rakam.js rakam.min.js
 	@-rm -rf node_modules npm-debug.log
 
@@ -33,9 +34,11 @@ clean:
 # Test.
 #
 
-test: build test/browser/index.html
-	@$(MOCHA) test/browser/index.html
-	@$(MOCHA) test/browser/snippet.html
+test: build
+	@$(KARMA) start karma.conf.js
+
+test-sauce: build
+	@$(KARMA) start karma.conf.js --browsers sauce_chrome_windows
 
 
 #
@@ -43,12 +46,12 @@ test: build test/browser/index.html
 #
 
 node_modules: package.json
-	@npm install
+	@yarn
 
 #
 # Target for updating version.
 
-version: component.json package.json src/version.js
+version: package.json
 	node scripts/version
 
 #
@@ -61,30 +64,38 @@ README.md: $(SNIPPET_OUT) version
 # Target for `rakam.js` file.
 #
 
-$(OUT): node_modules $(SRC) version
+$(OUT): node_modules $(SRC) package.json rollup.config.js rollup.min.js rollup.native.js rollup.esm.js rollup.umd.js rollup.umd.min.js
 	@$(JSHINT) --verbose $(SRC)
-	@$(DUO) --standalone rakam src/index.js > $(OUT)
-	@$(MINIFY) $(OUT) --output $(MIN_OUT)
+	@NODE_ENV=production $(ROLLUP) --config rollup.config.js
+	@NODE_ENV=production $(ROLLUP) --config rollup.esm.js
+	@NODE_ENV=production $(ROLLUP) --config rollup.umd.js
+	@NODE_ENV=production $(ROLLUP) --config rollup.native.js
+	@NODE_ENV=production $(ROLLUP) --config rollup.nocompat.js
+	@NODE_ENV=production $(ROLLUP) --config rollup.umd.min.js
+	@NODE_ENV=production $(ROLLUP) --config rollup.min.js
+	@NODE_ENV=production $(ROLLUP) --config rollup.nocompat.min.js
 
 #
 # Target for minified `rakam-snippet.js` file.
 #
-$(SNIPPET_OUT): $(SRC) $(SNIPPET) version
+$(SNIPPET_OUT): $(SRC) $(SNIPPET)
 	@$(JSHINT) --verbose $(SNIPPET)
 	@$(MINIFY) $(SNIPPET) -m -b max-line-len=80,beautify=false | awk 'NF' > $(SNIPPET_OUT)
 
-$(SEGMENT_SNIPPET_OUT): $(SRC) $(SNIPPET) version
+$(SEGMENT_SNIPPET_OUT): $(SRC) $(SNIPPET)
 	@grep -Ev "\ba?s\b" $(SNIPPET) | $(MINIFY) -m -b max-line-len=80,beautify=false - \
 		| awk 'NF' > $(SEGMENT_SNIPPET_OUT)
 
 #
 # Target for `tests-build.js` file.
-
 #
 
-build: $(TESTS) $(OUT) $(SNIPPET_OUT) $(SEGMENT_SNIPPET_OUT) README.md
-	@-mkdir -p build
-	@$(DUO) --development test/tests.js > build/tests.js
+build: $(TESTS) $(OUT) $(SNIPPET_OUT) $(SEGMENT_SNIPPET_OUT)
+	@$(ROLLUP) --config rollup.test.js
+	@$(ROLLUP) --config rollup.snippet-tests.js
+
+docs:
+	@$(JSDOC) -d ./documentation/ src/*.js
 
 #
 # Target for release.

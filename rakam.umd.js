@@ -1,5 +1,8 @@
-var rakam = (function () {
-    'use strict';
+(function (global, factory) {
+    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
+    typeof define === 'function' && define.amd ? define('rakam', factory) :
+    (global = global || self, global.rakam = factory());
+}(this, (function () { 'use strict';
 
     /* jshint bitwise: false */
 
@@ -644,12 +647,12 @@ var rakam = (function () {
     }
 
     var ifvisible = createCommonjsModule(function (module, exports) {
-    (function () {
-      (function (root, factory) {
+    (function() {
+      (function(root, factory) {
         {
           return module.exports = factory();
         }
-      })(this, function () {
+      })(this, function() {
         var addEvent, customEvent, doc, hidden, idleStartedTime, idleTime, ie, ifvisible, init, initialized, status, trackIdleStatus, visibilityChange;
         ifvisible = {};
         doc = document;
@@ -657,57 +660,42 @@ var rakam = (function () {
         status = "active";
         idleTime = 60000;
         idleStartedTime = false;
-
-        customEvent = function () {
+        customEvent = (function() {
           var addCustomEvent, cgid, fireCustomEvent, listeners, removeCustomEvent;
-
           listeners = {};
           cgid = '__ceGUID';
-
-          addCustomEvent = function (obj, event, callback) {
+          addCustomEvent = function(obj, event, callback) {
             obj[cgid] = undefined;
-
             if (!obj[cgid]) {
               obj[cgid] = "ifvisible.object.event.identifier";
             }
-
             if (!listeners[obj[cgid]]) {
               listeners[obj[cgid]] = {};
             }
-
             if (!listeners[obj[cgid]][event]) {
               listeners[obj[cgid]][event] = [];
             }
-
             return listeners[obj[cgid]][event].push(callback);
           };
-
-          fireCustomEvent = function (obj, event, memo) {
+          fireCustomEvent = function(obj, event, memo) {
             var ev, j, len, ref, results;
-
             if (obj[cgid] && listeners[obj[cgid]] && listeners[obj[cgid]][event]) {
               ref = listeners[obj[cgid]][event];
               results = [];
-
               for (j = 0, len = ref.length; j < len; j++) {
                 ev = ref[j];
                 results.push(ev(memo || {}));
               }
-
               return results;
             }
           };
-
-          removeCustomEvent = function (obj, event, callback) {
+          removeCustomEvent = function(obj, event, callback) {
             var cl, i, j, len, ref;
-
             if (callback) {
               if (obj[cgid] && listeners[obj[cgid]] && listeners[obj[cgid]][event]) {
                 ref = listeners[obj[cgid]][event];
-
                 for (i = j = 0, len = ref.length; j < len; i = ++j) {
                   cl = ref[i];
-
                   if (cl === callback) {
                     listeners[obj[cgid]][event].splice(i, 1);
                     return cl;
@@ -720,63 +708,54 @@ var rakam = (function () {
               }
             }
           };
-
           return {
             add: addCustomEvent,
             remove: removeCustomEvent,
             fire: fireCustomEvent
           };
-        }();
-
-        addEvent = function () {
+        })();
+        addEvent = (function() {
           var setListener;
           setListener = false;
-          return function (el, ev, fn) {
+          return function(el, ev, fn) {
             if (!setListener) {
               if (el.addEventListener) {
-                setListener = function (el, ev, fn) {
+                setListener = function(el, ev, fn) {
                   return el.addEventListener(ev, fn, false);
                 };
               } else if (el.attachEvent) {
-                setListener = function (el, ev, fn) {
+                setListener = function(el, ev, fn) {
                   return el.attachEvent('on' + ev, fn, false);
                 };
               } else {
-                setListener = function (el, ev, fn) {
+                setListener = function(el, ev, fn) {
                   return el['on' + ev] = fn;
                 };
               }
             }
-
             return setListener(el, ev, fn);
           };
-        }();
-
-        ie = function () {
+        })();
+        ie = (function() {
           var all, check, div, undef, v;
           undef = void 0;
           v = 3;
           div = doc.createElement("div");
           all = div.getElementsByTagName("i");
-
-          check = function () {
-            return div.innerHTML = "<!--[if gt IE " + ++v + "]><i></i><![endif]-->", all[0];
+          check = function() {
+            return (div.innerHTML = "<!--[if gt IE " + (++v) + "]><i></i><![endif]-->", all[0]);
           };
-
           while (check()) {
             continue;
           }
-
           if (v > 4) {
             return v;
           } else {
             return undef;
           }
-        }();
-
+        })();
         hidden = false;
         visibilityChange = void 0;
-
         if (typeof doc.hidden !== "undefined") {
           hidden = "hidden";
           visibilityChange = "visibilitychange";
@@ -790,26 +769,21 @@ var rakam = (function () {
           hidden = "webkitHidden";
           visibilityChange = "webkitvisibilitychange";
         }
-
-        trackIdleStatus = function () {
+        trackIdleStatus = function() {
           var timer, wakeUp;
           timer = false;
-
-          wakeUp = function () {
+          wakeUp = function() {
             clearTimeout(timer);
-
             if (status !== "active") {
               ifvisible.wakeup();
             }
-
-            idleStartedTime = +new Date();
-            return timer = setTimeout(function () {
+            idleStartedTime = +(new Date());
+            return timer = setTimeout(function() {
               if (status === "active") {
                 return ifvisible.idle();
               }
             }, idleTime);
           };
-
           wakeUp();
           addEvent(doc, "mousemove", wakeUp);
           addEvent(doc, "keyup", wakeUp);
@@ -817,29 +791,24 @@ var rakam = (function () {
           ifvisible.focus(wakeUp);
           return ifvisible.wakeup(wakeUp);
         };
-
-        init = function () {
+        init = function() {
           var blur;
-
           if (initialized) {
             return true;
           }
-
           if (hidden === false) {
             blur = "blur";
-
             if (ie < 9) {
               blur = "focusout";
             }
-
-            addEvent(window, blur, function () {
+            addEvent(window, blur, function() {
               return ifvisible.blur();
             });
-            addEvent(window, "focus", function () {
+            addEvent(window, "focus", function() {
               return ifvisible.focus();
             });
           } else {
-            addEvent(doc, visibilityChange, function () {
+            addEvent(doc, visibilityChange, function() {
               if (doc[hidden]) {
                 return ifvisible.blur();
               } else {
@@ -847,23 +816,20 @@ var rakam = (function () {
               }
             }, false);
           }
-
           initialized = true;
           return trackIdleStatus();
         };
-
         ifvisible = {
-          setIdleDuration: function (seconds) {
+          setIdleDuration: function(seconds) {
             return idleTime = seconds * 1000;
           },
-          getIdleDuration: function () {
+          getIdleDuration: function() {
             return idleTime;
           },
-          getIdleInfo: function () {
+          getIdleInfo: function() {
             var now, res;
-            now = +new Date();
+            now = +(new Date());
             res = {};
-
             if (status === "idle") {
               res.isIdle = true;
               res.idleFor = now - idleStartedTime;
@@ -872,17 +838,15 @@ var rakam = (function () {
             } else {
               res.isIdle = false;
               res.idleFor = now - idleStartedTime;
-              res.timeLeft = idleStartedTime + idleTime - now;
-              res.timeLeftPer = (100 - res.timeLeft * 100 / idleTime).toFixed(2);
+              res.timeLeft = (idleStartedTime + idleTime) - now;
+              res.timeLeftPer = (100 - (res.timeLeft * 100 / idleTime)).toFixed(2);
             }
-
             return res;
           },
-          focus: function (callback) {
+          focus: function(callback) {
             if (typeof callback === "function") {
               return this.on("focus", callback);
             }
-
             status = "active";
             customEvent.fire(this, "focus");
             customEvent.fire(this, "wakeup");
@@ -890,11 +854,10 @@ var rakam = (function () {
               status: status
             });
           },
-          blur: function (callback) {
+          blur: function(callback) {
             if (typeof callback === "function") {
               return this.on("blur", callback);
             }
-
             status = "hidden";
             customEvent.fire(this, "blur");
             customEvent.fire(this, "idle");
@@ -902,71 +865,70 @@ var rakam = (function () {
               status: status
             });
           },
-          idle: function (callback) {
+          idle: function(callback) {
             if (typeof callback === "function") {
               return this.on("idle", callback);
             }
-
             status = "idle";
             customEvent.fire(this, "idle");
             return customEvent.fire(this, "statusChanged", {
               status: status
             });
           },
-          wakeup: function (callback) {
+          wakeup: function(callback) {
             if (typeof callback === "function") {
               return this.on("wakeup", callback);
             }
-
             status = "active";
             customEvent.fire(this, "wakeup");
             return customEvent.fire(this, "statusChanged", {
               status: status
             });
           },
-          on: function (name, callback) {
+          on: function(name, callback) {
             init();
             return customEvent.add(this, name, callback);
           },
-          off: function (name, callback) {
+          off: function(name, callback) {
             init();
             return customEvent.remove(this, name, callback);
           },
-          onEvery: function (seconds, callback) {
+          onEvery: function(seconds, callback) {
             var paused, t;
             init();
             paused = false;
-
             if (callback) {
-              t = setInterval(function () {
+              t = setInterval(function() {
                 if (status === "active" && paused === false) {
                   return callback();
                 }
               }, seconds * 1000);
             }
-
             return {
-              stop: function () {
+              stop: function() {
                 return clearInterval(t);
               },
-              pause: function () {
+              pause: function() {
                 return paused = true;
               },
-              resume: function () {
+              resume: function() {
                 return paused = false;
               },
               code: t,
               callback: callback
             };
           },
-          now: function (check) {
+          now: function(check) {
             init();
             return status === (check || "active");
           }
         };
         return ifvisible;
       });
+
     }).call(commonjsGlobal);
+
+
     });
 
     var API_VERSION$1 = 1;
@@ -1852,4 +1814,4 @@ var rakam = (function () {
 
     return instance;
 
-}());
+})));

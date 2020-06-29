@@ -3,7 +3,7 @@
     var as = document.createElement('script');
     as.type = 'text/javascript';
     as.async = true;
-    as.src = 'https://d2f7xo8n6nlhxf.cloudfront.net/rakam.min.js';
+    as.src = 'https://cdn.rakam.io/sdk/rakam.min.js';
     as.onload = function () {window.rakam.runQueuedFunctions();};
     var s = document.getElementsByTagName('script')[0];
     s.parentNode.insertBefore(as, s);

@@ -2,123 +2,114 @@
  * Cookie data
  */
 
-var Base64 = require('./base64');
-var JSON = require('json'); // jshint ignore:line
-var topDomain = require('top-domain');
-
+import Base64 from './base64'
+// import topDomain from 'top-domain'
 
 var _options = {
   expirationDays: undefined,
   domain: undefined
-};
+}
 
+var reset = function () {
+  _options = {}
+}
 
-var reset = function() {
-  _options = {};
-};
-
-
-var options = function(opts) {
+var options = function (opts) {
   if (arguments.length === 0) {
-    return _options;
+    return _options
   }
 
-  opts = opts || {};
+  opts = opts || {}
 
-  _options.expirationDays = opts.expirationDays;
+  _options.expirationDays = opts.expirationDays
 
-  var domain = (opts.domain !== undefined) ? opts.domain : '.' + topDomain(window.location.href);
-  var token = Math.random();
-  _options.domain = domain;
-  set('rakam_test', token);
-  var stored = get('rakam_test');
+  var domain = (opts.domain !== undefined) ? opts.domain : '.'
+  var token = Math.random()
+  _options.domain = domain
+  set('rakam_test', token)
+  var stored = get('rakam_test')
   if (!stored || stored !== token) {
-    domain = null;
+    domain = null
   }
-  remove('rakam_test');
-  _options.domain = domain;
-};
+  remove('rakam_test')
+  _options.domain = domain
+}
 
-var _domainSpecific = function(name) {
+var _domainSpecific = function (name) {
   // differentiate between cookies on different domains
-  var suffix = '';
+  var suffix = ''
   if (_options.domain) {
-    suffix = _options.domain.charAt(0) === '.' ? _options.domain.substring(1) : _options.domain;
+    suffix = _options.domain.charAt(0) === '.' ? _options.domain.substring(1) : _options.domain
   }
-  return name + suffix;
-};
+  return name + suffix
+}
 
-
-var get = function(name) {
+var get = function (name) {
   try {
-    var nameEq = _domainSpecific(name) + '=';
-    var ca = document.cookie.split(';');
-    var value = null;
+    var nameEq = _domainSpecific(name) + '='
+    var ca = document.cookie.split(';')
+    var value = null
     for (var i = 0; i < ca.length; i++) {
-      var c = ca[i];
+      var c = ca[i]
       while (c.charAt(0) === ' ') {
-        c = c.substring(1, c.length);
+        c = c.substring(1, c.length)
       }
       if (c.indexOf(nameEq) === 0) {
-        value = c.substring(nameEq.length, c.length);
-        break;
+        value = c.substring(nameEq.length, c.length)
+        break
       }
     }
 
     if (value) {
-      return JSON.parse(Base64.decode(value));
+      return JSON.parse(Base64.decode(value))
     }
-    return null;
+    return null
   } catch (e) {
-    return null;
+    return null
   }
-};
+}
 
-
-var set = function(name, value) {
+var set = function (name, value) {
   try {
-    _set(_domainSpecific(name), Base64.encode(JSON.stringify(value)), _options);
-    return true;
+    _set(_domainSpecific(name), Base64.encode(JSON.stringify(value)), _options)
+    return true
   } catch (e) {
-    return false;
+    return false
   }
-};
+}
 
-
-var _set = function(name, value, opts) {
-  var expires = value !== null ? opts.expirationDays : -1 ;
+var _set = function (name, value, opts) {
+  var expires = value !== null ? opts.expirationDays : -1
   if (expires) {
-    var date = new Date();
-    date.setTime(date.getTime() + (expires * 24 * 60 * 60 * 1000));
-    expires = date;
+    var date = new Date()
+    date.setTime(date.getTime() + (expires * 24 * 60 * 60 * 1000))
+    expires = date
   }
-  var str = name + '=' + value;
+  var str = name + '=' + value
   if (expires) {
-    str += '; expires=' + expires.toUTCString();
+    str += '; expires=' + expires.toUTCString()
   }
-  str += '; path=/';
+  str += '; path=/'
   if (opts.domain) {
-    str += '; domain=' + opts.domain;
+    str += '; domain=' + opts.domain
   }
-  document.cookie = str;
-};
+  document.cookie = str
+}
 
-
-var remove = function(name) {
+var remove = function (name) {
   try {
-    _set(_domainSpecific(name), null, _options);
-    return true;
+    _set(_domainSpecific(name), null, _options)
+    return true
   } catch (e) {
-    return false;
+    return false
   }
-};
+}
 
-
-module.exports = {
+export default {
   reset: reset,
   options: options,
   get: get,
   set: set,
   remove: remove
 
-};
+}

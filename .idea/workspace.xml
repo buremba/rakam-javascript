@@ -1,0 +1,469 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="46f25102-99a2-4094-bc7c-0bcb5c6c0ad3" name="Default" comment="">
+      <change afterPath="$PROJECT_DIR$/karma.conf.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rollup.config.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rollup.esm.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rollup.min.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rollup.native.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rollup.nocompat.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rollup.nocompat.min.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rollup.snippet-tests.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rollup.test.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rollup.umd.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rollup.umd.min.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/rollup.esm.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.jshintrc" beforeDir="false" afterPath="$PROJECT_DIR$/.jshintrc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/Makefile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/component.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rakam-snippet.min.js" beforeDir="false" afterPath="$PROJECT_DIR$/rakam-snippet.min.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rakam.js" beforeDir="false" afterPath="$PROJECT_DIR$/rakam.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rakam.min.js" beforeDir="false" afterPath="$PROJECT_DIR$/rakam.min.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/version.js" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/version.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/base64.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/base64.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cookie.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/cookie.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/language.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/language.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/localstorage.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/localstorage.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/object.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/object.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/rakam-snippet.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/rakam-snippet.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/rakam.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/rakam.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/type.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/type.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/user.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/user.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/utf8.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/utf8.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/uuid.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/uuid.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/version.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/version.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xhr.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/xhr.js" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="CreatePatchCommitExecutor">
+    <option name="PATCH_PATH" value="" />
+  </component>
+  <component name="FavoritesManager">
+    <favorites_list name="rakam-javascript" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GradleLocalSettings">
+    <option name="externalProjectsViewState">
+      <projects_view />
+    </option>
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="mavenHome" value="Bundled (Maven 3)" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="ProjectFrameBounds">
+    <option name="y" value="23" />
+    <option name="width" value="1680" />
+    <option name="height" value="951" />
+  </component>
+  <component name="ProjectId" id="1dfOHHss29lhGn99CMy3nJNAdrb" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showExcludedFiles" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="HbShouldOpenHtmlAsHb" value="" />
+    <property name="SearchEverywhereHistoryKey" value="index&#9;FILE&#9;file:///Users/buremba/Code/rakam-subproject/sdk/rakam-javascript/test/browser/index.html&#10;termi&#9;ACTION&#9;ActivateTerminalToolWindow&#10;ter&#9;ACTION&#9;ActivateTerminalToolWindow&#10;src/rakam&#9;FILE&#9;file:///Users/buremba/Code/rakam-javascript/src/rakam.js&#10;term&#9;ACTION&#9;ActivateTerminalToolWindow&#10;user&#9;FILE&#9;file:///Users/buremba/Code/rakam-javascript/src/user.js&#10;segment&#9;FILE&#9;file:///Users/buremba/Code/rakam-javascript/rakam-segment-snippet.min.js&#10;user.&#9;FILE&#9;file:///Users/buremba/Code/rakam-javascript/src/user.js&#10;rakam.js&#9;FILE&#9;file:///Users/buremba/Code/rakam-javascript/rakam.js&#10;rakam&#9;FILE&#9;file:///Users/buremba/Code/rakam-javascript/test/rakam.js&#10;node.&#9;FILE&#9;file:///Users/buremba/Code/rakam-javascript/node_modules/uglify-js/tools/node.js&#10;node&#9;FILE&#9;file:///Users/buremba/Code/rakam-javascript/node_modules/uglify-js/tools/node.js" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="com.intellij.ide.scratch.LRUPopupBuilder$3/Languages" value="JavaScript" />
+    <property name="js-jscs-nodeInterpreter" value="/usr/local/bin/node" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.detected.package.tslint" value="true" />
+    <property name="node.js.path.for.package.eslint" value="project" />
+    <property name="node.js.path.for.package.tslint" value="project" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="node.js.selected.package.tslint" value="(autodetect)" />
+    <property name="nodejs.mocha.mocha_node_package_dir" value="$PROJECT_DIR$/node_modules/mocha" />
+    <property name="nodejs_interpreter_path" value="/usr/local/bin/node" />
+    <property name="nodejs_package_manager_path" value="npm" />
+    <property name="prettierjs.PrettierConfiguration.Package" value="$PROJECT_DIR$/node_modules/prettier" />
+    <property name="settings.editor.selected.configurable" value="preferences.sourceCode.JavaScript" />
+    <property name="ts.external.directory.path" value="$APPLICATION_HOME_DIR$/plugins/JavaScriptLanguage/jsLanguageServicesImpl/external" />
+  </component>
+  <component name="RunManager" selected="Node.js.version.js">
+    <configuration default="true" type="AndroidRunConfigurationType" factoryName="Android Application">
+      <module name="" />
+      <option name="DEPLOY" value="true" />
+      <option name="ARTIFACT_NAME" value="" />
+      <option name="PM_INSTALL_OPTIONS" value="" />
+      <option name="ACTIVITY_EXTRA_FLAGS" value="" />
+      <option name="MODE" value="default_activity" />
+      <option name="TARGET_SELECTION_MODE" value="SHOW_DIALOG" />
+      <option name="PREFERRED_AVD" value="" />
+      <option name="CLEAR_LOGCAT" value="false" />
+      <option name="SHOW_LOGCAT_AUTOMATICALLY" value="true" />
+      <option name="SKIP_NOOP_APK_INSTALLATIONS" value="true" />
+      <option name="FORCE_STOP_RUNNING_APP" value="true" />
+      <option name="USE_LAST_SELECTED_DEVICE" value="false" />
+      <option name="PREFERRED_AVD" value="" />
+      <option name="DEEP_LINK" value="" />
+      <option name="ACTIVITY_CLASS" value="" />
+      <method />
+    </configuration>
+    <configuration default="true" type="AndroidTestRunConfigurationType" factoryName="Android Tests">
+      <module name="" />
+      <option name="TESTING_TYPE" value="0" />
+      <option name="INSTRUMENTATION_RUNNER_CLASS" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="PACKAGE_NAME" value="" />
+      <option name="EXTRA_OPTIONS" value="" />
+      <option name="TARGET_SELECTION_MODE" value="SHOW_DIALOG" />
+      <option name="PREFERRED_AVD" value="" />
+      <option name="CLEAR_LOGCAT" value="false" />
+      <option name="SHOW_LOGCAT_AUTOMATICALLY" value="true" />
+      <option name="SKIP_NOOP_APK_INSTALLATIONS" value="true" />
+      <option name="FORCE_STOP_RUNNING_APP" value="true" />
+      <option name="USE_LAST_SELECTED_DEVICE" value="false" />
+      <option name="PREFERRED_AVD" value="" />
+      <method />
+    </configuration>
+    <configuration default="true" type="Application" factoryName="Application">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="VM_PARAMETERS" />
+      <option name="PROGRAM_PARAMETERS" />
+      <option name="WORKING_DIRECTORY" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="ENABLE_SWING_INSPECTOR" value="false" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <module name="" />
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="true" type="BashConfigurationType" factoryName="Bash">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="INTERPRETER_PATH" value="/bin/bash" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="PARAMETERS" value="" />
+      <module name="" />
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="true" type="CucumberJavaRunConfigurationType" factoryName="Cucumber java">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <option name="myFilePath" />
+      <option name="GLUE" />
+      <option name="myNameFilter" />
+      <option name="myGeneratedName" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="VM_PARAMETERS" />
+      <option name="PROGRAM_PARAMETERS" />
+      <option name="WORKING_DIRECTORY" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="ENABLE_SWING_INSPECTOR" value="false" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <module name="" />
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="true" type="GradleRunConfiguration" factoryName="Gradle">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list />
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <method />
+    </configuration>
+    <configuration default="true" type="JUnitTestDiscovery" factoryName="JUnit Test Discovery" changeList="All">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <module name="" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PACKAGE_NAME" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="METHOD_NAME" />
+      <option name="TEST_OBJECT" value="class" />
+      <option name="VM_PARAMETERS" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="singleModule" />
+      </option>
+      <envs />
+      <patterns />
+      <method />
+    </configuration>
+    <configuration default="true" type="JUnit" factoryName="JUnit">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <module name="" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PACKAGE_NAME" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="METHOD_NAME" />
+      <option name="TEST_OBJECT" value="class" />
+      <option name="VM_PARAMETERS" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="singleModule" />
+      </option>
+      <envs />
+      <patterns />
+      <method />
+    </configuration>
+    <configuration default="true" type="JarApplication" factoryName="JAR Application">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="true" type="Java Scratch" factoryName="Java Scratch">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <option name="SCRATCH_FILE_ID" value="0" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="VM_PARAMETERS" />
+      <option name="PROGRAM_PARAMETERS" />
+      <option name="WORKING_DIRECTORY" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="ENABLE_SWING_INSPECTOR" value="false" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <module name="" />
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="true" type="JetRunConfigurationType" factoryName="Kotlin">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="VM_PARAMETERS" />
+      <option name="PROGRAM_PARAMETERS" />
+      <option name="WORKING_DIRECTORY" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <module name="rakam-javascript" />
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType" factoryName="Kotlin script">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <option name="filePath" />
+      <option name="vmParameters" />
+      <option name="alternativeJrePath" />
+      <option name="programParameters" />
+      <option name="passParentEnvs" value="true" />
+      <option name="workingDirectory" />
+      <option name="isAlternativeJrePathEnabled" value="false" />
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="true" type="TestNGTestDiscovery" factoryName="TestNG Test Discovery" changeList="All">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <module name="" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="SUITE_NAME" />
+      <option name="PACKAGE_NAME" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="METHOD_NAME" />
+      <option name="GROUP_NAME" />
+      <option name="TEST_OBJECT" value="CLASS" />
+      <option name="VM_PARAMETERS" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" />
+      <option name="OUTPUT_DIRECTORY" />
+      <option name="ANNOTATION_TYPE" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="singleModule" />
+      </option>
+      <option name="USE_DEFAULT_REPORTERS" value="false" />
+      <option name="PROPERTIES_FILE" />
+      <envs />
+      <properties />
+      <listeners />
+      <method />
+    </configuration>
+    <configuration default="true" type="TestNG" factoryName="TestNG">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <module name="" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="SUITE_NAME" />
+      <option name="PACKAGE_NAME" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="METHOD_NAME" />
+      <option name="GROUP_NAME" />
+      <option name="TEST_OBJECT" value="CLASS" />
+      <option name="VM_PARAMETERS" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" />
+      <option name="OUTPUT_DIRECTORY" />
+      <option name="ANNOTATION_TYPE" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="singleModule" />
+      </option>
+      <option name="USE_DEFAULT_REPORTERS" value="false" />
+      <option name="PROPERTIES_FILE" />
+      <envs />
+      <properties />
+      <listeners />
+      <method />
+    </configuration>
+    <configuration name="index.html (1)" type="JavascriptDebugType" temporary="true" nameIsGenerated="true" uri="http://localhost:63342/rakam-javascript/test/browser/index.html">
+      <method v="2" />
+    </configuration>
+    <configuration name="index.html" type="JavascriptDebugType" temporary="true" nameIsGenerated="true" uri="http://localhost:63343/rakam-javascript/test/browser/index.html">
+      <method v="2" />
+    </configuration>
+    <configuration name="rakam.js" type="NodeJSConfigurationType" temporary="true" path-to-js-file="rakam.js" working-dir="$PROJECT_DIR$/test">
+      <method v="2" />
+    </configuration>
+    <configuration name="tests.js" type="NodeJSConfigurationType" temporary="true" path-to-js-file="tests.js" working-dir="$PROJECT_DIR$/test">
+      <method v="2" />
+    </configuration>
+    <configuration name="version.js" type="NodeJSConfigurationType" nameIsGenerated="true" node-parameters="component.json package.json src/version.js" path-to-js-file="scripts/version.js" working-dir="$PROJECT_DIR$">
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="js.build_tools.gulp">
+      <node-interpreter>project</node-interpreter>
+      <node-options />
+      <gulpfile />
+      <tasks />
+      <arguments />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <list>
+      <item itemvalue="JavaScript Debug.index.html" />
+      <item itemvalue="JavaScript Debug.index.html (1)" />
+      <item itemvalue="Node.js.version.js" />
+      <item itemvalue="Node.js.rakam.js" />
+      <item itemvalue="Node.js.tests.js" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Node.js.rakam.js" />
+        <item itemvalue="Node.js.tests.js" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="ServiceViewManager">
+    <option name="viewStates">
+      <list>
+        <serviceView>
+          <treeState>
+            <expand />
+            <select />
+          </treeState>
+        </serviceView>
+      </list>
+    </option>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="46f25102-99a2-4094-bc7c-0bcb5c6c0ad3" name="Default" comment="" />
+      <created>1464825348026</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1464825348026</updated>
+      <workItem from="1464825349381" duration="8535000" />
+      <workItem from="1465500880033" duration="83000" />
+      <workItem from="1465642777369" duration="7648000" />
+      <workItem from="1466642762461" duration="17819000" />
+      <workItem from="1468271107706" duration="578000" />
+      <workItem from="1468507353699" duration="1158000" />
+      <workItem from="1469178385235" duration="2963000" />
+      <workItem from="1469953849176" duration="1773000" />
+      <workItem from="1470240615113" duration="6975000" />
+      <workItem from="1470667022462" duration="9550000" />
+      <workItem from="1473163359091" duration="2893000" />
+      <workItem from="1473331634542" duration="1947000" />
+      <workItem from="1485967816112" duration="2127000" />
+      <workItem from="1486950076981" duration="6770000" />
+      <workItem from="1488197551551" duration="2176000" />
+      <workItem from="1488313904440" duration="5089000" />
+      <workItem from="1489754589715" duration="965000" />
+      <workItem from="1490367707581" duration="5403000" />
+      <workItem from="1490619324230" duration="10193000" />
+      <workItem from="1490991735662" duration="13000" />
+      <workItem from="1505817904741" duration="5117000" />
+      <workItem from="1513197377686" duration="6739000" />
+      <workItem from="1514282480096" duration="470000" />
+      <workItem from="1518695524906" duration="980000" />
+      <workItem from="1522004376456" duration="2768000" />
+      <workItem from="1571992398629" duration="14798000" />
+      <workItem from="1592812594088" duration="10379000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+    <option name="exactExcludedFiles">
+      <list>
+        <option value="$PROJECT_DIR$/node_modules/karma/config.tpl.js" />
+      </list>
+    </option>
+  </component>
+  <component name="Vcs.Log.UiProperties">
+    <option name="RECENTLY_FILTERED_USER_GROUPS">
+      <collection />
+    </option>
+    <option name="RECENTLY_FILTERED_BRANCH_GROUPS">
+      <collection />
+    </option>
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="388" y="92" key="CommitChangelistDialog2" timestamp="1593438543264">
+      <screen x="0" y="23" width="1680" height="934" />
+    </state>
+    <state x="388" y="92" key="CommitChangelistDialog2/0.23.1680.934@0.23.1680.934" timestamp="1593438543264" />
+    <state x="100" y="123" width="1480" height="734" key="DiffContextDialog" timestamp="1593184393366">
+      <screen x="0" y="23" width="1680" height="934" />
+    </state>
+    <state x="100" y="123" width="1480" height="734" key="DiffContextDialog/0.23.1680.934@0.23.1680.934" timestamp="1593184393366" />
+    <state x="341" y="129" key="SettingsEditor" timestamp="1593433297977">
+      <screen x="0" y="23" width="1680" height="934" />
+    </state>
+    <state x="341" y="129" key="SettingsEditor/0.23.1680.934@0.23.1680.934" timestamp="1593433297977" />
+    <state x="498" y="247" width="683" height="486" key="find.popup" timestamp="1593439118398">
+      <screen x="0" y="23" width="1680" height="934" />
+    </state>
+    <state x="498" y="247" width="683" height="486" key="find.popup/0.23.1680.934@0.23.1680.934" timestamp="1593439118398" />
+    <state x="505" y="227" width="670" height="676" key="search.everywhere.popup" timestamp="1593439545186">
+      <screen x="0" y="23" width="1680" height="934" />
+    </state>
+    <state x="505" y="227" width="670" height="676" key="search.everywhere.popup/0.23.1680.934@0.23.1680.934" timestamp="1593439545186" />
+  </component>
+</project>

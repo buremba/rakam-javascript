@@ -1,4 +1,3 @@
-var JSON = require('json'); // jshint ignore:line
 
 /*
  * Simple AJAX request object
@@ -50,15 +49,15 @@ Request.prototype.send = function (callback) {
             }
         };
         xhr.setRequestHeader('Content-Type', 'text/plain');
-        
+
         for (var key in this.headers) {
            if (this.headers.hasOwnProperty(key)) {
                xhr.setRequestHeader(key, this.headers[key]);
            }
         }
-        
+
         xhr.send(JSON.stringify(this.data));
     }
 };
 
-module.exports = Request;
+export default Request;

@@ -14,7 +14,7 @@ var toString = Object.prototype.toString;
  * @api public
  */
 
-module.exports = function(val){
+export default function(val){
     switch (toString.call(val)) {
         case '[object Date]': return 'date';
         case '[object RegExp]': return 'regexp';
@@ -42,4 +42,4 @@ module.exports = function(val){
 
     val = val.valueOf ? val.valueOf() : Object.prototype.valueOf.apply(val);
     return typeof val;
-};
+}

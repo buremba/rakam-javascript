@@ -1,5 +1,5 @@
-var type = require('./type');
-var Request = require('./xhr');
+import type from './type';
+import Request from './xhr';
 
 /*
  * Wrapper for a user properties JSON object that supports operations.
@@ -98,4 +98,4 @@ User.prototype.unset = function (properties, callback) {
     return this;
 };
 
-module.exports = User;
+export default User;
