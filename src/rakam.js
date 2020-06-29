@@ -55,11 +55,11 @@ var StorageKeys = {
 }
 
 var getSessionItem = function (options, key) {
-    if (options.useLocalStorageForSessionization) {
-        return localStorage.getItem(key)
-    } else {
-        return Cookie.get(key, value)
-    }
+  if (options.useLocalStorageForSessionization) {
+    return localStorage.getItem(key)
+  } else {
+    return Cookie.get(key, value)
+  }
 }
 
 var setSessionItem = function (options, key, value) {
