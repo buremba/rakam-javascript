@@ -1,8 +1,7 @@
 [![Build Status](https://travis-ci.org/buremba/rakam-javascript.svg?branch=master)](https://travis-ci.org/buremba/rakam-javascript)
 
 # Setup #
-1. If you haven't already, go to http://rakam.io and register for an account. You will receive an API Key.
-2. On every page that uses analytics, paste the following Javascript code between the `<head>` and `</head>` tags:
+On every page that uses analytics, paste the following Javascript code between the `<head>` and `</head>` tags:
 
 ```
 <script type="text/javascript">
