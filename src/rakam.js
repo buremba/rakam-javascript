@@ -8,8 +8,6 @@ import UUID from './uuid';
 import version from './version';
 import User from './user';
 import type from './type';
-import ifvisible from 'ifvisible.js';
-
 
 var indexOf
 if (!Array.prototype.indexOf) {
@@ -27,7 +25,7 @@ if (!Array.prototype.indexOf) {
 
 var API_VERSION = 1
 var DEFAULT_OPTIONS = {
-    apiEndpoint: 'app.rakam.io',
+    apiEndpoint: 'managed.getrakam.com',
     eventEndpointPath: '/event/batch',
     cookieExpiration: 365 * 10,
     cookieName: 'rakam_id',
@@ -201,7 +199,6 @@ Rakam.prototype.init = function (apiKey, opt_userId, opt_config, callback) {
                 this._returningUser = true
             }
             this._sessionId = now
-            Cookie.remove('_rakam_time')
             setSessionItem(this.options, StorageKeys.SESSION_ID, this._sessionId)
         } else {
             this._returningUser = getSessionItem(this.options, StorageKeys.RETURNING_SESSION) === 'true'
@@ -310,65 +307,20 @@ Rakam.prototype.isReturningUser = function () {
     return this._returningUser
 }
 
-var gapMillis = 0
-var startTime = (new Date()).getTime()
-var idleTime
-var initializedTimer = false
-
 Rakam.prototype.resetTimer = function () {
-    if (!initializedTimer) {
-        return this.log('Timer is not initialized')
-    }
-
-    idleTime = null
-    gapMillis = 0
-    startTime = (new Date()).getTime()
+    console.log('[Rakam WARN] rakam.resetTimer function is removed from the API.')
 }
 
-Rakam.prototype.startTimer = function (saveOnClose) {
-    if (initializedTimer) {
-        return this.log('Timer is already initialized')
-    }
-
-    startTime = (new Date()).getTime()
-
-    ifvisible.on('idle', function () {
-        idleTime = (new Date()).getTime()
-    })
-
-    ifvisible.on('wakeup', function () {
-        gapMillis += (new Date()).getTime() - idleTime
-        idleTime = null
-    })
-
-    if (saveOnClose) {
-        var func
-        if (window.onbeforeunload !== null) {
-            func = window.onbeforeunload
-        }
-        var _this = this
-        window.onbeforeunload = function (e) {
-            Cookie.set('_rakam_time', _this.getTimeOnPage())
-
-            if (func) {
-                func(e)
-            }
-        }
-    }
-
-    initializedTimer = true
+Rakam.prototype.startTimer = function () {
+    console.log('[Rakam WARN] rakam.startTimer function is removed from the API.')
 }
 
 Rakam.prototype.getTimeOnPage = function () {
-    if (!initializedTimer) {
-        return this.log('Timer is not initialized, returning null from getTimeOnPage()')
-    }
-
-    return ((idleTime > 0 ? idleTime : (new Date()).getTime()) - startTime - gapMillis) / 1000
+    console.log('[Rakam WARN] rakam.getTimeOnPage function is removed from the API.')
 }
 
 Rakam.prototype.getTimeOnPreviousPage = function () {
-    return Cookie.get('_rakam_time')
+    console.log('[Rakam WARN] rakam.getTimeOnPreviousPage function is removed from the API.')
 }
 
 Rakam.prototype.nextEventId = function () {
@@ -568,20 +520,7 @@ Rakam.prototype.setDomain = function (domain) {
 }
 
 Rakam.prototype.setUserId = function (userId) {
-    try {
-        var previousId = this.options.deviceId
-        this.options.userId = (userId !== undefined && userId !== null && ('' + userId)) || null
-
-        if (userId !== null && userId !== '' && userId !== undefined &&
-            ((this._eventId > 0 && (previousId === null || previousId === undefined)) ||
-                (previousId !== null && previousId !== undefined))) {
-            var _this = this
-            this.User()._merge(previousId, this.deviceIdCreatedAt, function () {
-                _this.deviceIdCreatedAt = null
-                _saveCookieData(_this)
-            })
-        }
-
+    try {this.options.userId = (userId !== undefined && userId !== null && ('' + userId)) || null
         _saveCookieData(this)
         this.log('set userId=' + userId)
     } catch (e) {

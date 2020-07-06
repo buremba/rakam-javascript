@@ -2,7 +2,6 @@ describe('Rakam', function () {
     var Rakam = require('../src/rakam.js');
     var localStorage = require('../src/localstorage.js');
     var cookie = require('../src/cookie.js');
-    var JSON = require('json');
     var apiKey = '000000';
     var userId = 'user';
     var rakam;

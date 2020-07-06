@@ -8,7 +8,7 @@ var rakam = (function () {
      * http://www.webtoolkit.info/
      */
     var UTF8 = {
-      encode: function (s) {
+      encode: function encode(s) {
         var utftext = '';
 
         for (var n = 0; n < s.length; n++) {
@@ -28,7 +28,7 @@ var rakam = (function () {
 
         return utftext;
       },
-      decode: function (utftext) {
+      decode: function decode(utftext) {
         var s = '';
         var i = 0;
         var c = 0,
@@ -65,7 +65,7 @@ var rakam = (function () {
 
     var Base64 = {
       _keyStr: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=',
-      encode: function (input) {
+      encode: function encode(input) {
         try {
           if (window.btoa && window.atob) {
             return window.btoa(unescape(encodeURIComponent(input)));
@@ -75,7 +75,7 @@ var rakam = (function () {
 
         return Base64._encode(input);
       },
-      _encode: function (input) {
+      _encode: function _encode(input) {
         var output = '';
         var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
         var i = 0;
@@ -101,7 +101,7 @@ var rakam = (function () {
 
         return output;
       },
-      decode: function (input) {
+      decode: function decode(input) {
         try {
           if (window.btoa && window.atob) {
             return decodeURIComponent(escape(window.atob(input)));
@@ -111,7 +111,7 @@ var rakam = (function () {
 
         return Base64._decode(input);
       },
-      _decode: function (input) {
+      _decode: function _decode(input) {
         var output = '';
         var chr1, chr2, chr3;
         var enc1, enc2, enc3, enc4;
@@ -142,31 +142,154 @@ var rakam = (function () {
       }
     };
 
+    // A URL safe variation on the the list of Base64 characters
+    var base64Chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
+
+    var base64Id = function base64Id() {
+      var str = '';
+
+      for (var i = 0; i < 22; ++i) {
+        str += base64Chars.charAt(Math.floor(Math.random() * 64));
+      }
+
+      return str;
+    };
+
+    var get = function get(name) {
+      try {
+        var ca = document.cookie.split(';');
+        var value = null;
+
+        for (var i = 0; i < ca.length; i++) {
+          var c = ca[i];
+
+          while (c.charAt(0) === ' ') {
+            c = c.substring(1, c.length);
+          }
+
+          if (c.indexOf(name) === 0) {
+            value = c.substring(name.length, c.length);
+            break;
+          }
+        }
+
+        return value;
+      } catch (e) {
+        return null;
+      }
+    };
+
+    var set = function set(name, value, opts) {
+      var expires = value !== null ? opts.expirationDays : -1;
+
+      if (expires) {
+        var date = new Date();
+        date.setTime(date.getTime() + expires * 24 * 60 * 60 * 1000);
+        expires = date;
+      }
+
+      var str = name + '=' + value;
+
+      if (expires) {
+        str += '; expires=' + expires.toUTCString();
+      }
+
+      str += '; path=/';
+
+      if (opts.domain) {
+        str += '; domain=' + opts.domain;
+      }
+
+      if (opts.secure) {
+        str += '; Secure';
+      }
+
+      if (opts.sameSite) {
+        str += '; SameSite=' + opts.sameSite;
+      }
+
+      document.cookie = str;
+    }; // test that cookies are enabled - navigator.cookiesEnabled yields false positives in IE, need to test directly
+
+
+    var areCookiesEnabled = function areCookiesEnabled() {
+      var uid = String(new Date());
+
+      try {
+        var cookieName = 'rakam' + base64Id();
+        set(cookieName, uid, {});
+
+        var _areCookiesEnabled = get(cookieName + '=') === uid;
+
+        set(cookieName, null, {});
+        return _areCookiesEnabled;
+      } catch (e) {}
+
+      return false;
+    };
+
+    var baseCookie = {
+      set: set,
+      get: get,
+      areCookiesEnabled: areCookiesEnabled
+    };
+
+    var getHost = function getHost(url) {
+      var a = document.createElement('a');
+      a.href = url;
+      return a.hostname || location.hostname;
+    };
+
+    var topDomain = function topDomain(url) {
+      var host = getHost(url);
+      var parts = host.split('.');
+      var levels = [];
+      var cname = '_tldtest_' + base64Id();
+
+      for (var i = parts.length - 2; i >= 0; --i) {
+        levels.push(parts.slice(i).join('.'));
+      }
+
+      for (var _i = 0; _i < levels.length; ++_i) {
+        var domain = levels[_i];
+        var opts = {
+          domain: '.' + domain
+        };
+        baseCookie.set(cname, 1, opts);
+
+        if (baseCookie.get(cname)) {
+          baseCookie.set(cname, null, opts);
+          return domain;
+        }
+      }
+
+      return '';
+    };
+
     /*
      * Cookie data
      */
-
     var _options = {
       expirationDays: undefined,
       domain: undefined
     };
 
-    var reset = function () {
+    var reset = function reset() {
       _options = {};
     };
 
-    var options = function (opts) {
+    var options = function options(opts) {
       if (arguments.length === 0) {
         return _options;
       }
 
       opts = opts || {};
       _options.expirationDays = opts.expirationDays;
-      var domain = opts.domain !== undefined ? opts.domain : '.';
+      var domain = opts.domain !== undefined ? opts.domain : '.' + topDomain(window.location.href);
       var token = Math.random();
       _options.domain = domain;
-      set('rakam_test', token);
-      var stored = get('rakam_test');
+      set$1('rakam_test', token);
+      var stored = get$1('rakam_test');
 
       if (!stored || stored !== token) {
         domain = null;
@@ -176,7 +299,7 @@ var rakam = (function () {
       _options.domain = domain;
     };
 
-    var _domainSpecific = function (name) {
+    var _domainSpecific = function _domainSpecific(name) {
       // differentiate between cookies on different domains
       var suffix = '';
 
@@ -187,7 +310,7 @@ var rakam = (function () {
       return name + suffix;
     };
 
-    var get = function (name) {
+    var get$1 = function get(name) {
       try {
         var nameEq = _domainSpecific(name) + '=';
         var ca = document.cookie.split(';');
@@ -216,7 +339,7 @@ var rakam = (function () {
       }
     };
 
-    var set = function (name, value) {
+    var set$1 = function set(name, value) {
       try {
         _set(_domainSpecific(name), Base64.encode(JSON.stringify(value)), _options);
 
@@ -226,7 +349,7 @@ var rakam = (function () {
       }
     };
 
-    var _set = function (name, value, opts) {
+    var _set = function _set(name, value, opts) {
       var expires = value !== null ? opts.expirationDays : -1;
 
       if (expires) {
@@ -250,7 +373,7 @@ var rakam = (function () {
       document.cookie = str;
     };
 
-    var remove = function (name) {
+    var remove = function remove(name) {
       try {
         _set(_domainSpecific(name), null, _options);
 
@@ -263,12 +386,12 @@ var rakam = (function () {
     var Cookie = {
       reset: reset,
       options: options,
-      get: get,
-      set: set,
+      get: get$1,
+      set: set$1,
       remove: remove
     };
 
-    var getLanguage = function () {
+    var getLanguage = function getLanguage() {
       return navigator && (navigator.languages && navigator.languages[0] || navigator.language || navigator.userLanguage) || undefined;
     };
 
@@ -320,7 +443,7 @@ var rakam = (function () {
         div.addBehavior('#default#userdata');
         localStorage = {
           length: 0,
-          setItem: function (k, v) {
+          setItem: function setItem(k, v) {
             div.load(attrKey);
 
             if (!div.getAttribute(k)) {
@@ -330,11 +453,11 @@ var rakam = (function () {
             div.setAttribute(k, v);
             div.save(attrKey);
           },
-          getItem: function (k) {
+          getItem: function getItem(k) {
             div.load(attrKey);
             return div.getAttribute(k);
           },
-          removeItem: function (k) {
+          removeItem: function removeItem(k) {
             div.load(attrKey);
 
             if (div.getAttribute(k)) {
@@ -344,7 +467,7 @@ var rakam = (function () {
             div.removeAttribute(k);
             div.save(attrKey);
           },
-          clear: function () {
+          clear: function clear() {
             div.load(attrKey);
             var i = 0;
             var attr;
@@ -356,7 +479,7 @@ var rakam = (function () {
             div.save(attrKey);
             this.length = 0;
           },
-          key: function (k) {
+          key: function key(k) {
             div.load(attrKey);
             return div.XMLDocument.documentElement.attributes[k];
           }
@@ -369,11 +492,11 @@ var rakam = (function () {
     if (!localStorage) {
       localStorage = {
         length: 0,
-        setItem: function (k, v) {},
-        getItem: function (k) {},
-        removeItem: function (k) {},
-        clear: function () {},
-        key: function (k) {}
+        setItem: function setItem(k, v) {},
+        getItem: function getItem(k) {},
+        removeItem: function removeItem(k) {},
+        clear: function clear() {},
+        key: function key(k) {}
       };
     }
 
@@ -394,7 +517,7 @@ var rakam = (function () {
     /*
      * Simple AJAX request object
      */
-    var Request = function (url, data, headers) {
+    var Request = function Request(url, data, headers) {
       this.url = url;
       this.data = data || {};
       this.headers = headers || {};
@@ -407,13 +530,13 @@ var rakam = (function () {
         return headers;
       }
 
-      var headerPairs = headerStr.split('\u000d\u000a');
+      var headerPairs = headerStr.split("\r\n");
 
       for (var i = 0; i < headerPairs.length; i++) {
         var headerPair = headerPairs[i]; // Can't use split() here because it does the wrong thing
         // if the header value has the string ": " in it.
 
-        var index = headerPair.indexOf('\u003a\u0020');
+        var index = headerPair.indexOf(": ");
 
         if (index > 0) {
           var key = headerPair.substring(0, index);
@@ -469,7 +592,7 @@ var rakam = (function () {
      * where each x is replaced with a random hexadecimal digit from 0 to f, and
      * y is replaced with a random hexadecimal digit from 8 to b.
      */
-    var uuid = function (a) {
+    var uuid = function uuid(a) {
       return a // if the placeholder was passed, return
       ? ( // a random number from 0 to 15
       a ^ // unless b is 8,
@@ -490,6 +613,22 @@ var rakam = (function () {
     };
 
     var version = '2.6.0';
+
+    function _typeof(obj) {
+      "@babel/helpers - typeof";
+
+      if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
+        _typeof = function (obj) {
+          return typeof obj;
+        };
+      } else {
+        _typeof = function (obj) {
+          return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+        };
+      }
+
+      return _typeof(obj);
+    }
 
     /* Taken from: https://github.com/component/type */
 
@@ -544,7 +683,7 @@ var rakam = (function () {
       }
 
       val = val.valueOf ? val.valueOf() : Object.prototype.valueOf.apply(val);
-      return typeof val;
+      return _typeof(val);
     }
 
     /*
@@ -555,7 +694,7 @@ var rakam = (function () {
 
     var API_VERSION = 1;
 
-    var wrapCallback = function (operation, props, callback) {
+    var wrapCallback = function wrapCallback(operation, props, callback) {
       return function (status, response, headers) {
         if (callback !== undefined) {
           callback(status, response, headers);
@@ -563,11 +702,11 @@ var rakam = (function () {
       };
     };
 
-    var getUrl = function (options) {
+    var getUrl = function getUrl(options) {
       return ('https:' === window.location.protocol ? 'https' : 'http') + '://' + options.apiEndpoint + "/user";
     };
 
-    var User = function () {};
+    var User = function User() {};
 
     User.prototype.init = function (options) {
       this.options = options;
@@ -582,21 +721,6 @@ var rakam = (function () {
         id: this.options.userId,
         properties: properties
       }).send(wrapCallback("set_properties", properties, callback));
-      return this;
-    };
-
-    User.prototype._merge = function (deviceId, createdAt, callback) {
-      new Request(getUrl(this.options) + "/merge", {
-        api: {
-          "api_version": API_VERSION,
-          "api_key": this.options.apiKey,
-          "upload_time": new Date().getTime()
-        },
-        anonymous_id: deviceId,
-        id: this.options.userId,
-        created_at: createdAt ? createdAt.getTime() : null,
-        merged_at: new Date().getTime()
-      }).send(wrapCallback("merge", null, callback));
       return this;
     };
 
@@ -637,341 +761,9 @@ var rakam = (function () {
       return this;
     };
 
-    var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
-
-    function createCommonjsModule(fn, module) {
-    	return module = { exports: {} }, fn(module, module.exports), module.exports;
-    }
-
-    var ifvisible = createCommonjsModule(function (module, exports) {
-    (function () {
-      (function (root, factory) {
-        {
-          return module.exports = factory();
-        }
-      })(this, function () {
-        var addEvent, customEvent, doc, hidden, idleStartedTime, idleTime, ie, ifvisible, init, initialized, status, trackIdleStatus, visibilityChange;
-        ifvisible = {};
-        doc = document;
-        initialized = false;
-        status = "active";
-        idleTime = 60000;
-        idleStartedTime = false;
-
-        customEvent = function () {
-          var addCustomEvent, cgid, fireCustomEvent, listeners, removeCustomEvent;
-
-          listeners = {};
-          cgid = '__ceGUID';
-
-          addCustomEvent = function (obj, event, callback) {
-            obj[cgid] = undefined;
-
-            if (!obj[cgid]) {
-              obj[cgid] = "ifvisible.object.event.identifier";
-            }
-
-            if (!listeners[obj[cgid]]) {
-              listeners[obj[cgid]] = {};
-            }
-
-            if (!listeners[obj[cgid]][event]) {
-              listeners[obj[cgid]][event] = [];
-            }
-
-            return listeners[obj[cgid]][event].push(callback);
-          };
-
-          fireCustomEvent = function (obj, event, memo) {
-            var ev, j, len, ref, results;
-
-            if (obj[cgid] && listeners[obj[cgid]] && listeners[obj[cgid]][event]) {
-              ref = listeners[obj[cgid]][event];
-              results = [];
-
-              for (j = 0, len = ref.length; j < len; j++) {
-                ev = ref[j];
-                results.push(ev(memo || {}));
-              }
-
-              return results;
-            }
-          };
-
-          removeCustomEvent = function (obj, event, callback) {
-            var cl, i, j, len, ref;
-
-            if (callback) {
-              if (obj[cgid] && listeners[obj[cgid]] && listeners[obj[cgid]][event]) {
-                ref = listeners[obj[cgid]][event];
-
-                for (i = j = 0, len = ref.length; j < len; i = ++j) {
-                  cl = ref[i];
-
-                  if (cl === callback) {
-                    listeners[obj[cgid]][event].splice(i, 1);
-                    return cl;
-                  }
-                }
-              }
-            } else {
-              if (obj[cgid] && listeners[obj[cgid]] && listeners[obj[cgid]][event]) {
-                return delete listeners[obj[cgid]][event];
-              }
-            }
-          };
-
-          return {
-            add: addCustomEvent,
-            remove: removeCustomEvent,
-            fire: fireCustomEvent
-          };
-        }();
-
-        addEvent = function () {
-          var setListener;
-          setListener = false;
-          return function (el, ev, fn) {
-            if (!setListener) {
-              if (el.addEventListener) {
-                setListener = function (el, ev, fn) {
-                  return el.addEventListener(ev, fn, false);
-                };
-              } else if (el.attachEvent) {
-                setListener = function (el, ev, fn) {
-                  return el.attachEvent('on' + ev, fn, false);
-                };
-              } else {
-                setListener = function (el, ev, fn) {
-                  return el['on' + ev] = fn;
-                };
-              }
-            }
-
-            return setListener(el, ev, fn);
-          };
-        }();
-
-        ie = function () {
-          var all, check, div, undef, v;
-          undef = void 0;
-          v = 3;
-          div = doc.createElement("div");
-          all = div.getElementsByTagName("i");
-
-          check = function () {
-            return div.innerHTML = "<!--[if gt IE " + ++v + "]><i></i><![endif]-->", all[0];
-          };
-
-          while (check()) {
-            continue;
-          }
-
-          if (v > 4) {
-            return v;
-          } else {
-            return undef;
-          }
-        }();
-
-        hidden = false;
-        visibilityChange = void 0;
-
-        if (typeof doc.hidden !== "undefined") {
-          hidden = "hidden";
-          visibilityChange = "visibilitychange";
-        } else if (typeof doc.mozHidden !== "undefined") {
-          hidden = "mozHidden";
-          visibilityChange = "mozvisibilitychange";
-        } else if (typeof doc.msHidden !== "undefined") {
-          hidden = "msHidden";
-          visibilityChange = "msvisibilitychange";
-        } else if (typeof doc.webkitHidden !== "undefined") {
-          hidden = "webkitHidden";
-          visibilityChange = "webkitvisibilitychange";
-        }
-
-        trackIdleStatus = function () {
-          var timer, wakeUp;
-          timer = false;
-
-          wakeUp = function () {
-            clearTimeout(timer);
-
-            if (status !== "active") {
-              ifvisible.wakeup();
-            }
-
-            idleStartedTime = +new Date();
-            return timer = setTimeout(function () {
-              if (status === "active") {
-                return ifvisible.idle();
-              }
-            }, idleTime);
-          };
-
-          wakeUp();
-          addEvent(doc, "mousemove", wakeUp);
-          addEvent(doc, "keyup", wakeUp);
-          addEvent(window, "scroll", wakeUp);
-          ifvisible.focus(wakeUp);
-          return ifvisible.wakeup(wakeUp);
-        };
-
-        init = function () {
-          var blur;
-
-          if (initialized) {
-            return true;
-          }
-
-          if (hidden === false) {
-            blur = "blur";
-
-            if (ie < 9) {
-              blur = "focusout";
-            }
-
-            addEvent(window, blur, function () {
-              return ifvisible.blur();
-            });
-            addEvent(window, "focus", function () {
-              return ifvisible.focus();
-            });
-          } else {
-            addEvent(doc, visibilityChange, function () {
-              if (doc[hidden]) {
-                return ifvisible.blur();
-              } else {
-                return ifvisible.focus();
-              }
-            }, false);
-          }
-
-          initialized = true;
-          return trackIdleStatus();
-        };
-
-        ifvisible = {
-          setIdleDuration: function (seconds) {
-            return idleTime = seconds * 1000;
-          },
-          getIdleDuration: function () {
-            return idleTime;
-          },
-          getIdleInfo: function () {
-            var now, res;
-            now = +new Date();
-            res = {};
-
-            if (status === "idle") {
-              res.isIdle = true;
-              res.idleFor = now - idleStartedTime;
-              res.timeLeft = 0;
-              res.timeLeftPer = 100;
-            } else {
-              res.isIdle = false;
-              res.idleFor = now - idleStartedTime;
-              res.timeLeft = idleStartedTime + idleTime - now;
-              res.timeLeftPer = (100 - res.timeLeft * 100 / idleTime).toFixed(2);
-            }
-
-            return res;
-          },
-          focus: function (callback) {
-            if (typeof callback === "function") {
-              return this.on("focus", callback);
-            }
-
-            status = "active";
-            customEvent.fire(this, "focus");
-            customEvent.fire(this, "wakeup");
-            return customEvent.fire(this, "statusChanged", {
-              status: status
-            });
-          },
-          blur: function (callback) {
-            if (typeof callback === "function") {
-              return this.on("blur", callback);
-            }
-
-            status = "hidden";
-            customEvent.fire(this, "blur");
-            customEvent.fire(this, "idle");
-            return customEvent.fire(this, "statusChanged", {
-              status: status
-            });
-          },
-          idle: function (callback) {
-            if (typeof callback === "function") {
-              return this.on("idle", callback);
-            }
-
-            status = "idle";
-            customEvent.fire(this, "idle");
-            return customEvent.fire(this, "statusChanged", {
-              status: status
-            });
-          },
-          wakeup: function (callback) {
-            if (typeof callback === "function") {
-              return this.on("wakeup", callback);
-            }
-
-            status = "active";
-            customEvent.fire(this, "wakeup");
-            return customEvent.fire(this, "statusChanged", {
-              status: status
-            });
-          },
-          on: function (name, callback) {
-            init();
-            return customEvent.add(this, name, callback);
-          },
-          off: function (name, callback) {
-            init();
-            return customEvent.remove(this, name, callback);
-          },
-          onEvery: function (seconds, callback) {
-            var paused, t;
-            init();
-            paused = false;
-
-            if (callback) {
-              t = setInterval(function () {
-                if (status === "active" && paused === false) {
-                  return callback();
-                }
-              }, seconds * 1000);
-            }
-
-            return {
-              stop: function () {
-                return clearInterval(t);
-              },
-              pause: function () {
-                return paused = true;
-              },
-              resume: function () {
-                return paused = false;
-              },
-              code: t,
-              callback: callback
-            };
-          },
-          now: function (check) {
-            init();
-            return status === (check || "active");
-          }
-        };
-        return ifvisible;
-      });
-    }).call(commonjsGlobal);
-    });
-
     var API_VERSION$1 = 1;
     var DEFAULT_OPTIONS = {
-      apiEndpoint: 'app.rakam.io',
+      apiEndpoint: 'api.getrakam.com',
       eventEndpointPath: '/event/batch',
       cookieExpiration: 365 * 10,
       cookieName: 'rakam_id',
@@ -999,7 +791,7 @@ var rakam = (function () {
       RETURNING_SESSION: 'rakam_returning'
     };
 
-    var getSessionItem = function (options, key) {
+    var getSessionItem = function getSessionItem(options, key) {
       if (options.useLocalStorageForSessionization) {
         return localStorage$1.getItem(key);
       } else {
@@ -1007,7 +799,7 @@ var rakam = (function () {
       }
     };
 
-    var setSessionItem = function (options, key, value) {
+    var setSessionItem = function setSessionItem(options, key, value) {
       if (options.useLocalStorageForSessionization) {
         localStorage$1.setItem(key, value);
       } else {
@@ -1019,7 +811,7 @@ var rakam = (function () {
      */
 
 
-    var Rakam = function () {
+    var Rakam = function Rakam() {
       this._unsentEvents = [];
       this.options = merge({}, DEFAULT_OPTIONS);
     };
@@ -1156,7 +948,6 @@ var rakam = (function () {
           }
 
           this._sessionId = now;
-          Cookie.remove('_rakam_time');
           setSessionItem(this.options, StorageKeys.SESSION_ID, this._sessionId);
         } else {
           this._returningUser = getSessionItem(this.options, StorageKeys.RETURNING_SESSION) === 'true';
@@ -1182,7 +973,7 @@ var rakam = (function () {
       this.options.eventCallbacks.push(callback);
     };
 
-    var transformValue = function (_this, attribute, value, type) {
+    var transformValue = function transformValue(_this, attribute, value, type) {
       if (type !== null) {
         type = type.toLowerCase();
       }
@@ -1219,7 +1010,7 @@ var rakam = (function () {
     };
 
     Rakam.prototype.logInlinedEvent = function (collection, extraProperties, callback) {
-      var getAllElementsWithAttribute = function (attribute) {
+      var getAllElementsWithAttribute = function getAllElementsWithAttribute(attribute) {
         if (document.querySelectorAll) {
           return document.querySelectorAll('[rakam-event-attribute]');
         }
@@ -1279,66 +1070,20 @@ var rakam = (function () {
       return this._returningUser;
     };
 
-    var gapMillis = 0;
-    var startTime = new Date().getTime();
-    var idleTime;
-    var initializedTimer = false;
-
     Rakam.prototype.resetTimer = function () {
-      if (!initializedTimer) {
-        return this.log('Timer is not initialized');
-      }
-
-      idleTime = null;
-      gapMillis = 0;
-      startTime = new Date().getTime();
+      console.log('[Rakam WARN] rakam.resetTimer function is removed from the API.');
     };
 
-    Rakam.prototype.startTimer = function (saveOnClose) {
-      if (initializedTimer) {
-        return this.log('Timer is already initialized');
-      }
-
-      startTime = new Date().getTime();
-      ifvisible.on('idle', function () {
-        idleTime = new Date().getTime();
-      });
-      ifvisible.on('wakeup', function () {
-        gapMillis += new Date().getTime() - idleTime;
-        idleTime = null;
-      });
-
-      if (saveOnClose) {
-        var func;
-
-        if (window.onbeforeunload !== null) {
-          func = window.onbeforeunload;
-        }
-
-        var _this = this;
-
-        window.onbeforeunload = function (e) {
-          Cookie.set('_rakam_time', _this.getTimeOnPage());
-
-          if (func) {
-            func(e);
-          }
-        };
-      }
-
-      initializedTimer = true;
+    Rakam.prototype.startTimer = function () {
+      console.log('[Rakam WARN] rakam.startTimer function is removed from the API.');
     };
 
     Rakam.prototype.getTimeOnPage = function () {
-      if (!initializedTimer) {
-        return this.log('Timer is not initialized, returning null from getTimeOnPage()');
-      }
-
-      return ((idleTime > 0 ? idleTime : new Date().getTime()) - startTime - gapMillis) / 1000;
+      console.log('[Rakam WARN] rakam.getTimeOnPage function is removed from the API.');
     };
 
     Rakam.prototype.getTimeOnPreviousPage = function () {
-      return Cookie.get('_rakam_time');
+      console.log('[Rakam WARN] rakam.getTimeOnPreviousPage function is removed from the API.');
     };
 
     Rakam.prototype.nextEventId = function () {
@@ -1366,7 +1111,7 @@ var rakam = (function () {
       return false;
     };
 
-    var _loadCookieData = function (scope) {
+    var _loadCookieData = function _loadCookieData(scope) {
       var cookieData = Cookie.get(scope.options.cookieName);
 
       if (cookieData) {
@@ -1392,7 +1137,7 @@ var rakam = (function () {
       }
     };
 
-    var _saveCookieData = function (scope) {
+    var _saveCookieData = function _saveCookieData(scope) {
       Cookie.set(scope.options.cookieName, {
         deviceId: scope.options.deviceId,
         deviceIdCreatedAt: scope.deviceIdCreatedAt ? scope.deviceIdCreatedAt.getTime() : undefined,
@@ -1413,7 +1158,7 @@ var rakam = (function () {
       // Translate the utmz cookie format into url query string format.
       var cookie = rawCookie ? '?' + rawCookie.split('.').slice(-1)[0].replace(/\|/g, '&') : '';
 
-      var fetchParam = function (queryName, query, cookieName, cookie) {
+      var fetchParam = function fetchParam(queryName, query, cookieName, cookie) {
         return Rakam._getUtmParam(queryName, query) || Rakam._getUtmParam(cookieName, cookie);
       };
 
@@ -1551,18 +1296,7 @@ var rakam = (function () {
 
     Rakam.prototype.setUserId = function (userId) {
       try {
-        var previousId = this.options.deviceId;
         this.options.userId = userId !== undefined && userId !== null && '' + userId || null;
-
-        if (userId !== null && userId !== '' && userId !== undefined && (this._eventId > 0 && (previousId === null || previousId === undefined) || previousId !== null && previousId !== undefined)) {
-          var _this = this;
-
-          this.User()._merge(previousId, this.deviceIdCreatedAt, function () {
-            _this.deviceIdCreatedAt = null;
-
-            _saveCookieData(_this);
-          });
-        }
 
         _saveCookieData(this);
 

@@ -2,41 +2,30 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="46f25102-99a2-4094-bc7c-0bcb5c6c0ad3" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/karma.conf.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/rollup.config.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/rollup.esm.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/rollup.min.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/rollup.native.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/rollup.nocompat.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/rollup.nocompat.min.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/rollup.snippet-tests.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/rollup.test.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/rollup.umd.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/rollup.umd.min.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/rollup.esm.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.jshintrc" beforeDir="false" afterPath="$PROJECT_DIR$/.jshintrc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.babelrc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.npmignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/base-cookie.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/base64Id.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/get-host.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/top-domain.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/Makefile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/component.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rakam-snippet.min.js" beforeDir="false" afterPath="$PROJECT_DIR$/rakam-snippet.min.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rakam.js" beforeDir="false" afterPath="$PROJECT_DIR$/rakam.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rakam.min.js" beforeDir="false" afterPath="$PROJECT_DIR$/rakam.min.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/scripts/version.js" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/version.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/base64.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/base64.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rakam-segment-snippet.min.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rakam-snippet.min.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rakam.esm.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rakam.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rakam.min.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rakam.native.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rakam.nocompat.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rakam.nocompat.min.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rakam.umd.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rakam.umd.min.js" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/cookie.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/cookie.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/language.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/language.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/localstorage.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/localstorage.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/object.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/object.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/rakam-snippet.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/rakam-snippet.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/rakam.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/rakam.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/type.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/type.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/user.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/user.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utf8.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/utf8.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/uuid.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/uuid.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/version.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/version.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xhr.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/xhr.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/browser/sinon.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/rakam.js" beforeDir="false" afterPath="$PROJECT_DIR$/test/rakam.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -457,13 +446,13 @@
       <screen x="0" y="23" width="1680" height="934" />
     </state>
     <state x="341" y="129" key="SettingsEditor/0.23.1680.934@0.23.1680.934" timestamp="1593433297977" />
-    <state x="498" y="247" width="683" height="486" key="find.popup" timestamp="1593439118398">
+    <state x="498" y="247" width="683" height="486" key="find.popup" timestamp="1594019943294">
       <screen x="0" y="23" width="1680" height="934" />
     </state>
-    <state x="498" y="247" width="683" height="486" key="find.popup/0.23.1680.934@0.23.1680.934" timestamp="1593439118398" />
-    <state x="505" y="227" width="670" height="676" key="search.everywhere.popup" timestamp="1593439545186">
+    <state x="498" y="247" width="683" height="486" key="find.popup/0.23.1680.934@0.23.1680.934" timestamp="1594019943294" />
+    <state x="505" y="227" width="670" height="676" key="search.everywhere.popup" timestamp="1594020163465">
       <screen x="0" y="23" width="1680" height="934" />
     </state>
-    <state x="505" y="227" width="670" height="676" key="search.everywhere.popup/0.23.1680.934@0.23.1680.934" timestamp="1593439545186" />
+    <state x="505" y="227" width="670" height="676" key="search.everywhere.popup/0.23.1680.934@0.23.1680.934" timestamp="1594020163465" />
   </component>
 </project>

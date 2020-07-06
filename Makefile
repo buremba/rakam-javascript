@@ -26,7 +26,7 @@ default: test
 #
 
 clean:
-	@-rm -f rakam.js rakam.min.js
+	@-rm -f rakam.js rakam.beta.min.js
 	@-rm -rf node_modules npm-debug.log
 
 
@@ -93,17 +93,3 @@ $(SEGMENT_SNIPPET_OUT): $(SRC) $(SNIPPET)
 build: $(TESTS) $(OUT) $(SNIPPET_OUT) $(SEGMENT_SNIPPET_OUT)
 	@$(ROLLUP) --config rollup.test.js
 	@$(ROLLUP) --config rollup.snippet-tests.js
-
-docs:
-	@$(JSDOC) -d ./documentation/ src/*.js
-
-#
-# Target for release.
-#
-
-release: $(OUT) $(SNIPPET_OUT) README.md
-	@-mkdir -p dist
-	node scripts/release
-
-.PHONY: clean
-.PHONY: test

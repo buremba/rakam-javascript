@@ -3,7 +3,7 @@
  */
 
 import Base64 from './base64'
-// import topDomain from 'top-domain'
+import topDomain from './top-domain';
 
 var _options = {
   expirationDays: undefined,
@@ -23,7 +23,7 @@ var options = function (opts) {
 
   _options.expirationDays = opts.expirationDays
 
-  var domain = (opts.domain !== undefined) ? opts.domain : '.'
+  var domain = (opts.domain !== undefined) ? opts.domain : '.' + topDomain(window.location.href);
   var token = Math.random()
   _options.domain = domain
   set('rakam_test', token)
