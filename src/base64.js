@@ -1,7 +1,7 @@
 /* jshint bitwise: false */
 /* global escape, unescape */
 
-var UTF8 = require('./utf8');
+import UTF8 from './utf8';
 
 /*
  * Base64 encoder/decoder
@@ -45,8 +45,8 @@ var Base64 = {
             }
 
             output = output +
-            Base64._keyStr.charAt(enc1) + Base64._keyStr.charAt(enc2) +
-            Base64._keyStr.charAt(enc3) + Base64._keyStr.charAt(enc4);
+                Base64._keyStr.charAt(enc1) + Base64._keyStr.charAt(enc2) +
+                Base64._keyStr.charAt(enc3) + Base64._keyStr.charAt(enc4);
         }
         return output;
     },
@@ -94,4 +94,4 @@ var Base64 = {
     }
 };
 
-module.exports = Base64;
+export default Base64;

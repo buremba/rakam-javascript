@@ -1,30 +1,22 @@
-var fs = require('fs');
+var fs = require('fs-extra');
 var path = require('path');
-var package = require('../package');
-var component = require('../component');
-var previous = require('../src/version');
-
-var version = package.version;
+const { version } = require('../package');
+var exec = require('child_process').exec;
 
 var cwd = process.cwd();
 
-function replaceVersion(filepath) {
-  var filename = path.join(cwd, filepath);
-  fs.writeFileSync(filename, fs.readFileSync(filename, 'utf-8').replace(previous, version));
-  console.log('Updated ', filepath);
-}
+var file = path.join(cwd, 'dist', 'rakam-' + version + '.js');
+var minfile = path.join(cwd, 'dist', 'rakam-' + version + '-min.js');
+var mingzfile = path.join(cwd, 'dist', 'rakam-' + version + '-min.gz.js');
 
-console.log('Updating to version ' + version);
+fs.copySync(path.join(cwd, 'rakam.js'), file);
+fs.copySync(path.join(cwd, 'rakam.min.js'), minfile);
+exec('gzip < ' + minfile + ' > ' + mingzfile);
 
-component.version = version;
-fs.writeFileSync(path.join(cwd, 'component.json'), JSON.stringify(component, null, 2) + '\n');
-console.log('Updated component.json');
+const umdFile = path.join(cwd, 'dist', 'rakam-' + version + '.umd.js');
+const umdMinfile = path.join(cwd, 'dist', 'rakam-' + version + '-min.umd.js');
+const umdMingzfile = path.join(cwd, 'dist', 'rakam-' + version + '-min.umd.gz.js');
 
-var files = [
-  'README.md',
-  path.join('src', 'rakam-snippet.js'),
-  path.join('src', 'version.js'),
-];
-files.map(replaceVersion);
-
-console.log('Updated version from', previous, 'to', version);
+fs.copySync(path.join(cwd, 'rakam.umd.js'), umdFile);
+fs.copySync(path.join(cwd, 'rakam.min.js'), umdMinfile);
+exec('gzip < ' + umdMinfile + ' > ' + umdMingzfile);

@@ -1,5 +1,8 @@
-var rakam = (function () {
-    'use strict';
+(function (global, factory) {
+    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
+    typeof define === 'function' && define.amd ? define('rakam', factory) :
+    (global = global || self, global.rakam = factory());
+}(this, (function () { 'use strict';
 
     /* jshint bitwise: false */
 
@@ -1586,4 +1589,4 @@ var rakam = (function () {
 
     return instance;
 
-}());
+})));

@@ -1,5 +1,5 @@
-var type = require('./type');
-var Request = require('./xhr');
+import type from './type';
+import Request from './xhr';
 
 /*
  * Wrapper for a user properties JSON object that supports operations.
@@ -37,22 +37,6 @@ User.prototype.set = function (properties, callback) {
         id: this.options.userId,
         properties: properties
     }).send(wrapCallback("set_properties", properties, callback));
-
-    return this;
-};
-
-User.prototype._merge = function (deviceId, createdAt, callback) {
-    new Request(getUrl(this.options) + "/merge", {
-        api: {
-            "api_version": API_VERSION,
-            "api_key": this.options.apiKey,
-            "upload_time": new Date().getTime()
-        },
-        anonymous_id: deviceId,
-        id: this.options.userId,
-        created_at: createdAt ? createdAt.getTime() : null,
-        merged_at: new Date().getTime()
-    }).send(wrapCallback("merge", null, callback));
 
     return this;
 };
@@ -98,4 +82,4 @@ User.prototype.unset = function (properties, callback) {
     return this;
 };
 
-module.exports = User;
+export default User;

@@ -1,0 +1,10 @@
+{
+  "presets": [
+    ["@babel/env", {
+      "targets": {
+        "browsers": ["ie >= 8"]
+      },
+      "modules": false
+    }]
+  ]
+}
