@@ -766,7 +766,7 @@
 
     var API_VERSION$1 = 1;
     var DEFAULT_OPTIONS = {
-      apiEndpoint: 'api.getrakam.com',
+      apiEndpoint: 'managed.getrakam.com',
       eventEndpointPath: '/event/batch',
       cookieExpiration: 365 * 10,
       cookieName: 'rakam_id',
@@ -884,7 +884,7 @@
           }
 
           this.options.platform = opt_config.platform || this.options.platform;
-          this.options.useLocalStorageForSessionization = opt_config.useLocalStorageForSessionization || this.options.useLocalStorageForSessionization;
+          this.options.useLocalStorageForSessionization = opt_config.useLocalStorageForSessionization !== undefined ? opt_config.useLocalStorageForSessionization : this.options.useLocalStorageForSessionization;
           this.options.language = opt_config.language || this.options.language;
           this.options.sessionTimeout = opt_config.sessionTimeout || this.options.sessionTimeout;
           this.options.uploadBatchSize = opt_config.uploadBatchSize || this.options.uploadBatchSize;

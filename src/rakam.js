@@ -134,7 +134,7 @@ Rakam.prototype.init = function (apiKey, opt_userId, opt_config, callback) {
                 this.options.batchEvents = !!opt_config.batchEvents
             }
             this.options.platform = opt_config.platform || this.options.platform
-            this.options.useLocalStorageForSessionization = opt_config.useLocalStorageForSessionization || this.options.useLocalStorageForSessionization
+            this.options.useLocalStorageForSessionization = opt_config.useLocalStorageForSessionization !== undefined ? opt_config.useLocalStorageForSessionization : this.options.useLocalStorageForSessionization
             this.options.language = opt_config.language || this.options.language
             this.options.sessionTimeout = opt_config.sessionTimeout || this.options.sessionTimeout
             this.options.uploadBatchSize = opt_config.uploadBatchSize || this.options.uploadBatchSize
