@@ -166,7 +166,8 @@ By default, no version name is set. You can specify a version name to distinguis
 
     rakam.setVersionName("VERSION_NAME_HERE");
 
-User IDs are automatically generated and stored in cookies if not specified.
+If you don't set the user id, the user id will be null in the target data warehouse. In that case, you should use unique devices for tracking.
+When you set a user id, the value is stored in cookies so all the subsequent events will be attached to the given user id.
 
 Device IDs are generated randomly, although you can define a custom device ID setting it as a configuration option or by calling:
 
